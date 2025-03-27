@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test GitHub Pages</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bienvenue sur GitHub Pages</h1>
+    <button id="showMessageBtn">Clique ici pour afficher le message</button>
+    <div id="message" style="display: none;">Bonjour, tu as cliqué sur le bouton !</div>
+
+    <script>
+        document.getElementById('showMessageBtn').addEventListener('click', function() {
+            document.getElementById('message').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
