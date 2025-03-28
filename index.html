@@ -2,35 +2,3529 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Bonjour</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <title>GESTION - CHEZ BARTH</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f0f0; font-family: Arial, sans-serif; }
-        h1 { color: #333; margin-bottom: 20px; font-size: 2em; }
-        button { background-color: #4CAF50; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.2em; cursor: pointer; }
-        #hello { display: none; font-size: 3em; color: #2196F3; }
-        #content { display: none; }
+button {
+        -webkit-user-select: none; /* Empêche la sélection de texte */
+        touch-action: manipulation; /* Réduit le délai de clic sur iOS */
+    }
+button {
+    touch-action: manipulation;
+}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        touch-action: manipulation;
+    }
+    .hidden {
+        display: none;
+    }
+button, input {
+    -webkit-tap-highlight-color: transparent;
+}
+    #homePage {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    #homePage h1 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    #homePage button {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto;
+        padding: 15px;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    #homePage #recipeBookBtn { /* Ventes */
+        background: #32CD32; /* Vert */
+    }
+    #homePage #recipeBookBtn:hover {
+        background: #2AB82A;
+    }
+    #homePage #purchasesBtn { /* Achats */
+        background: #FF0000; /* Rouge */
+    }
+    #homePage #purchasesBtn:hover {
+        background: #CC0000;
+    }
+    #homePage #personnelBtn { /* inchangé */
+        background: #6f42c1;
+    }
+    #homePage #personnelBtn:hover {
+        background: #5a32a3;
+    }
+    #homePage #invoiceBtn { /* Commande Facture */
+        background: #0000FF; /* Bleu */
+    }
+    #homePage #invoiceBtn:hover {
+        background: #0000CC;
+    }
+
+#passwordPage {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#passwordPage h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#passwordPage input {
+    padding: 10px;
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+#passwordPage button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#passwordPage button:hover {
+    background: #0056b3;
+}
+
+
+
+    #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
+        text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    #recipeBookPage .date-nav, #purchasesPage .date-nav, #personnelPage .date-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    #recipeBookPage .date-nav button, #purchasesPage .date-nav button, #personnelPage .date-nav button {
+        background: #ddd;
+        color: #333;
+        padding: 8px 12px;
+    }
+    #recipeBookPage .date-nav button:hover, #purchasesPage .date-nav button:hover, #personnelPage .date-nav button:hover {
+        background: #ccc;
+    }
+    /* Boutons "Ajouter" */
+    #saveRecipeBtn, #addPurchaseBtn, #addPersonnelBtn, #addProductBtn {
+        background: #32CD32; /* Vert */
+    }
+    #saveRecipeBtn:hover, #addPurchaseBtn:hover, #addPersonnelBtn:hover, #addProductBtn:hover {
+        background: #2AB82A;
+    }
+    /* Boutons "Supprimer" et "Effacer" */
+    #deleteProductBtn, #deleteRecipeBtn,#deleteDetailBtn, #clearInvoiceBtn, .delete-btn {
+        background: #FF0000; /* Rouge */
+    }
+    #deleteProductBtn:hover, #deleteRecipeBtn:hover,#deleteDetailBtn:hover, #clearInvoiceBtn:hover, .delete-btn:hover {
+        background: #CC0000;
+    }
+    /* Boutons "Bilan" */
+    #manageRecipesBtn, #manageInvoicesBtn, #managePurchasesBtn, #managePersonnelBtn {
+        background: #0000FF; /* Bleu */
+    }
+    #manageRecipesBtn:hover, #manageInvoicesBtn:hover, #managePurchasesBtn:hover, #managePersonnelBtn:hover {
+        background: #0000CC;
+    }
+    /* Boutons "Imprimer" */
+    #printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn {
+        background: #FFFF00; /* Jaune */
+        color: #000; /* Texte noir pour lisibilité */
+    }
+    #printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover {
+        background: #CCCC00;
+    }
+    /* Boutons "Envoyer" */
+    #sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
+        background: #800080; /* Violet */
+    }
+    #sendSmsInvoiceBtn:hover, #sendEmailInvoiceBtn:hover {
+        background: #660066;
+    }
+    /* Bouton "Sauvegarder (10 ans)" */
+    #saveInvoiceBtn {
+        background: #32CD32; /* Vert */
+    }
+    #saveInvoiceBtn:hover {
+        background: #2AB82A;
+    }
+    /* Boutons "Retour" */
+    #recipeBookPage .buttons button[onclick="backToHome()"],
+    #recipeManagementPage .buttons button[onclick="backToRecipeBook()"],
+    #invoicePage .buttons button[onclick="backToHome()"],
+    #invoiceManagementPage .buttons button[onclick="backToInvoice()"],
+    #invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"],
+    #purchasesPage .buttons button[onclick="backToHome()"],
+    #purchasesManagementPage .buttons button[onclick="backToPurchases()"],
+    #personnelPage .buttons button[onclick="backToHome()"],
+    #personnelManagementPage .buttons button[onclick="backToPersonnel()"] {
+        background: #000000; /* Noir */
+    }
+    #recipeBookPage .buttons button[onclick="backToHome()"]:hover,
+    #recipeManagementPage .buttons button[onclick="backToRecipeBook()"]:hover,
+    #invoicePage .buttons button[onclick="backToHome()"]:hover,
+    #invoiceManagementPage .buttons button[onclick="backToInvoice()"]:hover,
+    #invoiceDetailPage .buttons button[onclick="backToInvoiceManagement()"]:hover,
+    #purchasesPage .buttons button[onclick="backToHome()"]:hover,
+    #purchasesManagementPage .buttons button[onclick="backToPurchases()"]:hover,
+    #personnelPage .buttons button[onclick="backToHome()"]:hover,
+    #personnelManagementPage .buttons button[onclick="backToPersonnel()"]:hover {
+        background: #333333;
+    }
+    /* Styles inchangés pour le reste */
+    #recipeBookPage .input-group, #purchasesPage .input-group, #personnelPage .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    #recipeBookPage .input-field, #purchasesPage .input-field, #personnelPage .input-field {
+        display: flex;
+        flex-direction: column;
+    }
+    #recipeBookPage label, #purchasesPage label, #personnelPage label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    #recipeBookPage input, #purchasesPage input[type="number"], #personnelPage input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+    }
+    #purchasesPage input[type="text"], #personnelPage input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+    }
+    #invoicePage .checkbox-group, #purchasesPage .radio-group, #personnelPage .select-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    #invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        color: #333;
+        font-weight: normal;
+    }
+    #invoicePage .checkbox-group input[type="checkbox"], #purchasesPage .radio-group input[type="radio"] {
+        margin-right: 10px;
+    }
+    #invoicePage .checkbox-group {
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+        text-align: left;
+    }
+    #invoicePage .checkbox-group label {
+        display: inline-flex;
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+    }
+    #invoicePage .checkbox-group .first-label {
+        margin-right: 30px;
+    }
+    #invoicePage .checkbox-group input[type="checkbox"] {
+        margin: 0 0 0 5px;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        min-width: 0;
+        min-height: 0;
+    }
+    #invoicePage .dropdown {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    /* MENU Chez BARTH */
+    #invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"] {
+        width: 100%;
+        background: #999999; /* Gris foncé plus clair */
+        color: white;
+    }
+    #invoicePage .dropdown button[onclick="toggleDropdown('menuDropdown')"]:hover {
+        background: #666666;
+    }
+    /* COMMANDE A FACTURER */
+    #invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"] {
+        width: 100%;
+        background: #008000; /* Bleu foncé plus clair */
+        color: white;
+    }
+    #invoicePage .dropdown button[onclick="toggleDropdown('commandeDropdown')"]:hover {
+        background: #006600;
+    }
+    #invoicePage .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        width: 100%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 4px;
+    }
+    #invoicePage .show { display: block; }
+    #invoicePage input, #invoicePage select, #personnelPage select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    #invoicePage #productList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    #invoicePage #productList li {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+    }
+    #invoicePage #productList input[type="checkbox"] {
+        margin-right: 10px;
+        width: auto;
+    }
+    #invoicePage #invoice, #personnelPage #personnelSummary {
+        margin-top: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 210mm;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: border-box;
+    }
+    #invoicePage table, #recipeManagementPage table, #invoiceManagementPage table, #purchasesManagementPage table, #personnelManagementPage table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+        min-height: 30px;
+    }
+    #invoicePage th, #recipeManagementPage th, #invoiceManagementPage th, #purchasesManagementPage th, #personnelManagementPage th {
+        background-color: #f2f2f2;
+    }
+    #invoicePage #orderTotal, #personnelPage #personnelTotal {
+        width: 100%;
+        margin-top: 20px;
+        box-sizing: border-box;
+    }
+    #recipeBookPage .buttons, #recipeManagementPage .buttons, #invoicePage .buttons, #invoiceManagementPage .buttons, #purchasesPage .buttons, #purchasesManagementPage .buttons, #personnelPage .buttons, #personnelManagementPage .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    /* Télécharger Livre des Recettes - Bilan des Ventes */
+    #recipeManagementPage #exportRecipeBtn {
+        background: #FFA500; /* Orange */
+    }
+    #recipeManagementPage #exportRecipeBtn:hover {
+        background: #E59400;
+    }
+    /* Télécharger PDF - Bilan des Ventes (inchangé, déjà corrigé) */
+    #recipeManagementPage #exportPurchasesPdfBtn {
+        background: #FFA500; /* Orange */
+    }
+    #recipeManagementPage #exportPurchasesPdfBtn:hover {
+        background: #E59400;
+    }
+    /* Télécharger PDF - Bilan des Achats */
+    #purchasesManagementPage #exportPurchasesPdfBtn {
+        background: #FFA500; /* Orange */
+    }
+    #purchasesManagementPage #exportPurchasesPdfBtn:hover {
+        background: #E59400;
+    }
+    /* Télécharger - Gestion des Factures */
+    #invoicePage #exportInvoicePdfBtn {
+        background: #FFA500; /* Orange */
+    }
+    #invoicePage #exportInvoicePdfBtn:hover {
+        background: #E59400;
+    }
+    /* Ajouter à la commande dans COMMANDE A FACTURER */
+    #invoicePage #commandeDropdown button {
+        background: #32CD32; /* Vert */
+    }
+    #invoicePage #commandeDropdown button:hover {
+        background: #2AB82A;
+    }
+    /* Ajouter Employé et Supprimer Employé - Gestion du Personnel */
+    #personnelPage .select-group button[onclick="addEmployee()"] {
+        background: #32CD32; /* Vert */
+    }
+    #personnelPage .select-group button[onclick="addEmployee()"]:hover {
+        background: #2AB82A;
+    }
+    #personnelPage .select-group button[onclick="deleteEmployee()"] {
+        background: #FF0000; /* Rouge */
+    }
+    #personnelPage .select-group button[onclick="deleteEmployee()"]:hover {
+        background: #CC0000;
+    }
+    /* Télécharger - Bilan du Personnel */
+    #personnelManagementPage #exportPersonnelPdfBtn {
+        background: #FFA500; /* Orange */
+    }
+    #personnelManagementPage #exportPersonnelPdfBtn:hover {
+        background: #E59400;
+    }
+    #invoicePage #invoiceHeader {
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    #invoicePage #invoiceHeader .invoice-number {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    #invoicePage .total-table, #personnelPage .total-table {
+        width: 100%;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+    #invoicePage .total-table td:last-child, #personnelPage .total-table td:last-child {
+        text-align: right;
+    }
+    #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
+        background-color: white;
+        width: 100%;
+        max-width: 210mm;
+        padding: 20px;
+        box-sizing: border-box;
+        margin: auto;
+    }
+    #recipeManagementPage .date-filter, #invoiceManagementPage .date-filter, #purchasesManagementPage .date-filter, #personnelManagementPage .date-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    #recipeManagementPage .date-filter label, #invoiceManagementPage .date-filter label, #purchasesManagementPage .date-filter label, #personnelManagementPage .date-filter label {
+        font-weight: bold;
+        color: #333;
+    }
+    #recipeManagementPage .date-filter input, #invoiceManagementPage .date-filter input, #purchasesManagementPage .date-filter input, #personnelManagementPage .date-filter input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
+        cursor: pointer;
+    }
+    #invoiceDetailPage {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #invoiceDetailPage h1 {
+        text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    #invoiceDetailPage .buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .no-print {
+        display: block;
+    }
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        button, .buttons {
+            display: none !important;
+        }
+        table {
+            width: 100%;
+            page-break-inside: auto;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        body {
+            margin: 10mm;
+        }
+    }
+    @media (max-width: 480px) {
+        #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
+            padding: 10px;
+        }
+        #recipeBookPage h1, #recipeManagementPage h1, #invoicePage h1, #invoiceManagementPage h1, #invoiceDetailPage h1, #purchasesPage h1, #purchasesManagementPage h1, #personnelPage h1, #personnelManagementPage h1 {
+            font-size: 1.2em;
+        }
+        #recipeBookPage input, #recipeBookPage button, #invoicePage input, #invoicePage button, #invoicePage select, #purchasesPage input, #purchasesPage button, #purchasesManagementPage input, #purchasesManagementPage button, #personnelPage input, #personnelPage button, #personnelPage select, #personnelManagementPage button {
+            font-size: 0.9em;
+        }
+        #invoicePage th, #invoicePage td, #recipeManagementPage th, #recipeManagementPage td, #invoiceManagementPage th, #invoiceManagementPage td, #purchasesManagementPage th, #purchasesManagementPage td, #personnelManagementPage th, #personnelManagementPage td {
+            font-size: 12px;
+        }
+        #invoicePage #invoiceContainer, #personnelPage #personnelContainer {
+            height: auto;
+        }
+    }
+
+.payment-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .payment-section label {
+        display: flex;
+        align-items: center;
+    }
+    .spacer {
+        width: 1cm; /* Réduit de 2cm à 1cm */
+    }
+
     </style>
 </head>
 <body>
-    <div id="content">
-        <h1>Bienvenue</h1>
-        <button id="openBtn">Ouvrir</button>
-        <div id="hello">BONJOUR</div>
+
+<!-- Section de mot de passe -->
+    <div id="passwordPage">
+        <h2>Entrez le mot de passe</h2>
+        <input type="password" id="passwordInput" placeholder="Mot de passe">
+        <button onclick="checkPassword()">Valider</button>
+        <p id="errorMessage" style="color: red; display: none;">Mot de passe incorrect !</p>
     </div>
-    <script>
-        var password = prompt("Mot de passe :");
-        if (password === "enfant123") { // Change ce mot de passe
-            document.getElementById("content").style.display = "block";
+
+    <!-- Page d'accueil (inchangée mais masquée au départ) -->
+    <div id="homePage" class="hidden">
+        <h2>GESTION          CHEZ BARTH</h2>
+        <button id="recipeBookBtn">Ventes</button>
+        <button id="purchasesBtn">Achats</button>
+        <button id="personnelBtn">Personnel</button>
+        <button id="invoiceBtn">Commande Facture</button>
+    </div>
+
+    <!-- Ventes -->
+    <div id="recipeBookPage" class="hidden">
+        <h1>GESTION DES VENTES</h1>
+        <div class="date-nav">
+            <button id="prevDay">←</button>
+            <span id="currentDate"></span>
+            <button id="nextDay">→</button>
+        </div>
+        <div class="input-group">
+            <div class="input-field">
+                <label>Ventes Carte Bancaire (€)</label>
+                <input type="number" id="cardInput" step="0.01" min="0">
+            </div>
+            <div class="input-field">
+                <label>Ventes Espèces (€)</label>
+                <input type="number" id="cashInput" step="0.01" min="0">
+            </div>
+            <div class="input-field">
+                <label>Total Ventes (€)</label>
+                <input type="number" id="totalInput" readonly>
+            </div>
+        </div>
+        <div class="buttons">
+    <button id="saveRecipeBtn">Ajouter</button>
+    <button id="deleteRecipeBtn">Supprimer</button>
+    <button id="manageRecipesBtn" onclick="showRecipeManagement()">Bilan des Ventes</button>
+    <button onclick="backToHome()">Retour</button>
+</div>
+    </div>
+
+    <!-- Bilan des Ventes -->
+    <div id="recipeManagementPage" class="hidden">
+        <h1>Bilan des Ventes</h1>
+        <button id="exportRecipeBtn" onclick="exportRecipeToPdf()">Télécharger Livre des recettes complet (PDF)</button>
+        <div class="date-filter">
+            <label>Date de début :</label>
+            <input type="date" id="recipeStartDate" onchange="filterRecipes()">
+            <label>Date de fin :</label>
+            <input type="date" id="recipeEndDate" onchange="filterRecipes()">
+        </div>
+        <div id="recipeList"></div>
+        <div class="buttons no-print">
+            <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
+            <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger PDF</button>
+            <button onclick="backToRecipeBook()">Retour</button>
+        </div>
+    </div>
+
+<!-- Facture -->
+<div id="invoicePage" class="hidden">
+    <h1>GESTION DES FACTURES CLIENTS</h1>
+    <div class="checkbox-group">
+        <label class="first-label">CA inférieur à 85000€ <input type="checkbox" id="caBelow85000" onchange="toggleCA(this)" checked></label>
+        <label>CA supérieur à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)"></label>
+    </div>
+    <div class="dropdown">
+        <button onclick="toggleDropdown('menuDropdown')">Le MENU Chez BARTH</button>
+        <div id="menuDropdown" class="dropdown-content" onclick="event.stopPropagation()">
+            <select id="productSelect"></select>
+            <button id="addProductBtn" onclick="showMenuAction('add')">Ajouter un produit</button>
+            <button id="deleteProductBtn" onclick="deleteProductFromMenu()">Supprimer le produit</button>
+            <div id="menuActionArea"></div>
+        </div>
+    </div>
+    <!-- Reste du code inchangé -->
+   <div class="dropdown">
+    <button onclick="toggleDropdown('commandeDropdown')">COMMANDE A SAISIR / FACTURE</button>
+    <div id="commandeDropdown" class="dropdown-content" onclick="event.stopPropagation()">
+        <ul id="productList"></ul>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button onclick="addSelectedToOrder()">Ajouter à la commande</button>
+            <div class="payment-section">
+                <span>Paiement :</span>
+                <label>
+                    Carte <input type="radio" name="paymentMethod" value="Carte" id="paymentCard">
+                </label>
+                <div class="spacer"></div>
+                <label>
+                    Espèce <input type="radio" name="paymentMethod" value="Espèce" id="paymentCash">
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="invoice">
+        <div id="invoiceContainer">
+            <div id="invoiceHeader"></div>
+            <div id="orderList"></div>
+            <div id="orderTotal"></div>
+        </div>
+    </div>
+    <div class="buttons no-print">
+        <button id="saveInvoiceBtn" onclick="saveInvoice()">Enregistrer</button>
+        <button id="clearInvoiceBtn" onclick="clearOrder()">Effacer</button>
+        <button id="exportInvoicePdfBtn" onclick="exportInvoiceToPdf()">Télécharger</button>
+       
+        <button id="printInvoiceBtn" onclick="printInvoice()">Imprimer</button>
+        <button id="sendSmsInvoiceBtn" onclick="sendInvoiceBySms()">Envoyer SMS</button>
+        <button id="sendEmailInvoiceBtn" onclick="sendInvoiceByEmail()">Envoyer Email (PC Mac)</button>
+        <button id="manageInvoicesBtn" onclick="showInvoiceManagement()">Bilan des Commandes Factures</button>
+        <button onclick="backToHome()">Retour</button>
+    </div>
+</div>
+
+<!-- Bilan des Factures -->
+<div id="invoiceManagementPage" class="hidden">
+    <h1>Bilan des Commandes Factures</h1>
+    <div class="date-filter">
+        <label>Date de début :</label>
+        <input type="date" id="startDate" onchange="filterInvoices()">
+        <label>Date de fin :</label>
+        <input type="date" id="endDate" onchange="filterInvoices()">
+    </div>
+    <div id="invoiceList"></div>
+    <div class="buttons no-print">
+        <button id="printAllInvoicesBtn" onclick="printAllInvoices()">Imprimer toutes les factures de la liste</button>
+        <button onclick="backToInvoice()">Retour</button>
+    </div>
+</div>
+
+<!-- Détail de la Facture -->
+<div id="invoiceDetailPage" class="hidden">
+    <div id="invoiceDetailContainer"></div>
+    <div class="buttons no-print">
+        <button id="printDetailBtn" onclick="printInvoiceDetail()">Imprimer</button>
+        <button id="deleteDetailBtn" onclick="deleteInvoiceDetail()">Supprimer</button>
+        <button onclick="backToInvoiceManagement()">Retour</button>
+    </div>
+</div>
+
+<!-- Achats -->
+<div id="purchasesPage" class="hidden">
+    <h1>GESTION DES ACHATS</h1>
+    <div class="date-nav">
+        <button id="prevPurchaseDay">←</button>
+        <span id="currentPurchaseDate"></span>
+        <button id="nextPurchaseDay">→</button>
+    </div>
+    <div class="input-group">
+        <div class="input-field">
+            <label>Achats TTC (€)</label>
+            <input type="number" id="purchaseAmount" step="0.01" min="0">
+        </div>
+    </div>
+    <div class="radio-group">
+        <label>Type d'achats</label>
+        <label><input type="radio" name="purchaseType" value="Alimentaire"> Alimentaire</label>
+        <label><input type="radio" name="purchaseType" value="Matériel"> Matériel</label>
+        <label><input type="radio" name="purchaseType" value="Autre"> Autre</label>
+    </div>
+    <div class="radio-group">
+        <label>Paiement</label>
+        <label><input type="radio" name="paymentMethod" value="Carte"> Carte</label>
+        <label><input type="radio" name="paymentMethod" value="Espèce"> Espèce</label>
+    </div>
+    <div class="input-group">
+        <div class="input-field">
+            <label>Commentaire</label>
+            <input type="text" id="purchaseComment">
+        </div>
+    </div>
+    <div class="buttons no-print">
+        <button id="addPurchaseBtn" onclick="addPurchase()">Ajouter</button>
+        <button id="managePurchasesBtn" onclick="showPurchasesManagement()">Bilan des Achats</button>
+        <button onclick="backToHome()">Retour</button>
+    </div>
+</div>
+
+<!-- Bilan des Achats -->
+<div id="purchasesManagementPage" class="hidden">
+    <h1>Bilan des Achats</h1>
+    <div class="date-filter">
+        <label>Date de début :</label>
+        <input type="date" id="purchaseStartDate" onchange="filterPurchases()">
+        <label>Date de fin :</label>
+        <input type="date" id="purchaseEndDate" onchange="filterPurchases()">
+    </div>
+    <label><input type="checkbox" id="showPurchaseComments" onchange="filterPurchases()"> Afficher commentaire</label>
+    <div id="purchasesList"></div>
+    <div class="buttons no-print">
+        <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger PDF</button>
+        <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
+        
+        <button onclick="backToPurchases()">Retour</button>
+    </div>
+</div>
+
+<!-- Personnel -->
+<div id="personnelPage" class="hidden">
+    <h1>GESTION DU PERSONNEL</h1>
+    <div class="date-nav">
+        <button id="prevPersonnelDay">←</button>
+        <span id="currentPersonnelDate"></span>
+        <button id="nextPersonnelDay">→</button>
+    </div>
+    <div class="select-group">
+        <label>Employé</label>
+        <select id="employeeSelect"></select>
+        <button onclick="addEmployee()">Rentrer nouvel employé</button>
+        <button onclick="deleteEmployee()">Sortir ancien employé</button>
+    </div>
+    <div class="input-group">
+        <div class="input-field">
+            <label>Heure de début</label>
+            <input type="text" id="startTime" placeholder="ex: 720 pour 07:20" required>
+        </div>
+        <div class="input-field">
+            <label>Heure de fin</label>
+            <input type="text" id="endTime" placeholder="ex: 1450 pour 14:50" required>
+        </div>
+        <div class="input-field">
+            <label>Commentaire</label>
+            <input type="text" id="personnelComment">
+        </div>
+        <div class="input-field">
+            <label>Total heures</label>
+            <input type="text" id="hoursTotal" readonly>
+        </div>
+    </div>
+    <div class="buttons no-print">
+        <button id="addPersonnelBtn" onclick="addPersonnelHours()">Ajouter</button>
+        <button id="managePersonnelBtn" onclick="showPersonnelManagement()">Bilan du Personnel</button>
+        <button onclick="backToHome()">Retour</button>
+    </div>
+</div>
+
+<!-- Bilan du Personnel -->
+<div id="personnelManagementPage" class="hidden">
+    <h1>Bilan du Personnel</h1>
+    <div class="date-filter">
+        <label>Date de début :</label>
+        <input type="date" id="personnelStartDate" onchange="filterPersonnel()">
+        <label>Date de fin :</label>
+        <input type="date" id="personnelEndDate" onchange="filterPersonnel()">
+    </div>
+    <label><input type="checkbox" id="showComments" onchange="filterPersonnel()"> Afficher commentaire</label>
+    <div id="personnelList"></div>
+    <div class="buttons no-print">
+        <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger PDF</button>
+        <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
+        
+        <button onclick="backToPersonnel()">Retour</button>
+    </div>
+</div>
+
+<script>
+// Vérification de la disponibilité de localStorage
+let storageAvailable = true;
+try {
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
+} catch (e) {
+    storageAvailable = false;
+    console.warn('localStorage non disponible, utilisation du stockage en mémoire.');
+}
+
+// Stockage en mémoire comme secours
+let memoryStorage = {};
+
+// Fonctions génériques pour sauvegarder et charger
+function saveToStorage(key, data) {
+    try {
+        if (storageAvailable) {
+            localStorage.setItem(key, JSON.stringify(data));
         } else {
-            alert("Mauvais mot de passe !");
-            document.body.innerHTML = "<h1>Accès refusé</h1>";
+            memoryStorage[key] = data;
         }
-        document.getElementById('openBtn').addEventListener('click', function() {
-            document.getElementById('hello').style.display = 'block';
-            this.style.display = 'none';
+    } catch (e) {
+        console.error(`Erreur lors de la sauvegarde de ${key}:`, e);
+        memoryStorage[key] = data; // Secours en cas d’erreur imprévue
+    }
+}
+
+function loadFromStorage(key, defaultValue) {
+    try {
+        if (storageAvailable) {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : defaultValue;
+        } else {
+            return memoryStorage[key] || defaultValue;
+        }
+    } catch (e) {
+        console.error(`Erreur lors du chargement de ${key}:`, e);
+        return defaultValue;
+    }
+}
+    const { jsPDF } = window.jspdf;
+
+    // Initialisation globale des variables
+let invoices = [];
+let invoiceCounter = 0;
+let order = [];
+let menu = [];
+let caBelow85000 = true; // Par défaut, CA inférieur à 85000€ (au lieu de false)
+let currentPaymentMethod = 'Non spécifié'; // Mode de paiement global pour la facture en cours
+
+// Mot de passe défini
+const correctPassword = "mathis";
+
+// Fonction pour vérifier le mot de passe
+function checkPassword() {
+    const input = document.getElementById('passwordInput').value;
+    const errorMessage = document.getElementById('errorMessage');
+    if (input === correctPassword) {
+        document.getElementById('passwordPage').classList.add('hidden');
+        document.getElementById('homePage').classList.remove('hidden');
+        errorMessage.style.display = 'none';
+    } else {
+        errorMessage.style.display = 'block';
+    }
+}
+
+// Gestion de la touche "Entrée" pour valider le mot de passe
+document.getElementById('passwordInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        checkPassword();
+    }
+});
+
+// Au démarrage, afficher la page de mot de passe et masquer le reste
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('passwordPage').classList.remove('hidden');
+    document.getElementById('homePage').classList.add('hidden');
+    document.getElementById('recipeBookPage').classList.add('hidden');
+    document.getElementById('recipeManagementPage').classList.add('hidden');
+    document.getElementById('invoicePage').classList.add('hidden');
+    document.getElementById('invoiceManagementPage').classList.add('hidden');
+    document.getElementById('invoiceDetailPage').classList.add('hidden');
+    document.getElementById('purchasesPage').classList.add('hidden');
+    document.getElementById('purchasesManagementPage').classList.add('hidden');
+    document.getElementById('personnelPage').classList.add('hidden');
+    document.getElementById('personnelManagementPage').classList.add('hidden');
+});
+
+
+
+
+function updateMenuTvaRates() {
+    console.log('Dans updateMenuTvaRates, caBelow85000 =', caBelow85000);
+    menu.forEach(item => {
+        if (caBelow85000) {
+            // Si CA < 85000€, TVA à 0% pour tous les produits
+            item.tvaRate = 0;
+            item.priceHT = item.priceTTC; // Pas de TVA, donc HT = TTC
+        } else {
+            // Sinon, rétablir les taux par défaut : 5.5% pour boissons, 10% pour sandwichs/desserts
+            if (item.type === "B") { // Boissons
+                item.tvaRate = 0.055; // 5.5%
+            } else { // Sandwichs et desserts (type "S")
+                item.tvaRate = 0.1; // 10%
+            }
+            // Recalculer le prix HT à partir du prix TTC
+            item.priceHT = item.priceTTC / (1 + item.tvaRate);
+        }
+        console.log(`Produit ${item.name}: tvaRate = ${item.tvaRate}, priceHT = ${item.priceHT}`);
+    });
+    // Mettre à jour la liste des produits et la commande après changement des taux
+    updateProductList();
+    updateOrderList();
+}
+
+function saveMenuToStorage() {
+    saveToStorage('menu', menu);
+}
+
+function loadMenuFromStorage() {
+    menu = loadFromStorage('menu', [
+        { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+        { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+        { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+        { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+        { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+        { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+        { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+        { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+        { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+        { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+    ]);
+    updateMenuTvaRates();
+}
+
+
+
+
+
+// Charger le menu au démarrage
+loadMenuFromStorage();
+
+ // Charger les factures au démarrage
+  
+function loadInvoices() {
+    invoices = loadFromStorage('savedInvoices', []);
+    if (invoices.length > 0) {
+        invoiceCounter = Math.max(...invoices.map(i => i.number));
+    }
+}
+    loadInvoices();
+
+    // Fonction dédiée pour sauvegarder dans localStorage
+    function saveInvoicesToStorage() {
+    saveToStorage('savedInvoices', invoices);
+}
+
+    // Gestion des pages
+    function showRecipeBook() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.remove('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        updateRecipeDisplay();
+    }
+
+    function showRecipeManagement() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.remove('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        filterRecipes();
+    }
+
+    function showInvoice() {
+    document.getElementById('homePage').classList.add('hidden');
+    document.getElementById('recipeBookPage').classList.add('hidden');
+    document.getElementById('recipeManagementPage').classList.add('hidden');
+    document.getElementById('invoicePage').classList.remove('hidden');
+    document.getElementById('invoiceManagementPage').classList.add('hidden');
+    document.getElementById('invoiceDetailPage').classList.add('hidden');
+    document.getElementById('purchasesPage').classList.add('hidden');
+    document.getElementById('purchasesManagementPage').classList.add('hidden');
+    document.getElementById('personnelPage').classList.add('hidden');
+    document.getElementById('personnelManagementPage').classList.add('hidden');
+    loadCAStatus();
+    updateProductList(); // Met à jour la liste et désélectionne les cases
+    updateOrderList();
+    // Réinitialisation supplémentaire au cas où
+    document.querySelectorAll('#productList input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+    function showInvoiceManagement() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.remove('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        filterInvoices();
+    }
+
+    function showInvoiceDetail() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.remove('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+    }
+
+    function showPurchases() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.remove('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        updatePurchaseDisplay();
+    }
+
+    function showPurchasesManagement() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.remove('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        filterPurchases();
+    }
+
+    function showPersonnel() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.remove('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+        updatePersonnelDisplay();
+    }
+
+    function showPersonnelManagement() {
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.remove('hidden');
+        filterPersonnel();
+    }
+
+    function backToHome() {
+        document.getElementById('homePage').classList.remove('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+    }
+
+    function backToRecipeBook() {
+        showRecipeBook();
+    }
+
+    function backToInvoice() {
+        showInvoice();
+    }
+
+    function backToInvoiceManagement() {
+        showInvoiceManagement();
+    }
+
+    function backToPurchases() {
+        showPurchases();
+    }
+
+    function backToPersonnel() {
+        showPersonnel();
+    }
+
+    // --- Ventes ---
+    let recipeCurrentDate = new Date();
+    const initialSalesData = {
+        "2024-12-11": { card: 352, cash: 147, total: 499 },
+        "2024-12-12": { card: 164, cash: 69, total: 233 },
+        "2024-12-13": { card: 134, cash: 56, total: 190 },
+        "2024-12-14": { card: 183, cash: 76, total: 259 },
+        "2024-12-16": { card: 316, cash: 132, total: 448 },
+        "2024-12-17": { card: 212, cash: 89, total: 301 },
+        "2024-12-18": { card: 182, cash: 76, total: 257 },
+        "2024-12-19": { card: 234, cash: 98, total: 332 },
+        "2024-12-20": { card: 123, cash: 51, total: 174 },
+        "2024-12-21": { card: 212, cash: 88, total: 300 },
+        "2024-12-23": { card: 160, cash: 67, total: 226 },
+        "2024-12-24": { card: 144, cash: 60, total: 203 },
+        "2024-12-27": { card: 52, cash: 22, total: 74 },
+        "2024-12-28": { card: 169, cash: 70, total: 239 },
+        "2024-12-30": { card: 207, cash: 86, total: 293 },
+        "2024-12-31": { card: 176, cash: 73, total: 249 },
+        "2025-01-02": { card: 148, cash: 44, total: 192 },
+        "2025-01-03": { card: 209, cash: 62, total: 271 },
+        "2025-01-04": { card: 166, cash: 49, total: 215 },
+        "2025-01-06": { card: 108, cash: 32, total: 140 },
+        "2025-01-07": { card: 198, cash: 59, total: 257 },
+        "2025-01-08": { card: 285, cash: 85, total: 370 },
+        "2025-01-09": { card: 241, cash: 72, total: 313 },
+        "2025-01-10": { card: 361, cash: 108, total: 469 },
+        "2025-01-11": { card: 252, cash: 75, total: 327 },
+        "2025-01-13": { card: 313, cash: 93, total: 406 },
+        "2025-01-14": { card: 179, cash: 53, total: 232 },
+        "2025-01-15": { card: 259, cash: 100, total: 359 },
+        "2025-01-16": { card: 242, cash: 100, total: 342 },
+        "2025-01-17": { card: 296, cash: 120, total: 416 },
+        "2025-01-18": { card: 200, cash: 60, total: 259 },
+        "2025-01-20": { card: 251, cash: 100, total: 351 },
+        "2025-01-21": { card: 293, cash: 88, total: 381 },
+        "2025-01-22": { card: 290, cash: 100, total: 390 },
+        "2025-01-23": { card: 199, cash: 60, total: 259 },
+        "2025-01-24": { card: 513, cash: 153, total: 666 },
+        "2025-01-25": { card: 471, cash: 141, total: 612 },
+        "2025-01-27": { card: 506, cash: 200, total: 706 },
+        "2025-01-28": { card: 239, cash: 71, total: 310 },
+        "2025-01-29": { card: 536, cash: 160, total: 696 },
+        "2025-01-30": { card: 316, cash: 94, total: 410 },
+        "2025-01-31": { card: 478, cash: 143, total: 620 },
+        "2025-02-01": { card: 281, cash: 100, total: 381 },
+        "2025-02-03": { card: 342, cash: 100, total: 442 },
+        "2025-02-04": { card: 255, cash: 100, total: 355 },
+        "2025-02-05": { card: 440, cash: 150, total: 590 },
+        "2025-02-06": { card: 475, cash: 200, total: 675 },
+        "2025-02-07": { card: 425, cash: 150, total: 575 },
+        "2025-02-08": { card: 327, cash: 100, total: 427 },
+        "2025-02-10": { card: 544, cash: 200, total: 744 },
+        "2025-02-11": { card: 913, cash: 350, total: 1263 },
+        "2025-02-12": { card: 1253, cash: 510, total: 1763 },
+        "2025-02-13": { card: 1336, cash: 500, total: 1836 },
+        "2025-02-14": { card: 1210, cash: 400, total: 1610 },
+        "2025-02-17": { card: 648, cash: 270, total: 918 },
+        "2025-02-18": { card: 794, cash: 290, total: 1084 },
+        "2025-02-19": { card: 942, cash: 300, total: 1242 },
+        "2025-02-20": { card: 963, cash: 190, total: 1153 },
+        "2025-02-21": { card: 1000, cash: 280, total: 1280 },
+        "2025-02-25": { card: 300, cash: 200, total: 500 }
+    };
+
+    let salesData = {};
+    try {
+        const storedData = localStorage.getItem('salesData');
+        if (storedData) {
+            salesData = JSON.parse(storedData);
+        } else {
+            salesData = { ...initialSalesData };
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+        }
+    } catch (e) {
+        console.error('Erreur avec localStorage:', e);
+        alert('Problème de stockage détecté. Les données ne seront pas persistantes.');
+        salesData = { ...initialSalesData };
+    }
+
+    const cardInput = document.getElementById('cardInput');
+    const cashInput = document.getElementById('cashInput');
+    const totalInput = document.getElementById('totalInput');
+    const saveRecipeBtn = document.getElementById('saveRecipeBtn');
+    const prevDay = document.getElementById('prevDay');
+    const nextDay = document.getElementById('nextDay');
+    const currentDateSpan = document.getElementById('currentDate');
+
+    function formatRecipeDate(date) {
+        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function getISODate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function updateRecipeDisplay() {
+        currentDateSpan.textContent = formatRecipeDate(recipeCurrentDate);
+        const dateKey = getISODate(recipeCurrentDate);
+        const data = salesData[dateKey] || { card: 0, cash: 0, total: 0 };
+        cardInput.value = data.card || '';
+        cashInput.value = data.cash || '';
+        totalInput.value = data.total || '';
+    }
+
+    function calculateRecipeTotal() {
+        const card = parseFloat(cardInput.value) || 0;
+        const cash = parseFloat(cashInput.value) || 0;
+        const total = card + cash;
+        totalInput.value = total.toFixed(2);
+        return total;
+    }
+
+    cardInput.addEventListener('input', calculateRecipeTotal);
+    cashInput.addEventListener('input', calculateRecipeTotal);
+
+    saveRecipeBtn.addEventListener('click', () => {
+        const dateKey = getISODate(recipeCurrentDate);
+        salesData[dateKey] = {
+            card: parseFloat(cardInput.value) || 0,
+            cash: parseFloat(cashInput.value) || 0,
+            total: parseFloat(totalInput.value) || 0
+        };
+        try {
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            alert('Données enregistrées avec succès !');
+        } catch (e) {
+            console.error('Erreur lors de la sauvegarde dans localStorage:', e);
+            alert('Erreur lors de la sauvegarde.');
+        }
+        updateRecipeDisplay();
+    });
+
+    const deleteRecipeBtn = document.getElementById('deleteRecipeBtn');
+    if (deleteRecipeBtn) {
+        deleteRecipeBtn.addEventListener('click', () => {
+            const dateKey = getISODate(recipeCurrentDate);
+            if (salesData[dateKey]) {
+                if (confirm(`Voulez-vous vraiment supprimer les ventes pour le ${formatRecipeDate(recipeCurrentDate)} ?`)) {
+                    delete salesData[dateKey];
+                    try {
+                        localStorage.setItem('salesData', JSON.stringify(salesData));
+                        
+                    } catch (e) {
+                        console.error('Erreur lors de la suppression dans localStorage:', e);
+                        alert('Erreur lors de la suppression.');
+                    }
+                    updateRecipeDisplay();
+                    filterRecipes();
+                }
+            } else {
+                alert('Aucune vente à supprimer pour cette date.');
+            }
         });
-    </script>
-</body>
-</html>
+    }
+
+    prevDay.addEventListener('click', () => {
+        recipeCurrentDate.setDate(recipeCurrentDate.getDate() - 1);
+        updateRecipeDisplay();
+    });
+
+    nextDay.addEventListener('click', () => {
+        recipeCurrentDate.setDate(recipeCurrentDate.getDate() + 1);
+        updateRecipeDisplay();
+    });
+
+    function exportRecipeToPdf() {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 10;
+        let y = margin;
+
+        const colWidths = [30, 35, 35, 35, 60];
+        const rowHeight = 8;
+        const tableX = margin;
+
+        const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+        const dataByMonth = {};
+        Object.keys(salesData).forEach(dateKey => {
+            const [year, month] = dateKey.split('-');
+            const monthYear = `${year}-${month}`;
+            if (!dataByMonth[monthYear]) {
+                dataByMonth[monthYear] = [];
+            }
+            dataByMonth[monthYear].push({
+                date: dateKey,
+                ...salesData[dateKey]
+            });
+        });
+
+        const drawTableHeader = (x, y, month, year) => {
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(margin, y, pageWidth - 2 * margin, 20);
+            doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
+            doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence', pageWidth / 2, y + 16, { align: 'center' });
+            y += 25;
+            doc.setFontSize(10);
+            doc.rect(x, y, colWidths[0], rowHeight); doc.text('Date', x + 2, y + 6);
+            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte B', x + colWidths[0] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', x + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TOTAL Ventes', x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Origine', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            return y + rowHeight;
+        };
+
+        const drawTableRow = (x, y, date, card, cash, total) => {
+            doc.setFont('helvetica', 'normal');
+            const dateParts = date.split('-');
+            const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            doc.rect(x, y, colWidths[0], rowHeight); doc.text(dateStr, x + 2, y + 6);
+            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${card} €`, x + colWidths[0] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${cash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${total} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight);
+            doc.text('Vente Sandwichs à emporter', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            return y + rowHeight;
+        };
+
+        const drawTotalRow = (x, y, totalCard, totalCash, totalSales, month) => {
+            doc.setFont('helvetica', 'bold');
+            doc.rect(x, y, colWidths[0], rowHeight); doc.text(`Total ${month}`, x + 2, y + 6);
+            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard} €`, x + colWidths[0] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            return y + rowHeight;
+        };
+
+        const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
+            const [yearA, monthA] = a.split('-');
+            const [yearB, monthB] = b.split('-');
+            return yearA.localeCompare(yearB) || monthA.localeCompare(monthB);
+        });
+
+        sortedMonths.forEach(monthYear => {
+            const [year, month] = monthYear.split('-');
+            const monthName = monthNames[parseInt(month) - 1];
+            let totalCard = 0;
+            let totalCash = 0;
+            let totalSales = 0;
+
+            y = drawTableHeader(tableX, y, monthName, year);
+
+            const monthData = dataByMonth[monthYear].sort((a, b) => a.date.localeCompare(b.date));
+            monthData.forEach(data => {
+                y = drawTableRow(tableX, y, data.date, data.card, data.cash, data.total);
+                totalCard += data.card;
+                totalCash += data.cash;
+                totalSales += data.total;
+
+                if (y > doc.internal.pageSize.getHeight() - 20) {
+                    doc.addPage();
+                    y = margin;
+                    y = drawTableHeader(tableX, y, monthName, year);
+                }
+            });
+
+            y += 5;
+            y = drawTotalRow(tableX, y, totalCard, totalCash, totalSales, monthName);
+            doc.addPage();
+            y = margin;
+        });
+
+        if (doc.getNumberOfPages() > 1 && y === margin) {
+            doc.deletePage(doc.getNumberOfPages());
+        }
+
+        doc.save('Livre_des_Recettes_Chez_Barth.pdf');
+    }
+
+    function filterRecipes() {
+        const startDateInput = document.getElementById('recipeStartDate').value;
+        const endDateInput = document.getElementById('recipeEndDate').value;
+
+        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+        const filteredSales = Object.entries(salesData).filter(([date]) => {
+            const saleDate = new Date(date);
+            return saleDate >= startDate && saleDate <= endDate;
+        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+        const recipeList = document.getElementById('recipeList');
+        let totalCard = 0, totalCash = 0, totalSales = 0;
+
+        filteredSales.forEach(([_, data]) => {
+            totalCard += data.card;
+            totalCash += data.cash;
+            totalSales += data.total;
+        });
+
+        recipeList.innerHTML = `
+            <h2>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Ventes Carte</th>
+                    <th>Ventes Espèce</th>
+                    <th>Total Ventes</th>
+                </tr>
+                ${filteredSales.map(([date, data]) => `
+                    <tr>
+                        <td>${new Date(date).toLocaleDateString('fr-FR')}</td>
+                        <td>${data.card.toFixed(2)}€</td>
+                        <td>${data.cash.toFixed(2)}€</td>
+                        <td>${data.total.toFixed(2)}€</td>
+                    </tr>
+                `).join('')}
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>${totalCard.toFixed(2)}€</strong></td>
+                    <td><strong>${totalCash.toFixed(2)}€</strong></td>
+                    <td><strong>${totalSales.toFixed(2)}€</strong></td>
+                </tr>
+            </table>
+        `;
+    }
+
+    function printAllRecipes() {
+        const startDateInput = document.getElementById('recipeStartDate').value;
+        const endDateInput = document.getElementById('recipeEndDate').value;
+        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+        const filteredSales = Object.entries(salesData).filter(([date]) => {
+            const saleDate = new Date(date);
+            return saleDate >= startDate && saleDate <= endDate;
+        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+        if (filteredSales.length === 0) {
+            alert("Aucune vente à imprimer dans cette période.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        const margin = 10;
+        let y = margin;
+        const colWidths = [40, 40, 40, 40];
+        const rowHeight = 10;
+        const tableX = margin;
+
+        doc.setFontSize(12);
+        doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+        y += 10;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        y += rowHeight;
+
+        doc.setFont('helvetica', 'normal');
+        filteredSales.forEach(([date, data]) => {
+            if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+                doc.addPage();
+                y = margin;
+                doc.setFontSize(12);
+                doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+                y += 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                y += rowHeight;
+                doc.setFont('helvetica', 'normal');
+            }
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${data.card.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${data.cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${data.total.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            y += rowHeight;
+        });
+
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.setFont('helvetica', 'bold');
+        let totalCard = 0, totalCash = 0, totalSales = 0;
+        filteredSales.forEach(([_, data]) => {
+            totalCard += data.card;
+            totalCash += data.cash;
+            totalSales += data.total;
+        });
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+
+        window.open(doc.output('bloburl'), '_blank');
+    }
+
+    function downloadRecipesPDF() {
+        const startDateInput = document.getElementById('recipeStartDate').value;
+        const endDateInput = document.getElementById('recipeEndDate').value;
+        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+        const filteredSales = Object.entries(salesData).filter(([date]) => {
+            const saleDate = new Date(date);
+            return saleDate >= startDate && saleDate <= endDate;
+        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+        if (filteredSales.length === 0) {
+            alert("Aucune vente à télécharger dans cette période.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        const margin = 10;
+        let y = margin;
+        const colWidths = [40, 40, 40, 40];
+        const rowHeight = 10;
+        const tableX = margin;
+
+        doc.setFontSize(12);
+        doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+        y += 10;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        y += rowHeight;
+
+        doc.setFont('helvetica', 'normal');
+        filteredSales.forEach(([date, data]) => {
+            if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+                doc.addPage();
+                y = margin;
+                doc.setFontSize(12);
+                doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+                y += 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+                y += rowHeight;
+                doc.setFont('helvetica', 'normal');
+            }
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${data.card.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${data.cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${data.total.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            y += rowHeight;
+        });
+
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.setFont('helvetica', 'bold');
+        let totalCard = 0, totalCash = 0, totalSales = 0;
+        filteredSales.forEach(([_, data]) => {
+            totalCard += data.card;
+            totalCash += data.cash;
+            totalSales += data.total;
+        });
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+
+        doc.save('liste_ventes_chez_barth.pdf');
+    }
+
+    // --- Facture ---
+    function loadMenuFromStorage() {
+    try {
+        const storedMenu = localStorage.getItem('menu');
+        if (storedMenu) {
+            menu = JSON.parse(storedMenu);
+        } else {
+            menu = [
+                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+            ];
+            saveMenuToStorage();
+        }
+        updateMenuTvaRates(); // Initialiser les taux au chargement
+    } catch (e) {
+        console.error('Erreur lors du chargement du menu:', e);
+        menu = [
+            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+        ];
+        updateMenuTvaRates(); // Initialiser les taux au chargement
+    }
+}
+
+    
+
+    function saveCAStatus() {
+        const caBelow = document.getElementById('caBelow85000').checked;
+        localStorage.setItem('caStatus', caBelow ? 'below' : 'above');
+    }
+
+   function toggleCA(checkbox) {
+    const belowCheckbox = document.getElementById('caBelow85000');
+    const aboveCheckbox = document.getElementById('caAbove85000');
+
+    // S'assurer qu'une seule case est cochée à la fois
+    if (checkbox.id === 'caBelow85000' && checkbox.checked) {
+        aboveCheckbox.checked = false;
+        caBelow85000 = true;
+    } else if (checkbox.id === 'caAbove85000' && checkbox.checked) {
+        belowCheckbox.checked = false;
+        caBelow85000 = false;
+    } else if (!belowCheckbox.checked && !aboveCheckbox.checked) {
+        // Si aucune case n'est cochée, on coche par défaut CA > 85000€
+        aboveCheckbox.checked = true;
+        caBelow85000 = false;
+    }
+
+    // Sauvegarder l'état dans localStorage
+    localStorage.setItem('caBelow85000', JSON.stringify(caBelow85000));
+
+    // Mettre à jour les taux de TVA et recalculer les prix
+    updateMenuTvaRates();
+}
+
+
+
+
+
+function addNewProduct() {
+    const name = document.getElementById('newProductName').value.trim();
+    const priceTTC = parseFloat(document.getElementById('newProductPriceTTC').value);
+    const type = document.getElementById('newProductType').value;
+
+    if (!name || isNaN(priceTTC) || priceTTC <= 0) {
+        alert('Veuillez entrer un nom valide et un prix TTC supérieur à 0.');
+        return;
+    }
+
+    if (menu.some(item => item.name === name)) {
+        alert('Ce produit existe déjà.');
+        return;
+    }
+
+    const tvaRate = type === 'S' ? 0.1 : 0.055;
+    const priceHT = priceTTC / (1 + tvaRate);
+
+    const newProduct = {
+        name: name,
+        priceTTC: priceTTC,
+        priceHT: parseFloat(priceHT.toFixed(2)),
+        type: type,
+        tvaRate: tvaRate
+    };
+
+    menu.push(newProduct);
+    saveMenuToStorage();
+    updateProductList(); // Mettre à jour la liste dans "COMMANDE A FACTURER"
+    document.getElementById('menuActionArea').innerHTML = '';
+    document.getElementById('menuDropdown').classList.remove('show');
+    alert(`Produit "${name}" ajouté avec succès !`);
+}
+
+// Conserver cette fonction pour référence future, mais elle n'est pas utilisée ici
+function addProduct() {
+    const productSelect = document.getElementById('productSelect');
+    const selectedProductName = productSelect.value;
+    const product = menu.find(p => p.name === selectedProductName);
+    if (product) {
+        order.push({ ...product });
+        updateOrderList();
+        document.getElementById('menuActionArea').innerHTML = '';
+        document.getElementById('menuDropdown').classList.remove('show');
+    }
+}
+
+function deleteProduct() {
+    const productSelectDelete = document.getElementById('productSelectDelete');
+    const selectedProductName = productSelectDelete.value;
+    const index = menu.findIndex(p => p.name === selectedProductName);
+    if (index !== -1 && confirm(`Voulez-vous vraiment supprimer ${selectedProductName} du menu ?`)) {
+        menu.splice(index, 1);
+        saveMenuToStorage();
+        document.getElementById('menuActionArea').innerHTML = '';
+        document.getElementById('menuDropdown').classList.remove('show');
+    }
+}
+
+// Fonction existante pour mettre à jour le menu déroulant et la liste des produits
+function updateProductList() {
+    const productSelect = document.getElementById('productSelect');
+    const productList = document.getElementById('productList');
+    
+    // Mise à jour du menu déroulant
+    productSelect.innerHTML = menu.map(item => 
+        `<option value="${item.name}">${item.name} (${item.priceTTC.toFixed(2)}€)</option>`
+    ).join('');
+    
+    // Mise à jour de la liste des produits dans COMMANDE-FACTURE
+    productList.innerHTML = menu.map(item => 
+        `<li><input type="checkbox" value="${item.name}"> ${item.name} (${item.priceTTC.toFixed(2)}€)</li>`
+    ).join('');
+}
+
+// Nouvelle fonction pour supprimer un produit
+function deleteProductFromMenu() {
+    const selectedProduct = document.getElementById('productSelect').value;
+    if (!selectedProduct) {
+        alert("Veuillez sélectionner un produit à supprimer.");
+        return;
+    }
+
+    if (confirm(`Tu veux supprimer le produit "${selectedProduct}" ?`)) {
+        // Supprimer le produit de la liste menu
+        menu = menu.filter(item => item.name !== selectedProduct);
+        
+        // Sauvegarder dans localStorage
+        saveMenuToStorage();
+        
+        // Mettre à jour immédiatement les affichages
+        updateProductList();
+        updateOrderList(); // Si un produit supprimé est dans la commande en cours
+        alert(`Le produit "${selectedProduct}" a été supprimé avec succès.`);
+    } else {
+        // Ne rien faire si "Non" est choisi
+        return;
+    }
+}
+
+// Modification de la fonction showMenuAction pour l'ajout
+function showMenuAction(action) {
+    const menuActionArea = document.getElementById('menuActionArea');
+    if (action === 'add') {
+        menuActionArea.innerHTML = `
+            <input type="text" id="newProductName" placeholder="Nom du produit">
+            <input type="number" id="newProductPrice" placeholder="Prix TTC (€)" step="0.01" min="0">
+            <select id="newProductType">
+                <option value="S">Sandwich/Dessert</option>
+                <option value="B">Boisson</option>
+            </select>
+            <button onclick="confirmAddProduct()">Confirmer l'ajout du produit</button>
+        `;
+    } else {
+        menuActionArea.innerHTML = '';
+    }
+}
+
+// Nouvelle fonction pour confirmer l'ajout d'un produit
+function confirmAddProduct() {
+    const name = document.getElementById('newProductName').value.trim();
+    const priceTTC = parseFloat(document.getElementById('newProductPrice').value);
+    const type = document.getElementById('newProductType').value;
+
+    if (!name || isNaN(priceTTC) || priceTTC <= 0) {
+        alert("Veuillez entrer un nom valide et un prix supérieur à 0.");
+        return;
+    }
+
+    // Calculer le prix HT selon le type et le statut CA
+    const tvaRate = caBelow85000 ? 0 : (type === "B" ? 0.055 : 0.1);
+    const priceHT = priceTTC / (1 + tvaRate);
+
+    const newProduct = {
+        name: name,
+        priceTTC: priceTTC,
+        priceHT: priceHT,
+        type: type,
+        tvaRate: tvaRate
+    };
+
+    // Ajouter le produit au menu
+    menu.push(newProduct);
+    
+    // Sauvegarder dans localStorage
+    saveMenuToStorage();
+    
+    // Mettre à jour immédiatement les affichages
+    updateProductList();
+    document.getElementById('menuActionArea').innerHTML = ''; // Vider la zone d'ajout
+    
+    // Message de confirmation
+    alert(`Ton produit "${name}" est bien ajouté !`);
+}
+
+// Fonction existante pour sauvegarder le menu dans localStorage
+function saveMenuToStorage() {
+    try {
+        localStorage.setItem('menu', JSON.stringify(menu));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde du menu:', e);
+        alert('Erreur lors de la sauvegarde du menu.');
+    }
+}
+
+// Fonction existante pour gérer le dropdown
+function toggleDropdown(dropdownId) {
+    document.getElementById(dropdownId).classList.toggle('show');
+}
+
+function toggleProduct(productName) {
+    // Ne plus ajouter ou supprimer de order ici pour éviter les doublons
+    // Cette fonction ne gère que l'état visuel des cases
+    updateOrderList(); // Optionnel : mettre à jour si besoin, mais pas nécessaire ici
+}
+
+function addSelectedToOrder() {
+    const checkboxes = document.querySelectorAll('#productList input[type="checkbox"]:checked');
+    if (checkboxes.length === 0) {
+        alert('Veuillez sélectionner au moins un produit.');
+        return;
+    }
+    checkboxes.forEach(checkbox => {
+        const productName = checkbox.value;
+        const product = menu.find(p => p.name === productName);
+        if (product) {
+            order.push({ ...product });
+        }
+    });
+
+// Ajout : Mettre à jour le mode de paiement global
+    currentPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'Non spécifié';
+
+    updateOrderList();
+    // Décocher toutes les cases après ajout
+    document.querySelectorAll('#productList input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('commandeDropdown').classList.remove('show');
+}
+
+function updateOrderList() {
+    const orderList = document.getElementById('orderList');
+    const orderTotal = document.getElementById('orderTotal');
+    const invoiceHeader = document.getElementById('invoiceHeader');
+    const caBelow = document.getElementById('caBelow85000').checked;
+
+    let totalHT = 0;
+    let totalTVA55 = 0;
+    let totalTVA10 = 0;
+    order.forEach(item => {
+        totalHT += item.priceHT;
+        if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+        else totalTVA10 += item.priceTTC - item.priceHT;
+    });
+    const totalTTC = totalHT + totalTVA55 + totalTVA10;
+
+    invoiceHeader.innerHTML = `
+        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+            <tr>
+                <td style="text-align: center;">CHEZ BARTH - 16 place des Prêcheurs, 13100 Aix en Provence Tél 09 77 53 78 71   Ent Indiv SIRET : 93253222900014 - APE : 56.10C</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
+            </tr>
+        </table>
+    `;
+
+    orderList.innerHTML = caBelow ? `
+        <table>
+            <tr><th>Produit</th><th>Prix TTC</th></tr>
+            ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+        </table>
+    ` : `
+        <table>
+            <tr><th>Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
+            ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+        </table>
+    `;
+
+    orderTotal.innerHTML = caBelow ? `
+        <table class="total-table">
+            <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
+            <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
+        </table>
+    ` : `
+        <table class="total-table">
+            <tr><td>Total HT:</td><td>${totalHT.toFixed(2)}€</td></tr>
+            <tr><td>TVA 5.5%:</td><td>${totalTVA55.toFixed(2)}€</td></tr>
+            <tr><td>TVA 10%:</td><td>${totalTVA10.toFixed(2)}€</td></tr>
+            <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
+            <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
+        </table>
+    `;
+}
+
+
+
+
+
+function clearOrder() {
+    order = [];
+    updateOrderList();
+}
+
+function saveInvoice() {
+    if (order.length === 0) {
+        alert("Veuillez ajouter des produits à la facture avant d'enregistrer");
+        return;
+    }
+
+    invoiceCounter++;
+    const invoiceNumber = invoiceCounter;
+    const timestamp = new Date().toISOString();
+    const caBelow = document.getElementById('caBelow85000').checked;
+
+    let totalHT = 0;
+    let totalTVA55 = 0;
+    let totalTVA10 = 0;
+    order.forEach(item => {
+        totalHT += item.priceHT;
+        if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+        else totalTVA10 += item.priceTTC - item.priceHT;
+    });
+    const totalTTC = totalHT + totalTVA55 + totalTVA10;
+
+    const invoice = {
+        number: invoiceNumber,
+        date: timestamp,
+        items: [...order],
+        caBelow: caBelow,
+        totalHT: totalHT,
+        totalTVA55: totalTVA55,
+        totalTVA10: totalTVA10,
+        totalTTC: totalTTC,
+        paymentMethod: currentPaymentMethod // Ajouter le mode de paiement global à la facture
+    };
+
+    invoices.push(invoice);
+    saveInvoicesToStorage();
+
+    const invoiceHeader = document.getElementById('invoiceHeader');
+    invoiceHeader.innerHTML = `
+        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+            <tr>
+                <td style="text-align: center;">CHEZ BARTH - 16 place des Prêcheurs, 13100 Aix en Provence Téléphone : 09 77 53 78 71 - Ent Indiv SIRET : 93253222900014 - APE : 56.10C</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">Fact N° ${invoiceNumber} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
+            </tr>
+        </table>
+    `;
+
+    alert(`Facture enregistrée avec succès sous le numéro ${invoiceNumber}`);
+
+    // Suppression de la réinitialisation
+    // order = [];
+    // currentPaymentMethod = 'Non spécifié'; // Réinitialiser après sauvegarde
+    // updateOrderList(); // Pas besoin si l'affichage est déjà correct
+}
+
+function exportInvoiceToPdf() {
+    const invoiceContainer = document.getElementById('invoiceContainer');
+    html2canvas(invoiceContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+        pdf.save(`Facture_Chez_Barth_${new Date().toISOString().split('T')[0]}.pdf`);
+    });
+}
+
+function printInvoice() {
+    const invoiceContainer = document.getElementById('invoiceContainer');
+    html2canvas(invoiceContainer, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+        window.open(pdf.output('bloburl'), '_blank');
+    });
+}
+
+function sendInvoiceBySms() {
+                if (order.length === 0) {
+                    alert("Veuillez ajouter des produits à la facture avant d'envoyer par SMS");
+                    return;
+                }
+
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                let smsText = "Facture Chez Barth - " + new Date().toLocaleDateString('fr-FR') + "\n\n";
+                smsText += "CHEZ BARTH\n16 place des Prêcheurs, 13100 Aix en Provence\nTel: 09 77 53 78 71\nSIRET: 93253222900014\nAPE: 56.10C\nEntreprise Individuelle\n\n";
+             
+                const caBelow = document.getElementById('caBelow85000').checked;
+                if (caBelow) {
+                    smsText += "FACTURE DU " + new Date().toLocaleDateString('fr-FR') + "\n";
+                    smsText += "TVA non applicable art 293B du CGI\n\n";
+                    smsText += "Détail:\n";
+                    order.forEach(item => {
+                        smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
+                    });
+                } else {
+                    smsText += "FACTURE DU " + new Date().toLocaleDateString('fr-FR') + "\n\n";
+       		    smsText += "Detail:\n";
+                    order.forEach(item => {
+                        smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
+                    });
+                }
+
+                let totalHT = 0;
+                let totalTVA55 = 0;
+                let totalTVA10 = 0;
+                order.forEach(item => {
+                    totalHT += item.priceHT;
+                    if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+                    else totalTVA10 += item.priceTTC - item.priceHT;
+                });
+                const totalTTC = totalHT + totalTVA55 + totalTVA10;
+
+                if (caBelow) {
+                    smsText += `\nTotal TTC: ${totalTTC.toFixed(2)}€\n`;
+		    smsText += `Paiement: ${currentPaymentMethod}\n\n`;
+                } else {
+                    smsText += `\nTotal HT: ${totalHT.toFixed(2)}€\n`;
+                    smsText += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
+                    smsText += `TVA 10%: ${totalTVA10.toFixed(2)}€\n`;
+                    smsText += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
+		    smsText += `Paiement: ${currentPaymentMethod}\n\n`;
+                }
+                smsText += "Merci de votre visite !";
+
+                const phoneNumber = prompt("Entrez le numéro de téléphone (ex: 06....):");
+                if (!phoneNumber) return;
+
+                const cleanNumber = phoneNumber.replace(/\s/g, '').replace(/-/g, '');
+                const smsUrl = `sms:${cleanNumber}?body=${encodeURIComponent(smsText)}`;
+
+                if (isMobile) {
+                    window.location.href = smsUrl;
+                } else {
+                    try {
+                        window.location.href = smsUrl;
+                    } catch (e) {
+                        alert("Impossible d'ouvrir l'application SMS.\n\nCopiez ce texte :\n\n" + smsText);
+                        navigator.clipboard.writeText(smsText);
+                    }
+                }
+            }
+
+function sendInvoiceByEmail() {
+    const caBelow = document.getElementById('caBelow85000').checked;
+    let totalHT = 0;
+    let totalTVA55 = 0;
+    let totalTVA10 = 0;
+    order.forEach(item => {
+        totalHT += item.priceHT;
+        if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+        else totalTVA10 += item.priceTTC - item.priceHT;
+    });
+    const totalTTC = totalHT + totalTVA55 + totalTVA10;
+
+    // Corps détaillé pour email avec toutes les informations
+    let emailBody = "Facture Chez BARTH\n";
+    emailBody += "16 place des Precheurs, 13100 Aix en Provence\n";
+    emailBody += "Tel: 09 77 53 78 71\n";
+    emailBody += "Ent. Indiv. SIRET: 93253222900014 - APE: 56.10C\n";
+    emailBody += `Fact N° ${invoiceCounter} - ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' (TVA non applicable)' : ''}\n`;
+    emailBody += "----------------------------\n";
+    order.forEach(item => {
+        if (caBelow) {
+            emailBody += `${item.name}: ${item.priceTTC.toFixed(2)}€\n`;
+        } else {
+            emailBody += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
+        }
+    });
+    emailBody += "----------------------------\n";
+    if (!caBelow) {
+        emailBody += `Total HT: ${totalHT.toFixed(2)}€\n`;
+        emailBody += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
+        emailBody += `TVA 10%: ${totalTVA10.toFixed(2)}€\n`;
+    }
+    emailBody += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
+    emailBody += `Paiement: ${currentPaymentMethod}\n`;
+    emailBody += "Merci de votre visite!";
+
+    const emailUrl = `mailto:?subject=Facture Chez BARTH&body=${encodeURIComponent(emailBody)}`;
+    window.open(emailUrl);
+}
+
+
+
+function filterInvoices() {
+    const startDateInput = document.getElementById('startDate').value;
+    const endDateInput = document.getElementById('endDate').value;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredInvoices = invoices.filter(invoice => {
+        const invoiceDate = new Date(invoice.date);
+        return invoiceDate >= startDate && invoiceDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Calcul des totaux
+    let totalHT = 0;
+    let totalTVA55 = 0;
+    let totalTVA10 = 0;
+    let totalTTC = 0;
+
+    filteredInvoices.forEach(invoice => {
+        totalHT += invoice.items.reduce((sum, item) => sum + item.priceHT, 0);
+        totalTVA55 += invoice.items
+            .filter(item => item.tvaRate === 0.055)
+            .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
+        totalTVA10 += invoice.items
+            .filter(item => item.tvaRate === 0.1)
+            .reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0);
+        totalTTC += invoice.totalTTC;
+    });
+
+    const totalTTCCard = filteredInvoices
+        .filter(invoice => invoice.paymentMethod === 'Carte')
+        .reduce((sum, invoice) => sum + invoice.totalTTC, 0);
+    const totalTTCCash = filteredInvoices
+        .filter(invoice => invoice.paymentMethod === 'Espèce')
+        .reduce((sum, invoice) => sum + invoice.totalTTC, 0);
+
+    const invoiceList = document.getElementById('invoiceList');
+    invoiceList.innerHTML = `
+        <h2>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <table>
+            <tr>
+                <th>Fact N°</th>
+                <th>Date</th>
+                <th>Total HT</th>
+                <th>TVA 5,5%</th>
+                <th>TVA 10%</th>
+                <th>Total TTC</th>
+                <th>Paiement</th>
+            </tr>
+            ${filteredInvoices.map(invoice => `
+                <tr onclick="viewInvoiceDetail(${invoice.number})">
+                    <td>${invoice.number}</td>
+                    <td>${new Date(invoice.date).toLocaleDateString('fr-FR')}</td>
+                    <td>${invoice.items.reduce((sum, item) => sum + item.priceHT, 0).toFixed(2)}€</td>
+                    <td>${invoice.items.filter(item => item.tvaRate === 0.055).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
+                    <td>${invoice.items.filter(item => item.tvaRate === 0.1).reduce((sum, item) => sum + (item.priceTTC - item.priceHT), 0).toFixed(2)}€</td>
+                    <td>${invoice.totalTTC.toFixed(2)}€</td>
+                    <td>${invoice.paymentMethod || 'Non spécifié'}</td>
+                </tr>
+            `).join('')}
+            <tr>
+                <td><strong>Total Général</strong></td>
+                <td></td>
+                <td><strong>${totalHT.toFixed(2)}€</strong></td>
+                <td><strong>${totalTVA55.toFixed(2)}€</strong></td>
+                <td><strong>${totalTVA10.toFixed(2)}€</strong></td>
+                <td><strong>${totalTTC.toFixed(2)}€</strong></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Total TTC par Carte</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>${totalTTCCard.toFixed(2)}€</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Total TTC par Espèce</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>${totalTTCCash.toFixed(2)}€</td>
+                <td></td>
+            </tr>
+        </table>
+    `;
+}
+
+function viewInvoiceDetail(number) {
+    const invoice = invoices.find(i => i.number === number);
+    if (!invoice) return;
+
+    showInvoiceDetail();
+    const invoiceDetailContainer = document.getElementById('invoiceDetailContainer');
+    invoiceDetailContainer.dataset.invoiceNumber = invoice.number;
+    const date = new Date(invoice.date).toLocaleDateString('fr-FR');
+    invoiceDetailContainer.innerHTML = `
+        <div id="invoiceHeader">
+            CHEZ BARTH<br>
+            16 place des Prêcheurs<br>
+	    13100 Aix en Provence<br>
+            Téléphone : 09 77 53 78 71<br>
+            Ent Indiv SIRET : 93253222900014<br>
+	    APE : 56.10C<br>
+            <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
+            <div class="invoice-number">${invoice.caBelow ? 'TVA non applicable art 293B du CGI' : ''}</div>
+        </div>
+        <div id="orderList">
+            ${invoice.caBelow ? `
+                <table>
+                    <tr><th>Produit</th><th>Prix TTC</th></tr>
+                    ${invoice.items.map(item => `<tr><td>${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                </table>
+            ` : `
+                <table>
+                    <tr><th>Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
+                    ${invoice.items.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                </table>
+            `}
+        </div>
+        <div id="orderTotal">
+            ${invoice.caBelow ? `
+                <table class="total-table">
+                    <tr><td><strong>Total TTC:</strong></td><td><strong>${invoice.totalTTC.toFixed(2)}€</strong></td></tr>
+                </table>
+            ` : `
+                <table class="total-table">
+                    <tr><td>Total HT:</td><td>${invoice.totalHT.toFixed(2)}€</td></tr>
+                    <tr><td>TVA 5.5%:</td><td>${invoice.totalTVA55.toFixed(2)}€</td></tr>
+                    <tr><td>TVA 10%:</td><td>${invoice.totalTVA10.toFixed(2)}€</td></tr>
+                    <tr><td><strong>Total TTC:</strong></td><td><strong>${invoice.totalTTC.toFixed(2)}€</strong></td></tr>
+                    <tr><td>Paiement</td><td>${invoice.paymentMethod || 'Non spécifié'}</td></tr>
+                </table>
+            `}
+        </div>
+    `;
+}
+
+function printInvoiceDetail() {
+    const element = document.getElementById('invoiceDetailContainer');
+    html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a5'
+        });
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
+        window.open(pdf.output('bloburl'), '_blank');
+    });
+}
+
+function deleteInvoiceDetail() {
+    const invoiceDetailContainer = document.getElementById('invoiceDetailContainer');
+    const invoiceNumber = invoiceDetailContainer.dataset.invoiceNumber;
+
+    if (!invoiceNumber) {
+        alert("Erreur : Aucune facture sélectionnée.");
+        return;
+    }
+
+    const invoiceNumberParsed = parseInt(invoiceNumber, 10);
+    const index = invoices.findIndex(i => i.number === invoiceNumberParsed);
+
+    if (index === -1) {
+        alert("Erreur : Facture non trouvée dans la liste.");
+        return;
+    }
+
+    if (confirm("Voulez-vous vraiment supprimer cette facture ? Cette action est irréversible.")) {
+        invoices.splice(index, 1);
+        saveInvoicesToStorage();
+        console.log('Après suppression - invoices:', invoices);
+     
+        showInvoiceManagement();
+        filterInvoices();
+    }
+}
+
+function printAllInvoices() {
+    const startDateInput = document.getElementById('startDate').value;
+    const endDateInput = document.getElementById('endDate').value;
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredInvoices = invoices.filter(invoice => {
+        const invoiceDate = new Date(invoice.date);
+        return invoiceDate >= startDate && invoiceDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (filteredInvoices.length === 0) {
+        alert("Aucune facture à imprimer dans cette période.");
+        return;
+    }
+
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = [30, 40, 30, 30, 30];
+    const rowHeight = 10;
+    const tableX = margin;
+
+    doc.setFontSize(12);
+    doc.text(`Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Fact N°', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Date', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Total HT', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TVA 5,5%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('TVA 10%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    filteredInvoices.forEach(invoice => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Fact N°', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Date', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Total HT', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TVA 5,5%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('TVA 10%', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`${invoice.number}`, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(new Date(invoice.date).toLocaleDateString('fr-FR'), tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${invoice.totalHT.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${invoice.totalTVA55.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${invoice.totalTVA10.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        y += rowHeight;
+    });
+
+    window.open(doc.output('bloburl'), '_blank');
+}
+
+ // --- Achats ---
+let purchaseCurrentDate = new Date();
+let purchases = [];
+
+const initialPurchases = [
+    { date: "2024-12-09T00:00:00Z", amountTTC: 940, type: "Alimentaire", payment: "Espèce", comment: "" },
+    { date: "2024-12-10T00:00:00Z", amountTTC: 1747, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-11T00:00:00Z", amountTTC: 157, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-12T00:00:00Z", amountTTC: 275, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-13T00:00:00Z", amountTTC: 13, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-14T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-16T00:00:00Z", amountTTC: 257, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-17T00:00:00Z", amountTTC: 21, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-18T00:00:00Z", amountTTC: 210, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-19T00:00:00Z", amountTTC: 137, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-20T00:00:00Z", amountTTC: 12, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-21T00:00:00Z", amountTTC: 21, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-23T00:00:00Z", amountTTC: 308, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-24T00:00:00Z", amountTTC: 14, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-27T00:00:00Z", amountTTC: 268, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-28T00:00:00Z", amountTTC: 17, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-30T00:00:00Z", amountTTC: 427, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2024-12-31T00:00:00Z", amountTTC: 17, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-02T00:00:00Z", amountTTC: 13, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-03T00:00:00Z", amountTTC: 252, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-04T00:00:00Z", amountTTC: 15, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-06T00:00:00Z", amountTTC: 307, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-07T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-08T00:00:00Z", amountTTC: 545, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-09T00:00:00Z", amountTTC: 22, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-10T00:00:00Z", amountTTC: 414, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-11T00:00:00Z", amountTTC: 23, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-13T00:00:00Z", amountTTC: 28, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-14T00:00:00Z", amountTTC: 16, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-15T00:00:00Z", amountTTC: 326, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-16T00:00:00Z", amountTTC: 24, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-17T00:00:00Z", amountTTC: 29, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-18T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-20T00:00:00Z", amountTTC: 396, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-21T00:00:00Z", amountTTC: 27, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-22T00:00:00Z", amountTTC: 431, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-23T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-24T00:00:00Z", amountTTC: 47, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-25T00:00:00Z", amountTTC: 43, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-27T00:00:00Z", amountTTC: 807, type: "Alimentaire", payment: "Espèce", comment: "" },
+    { date: "2025-01-28T00:00:00Z", amountTTC: 366, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-29T00:00:00Z", amountTTC: 49, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-30T00:00:00Z", amountTTC: 29, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-01-31T00:00:00Z", amountTTC: 177, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-01T00:00:00Z", amountTTC: 529, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-03T00:00:00Z", amountTTC: 317, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-04T00:00:00Z", amountTTC: 25, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-05T00:00:00Z", amountTTC: 422, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-06T00:00:00Z", amountTTC: 47, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-07T00:00:00Z", amountTTC: 514, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-08T00:00:00Z", amountTTC: 30, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-10T00:00:00Z", amountTTC: 982, type: "Alimentaire", payment: "Espèce", comment: "" },
+    { date: "2025-02-11T00:00:00Z", amountTTC: 358, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-12T00:00:00Z", amountTTC: 969, type: "Alimentaire", payment: "Espèce", comment: "" },
+    { date: "2025-02-13T00:00:00Z", amountTTC: 505, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-14T00:00:00Z", amountTTC: 113, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-17T00:00:00Z", amountTTC: 1301, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-18T00:00:00Z", amountTTC: 352, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-19T00:00:00Z", amountTTC: 142, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-20T00:00:00Z", amountTTC: 464, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-21T00:00:00Z", amountTTC: 94, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-24T00:00:00Z", amountTTC: 481, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-25T00:00:00Z", amountTTC: 84, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-26T00:00:00Z", amountTTC: 409, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-27T00:00:00Z", amountTTC: 110, type: "Alimentaire", payment: "Carte", comment: "" },
+    { date: "2025-02-28T00:00:00Z", amountTTC: 56, type: "Alimentaire", payment: "Carte", comment: "" }
+];
+
+function loadPurchases() {
+    purchases = loadFromStorage('purchases', []);
+}
+
+function savePurchases() {
+    saveToStorage('purchases', purchases);
+}
+
+function formatRecipeDate(date) {
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function getISODate(date) {
+    return date.toISOString();
+}
+
+function updatePurchaseDisplay() {
+    document.getElementById('currentPurchaseDate').textContent = formatRecipeDate(purchaseCurrentDate);
+    document.getElementById('purchaseAmount').value = '';
+    document.querySelectorAll('input[name="purchaseType"]').forEach(input => input.checked = false);
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(input => input.checked = false);
+    document.getElementById('purchaseComment').value = '';
+}
+
+function addPurchase() {
+    const amount = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+    const type = document.querySelector('input[name="purchaseType"]:checked')?.value;
+    const payment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+    const comment = document.getElementById('purchaseComment').value;
+
+    if (!amount || !type || !payment) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+    }
+
+    const purchase = {
+        date: getISODate(purchaseCurrentDate),
+        amountTTC: amount,
+        type: type,
+        payment: payment,
+        comment: comment
+    };
+
+    purchases.push(purchase);
+    savePurchases();
+    updatePurchaseDisplay();
+}
+
+document.getElementById('prevPurchaseDay').addEventListener('click', () => {
+    purchaseCurrentDate.setDate(purchaseCurrentDate.getDate() - 1);
+    updatePurchaseDisplay();
+});
+
+document.getElementById('nextPurchaseDay').addEventListener('click', () => {
+    purchaseCurrentDate.setDate(purchaseCurrentDate.getDate() + 1);
+    updatePurchaseDisplay();
+});
+
+function deletePurchase(index) {
+    if (confirm('Voulez-vous vraiment supprimer cet achat ?')) {
+        purchases.splice(index, 1);
+        savePurchases();
+        filterPurchases();
+    }
+}
+
+function filterPurchases() {
+    const startDateInput = document.getElementById('purchaseStartDate').value;
+    const endDateInput = document.getElementById('purchaseEndDate').value;
+    const showComments = document.getElementById('showPurchaseComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredPurchases = purchases.filter(purchase => {
+        const purchaseDate = new Date(purchase.date);
+        return purchaseDate >= startDate && purchaseDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const purchasesList = document.getElementById('purchasesList');
+
+    // Calculate subtotals by type and payment method
+    const totalsByType = { Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let grandTotal = 0;
+
+    filteredPurchases.forEach(purchase => {
+        totalsByType[purchase.type] += purchase.amountTTC;
+        totalsByPayment[purchase.payment] += purchase.amountTTC;
+        grandTotal += purchase.amountTTC;
+    });
+
+    // Generate the table with purchases and totals
+    purchasesList.innerHTML = `
+        <h2>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Montant TTC (€)</th>
+                <th>Type</th>
+                <th>Paiement</th>
+                ${showComments ? '<th>Commentaire</th>' : ''}
+                <th class="no-print">Action</th>
+            </tr>
+            ${filteredPurchases.map((purchase, index) => `
+                <tr>
+                    <td>${new Date(purchase.date).toLocaleDateString('fr-FR')}</td>
+                    <td>${purchase.amountTTC.toFixed(2)}</td>
+                    <td>${purchase.type}</td>
+                    <td>${purchase.payment}</td>
+                    ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
+                    <td class="no-print"><button class="delete-btn" onclick="deletePurchase(${index})">Supprimer</button></td>
+                </tr>
+            `).join('')}
+            <!-- Subtotals by Type -->
+            ${Object.keys(totalsByType).map(type => `
+                <tr>
+                    <td>Total ${type}</td>
+                    <td>${totalsByType[type].toFixed(2)}</td>
+                    <td></td><td></td>
+                    ${showComments ? '<td></td>' : ''}
+                    <td class="no-print"></td>
+                </tr>
+            `).join('')}
+            <!-- Subtotals by Payment Method -->
+            ${Object.keys(totalsByPayment).map(payment => `
+                <tr>
+                    <td>Total ${payment}</td>
+                    <td>${totalsByPayment[payment].toFixed(2)}</td>
+                    <td></td><td></td>
+                    ${showComments ? '<td></td>' : ''}
+                    <td class="no-print"></td>
+                </tr>
+            `).join('')}
+            <!-- Grand Total -->
+            <tr>
+                <td><strong>Total Général</strong></td>
+                <td><strong>${grandTotal.toFixed(2)}</strong></td>
+                <td></td><td></td>
+                ${showComments ? '<td></td>' : ''}
+                <td class="no-print"></td>
+            </tr>
+        </table>
+    `;
+}
+
+function printPurchases() {
+    const startDateInput = document.getElementById('purchaseStartDate').value;
+    const endDateInput = document.getElementById('purchaseEndDate').value;
+    const showComments = document.getElementById('showPurchaseComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredPurchases = purchases.filter(purchase => {
+        const purchaseDate = new Date(purchase.date);
+        return purchaseDate >= startDate && purchaseDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (filteredPurchases.length === 0) {
+        alert("Aucune donnée d'achat à imprimer.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
+    const rowHeight = 10;
+    const tableX = margin;
+
+    doc.setFontSize(12);
+    doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    filteredPurchases.forEach(purchase => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(purchase.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(purchase.type, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(purchase.payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text(purchase.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${purchase.amountTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+    });
+
+    y += 5;
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
+    filteredPurchases.forEach(purchase => {
+        if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
+        if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
+        if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
+        if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
+        if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
+    });
+    const totalTTC = totalFood + totalEquipment + totalOther;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Alimentaire TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalFood.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Matériel TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalEquipment.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Autre TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalOther.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Achats TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Carte', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Espèce', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
+    window.open(doc.output('bloburl'), '_blank');
+}
+
+function downloadPurchasesPDF() {
+    const startDateInput = document.getElementById('purchaseStartDate').value;
+    const endDateInput = document.getElementById('purchaseEndDate').value;
+    const showComments = document.getElementById('showPurchaseComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredPurchases = purchases.filter(purchase => {
+        const purchaseDate = new Date(purchase.date);
+        return purchaseDate >= startDate && purchaseDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (filteredPurchases.length === 0) {
+        alert("Aucune donnée d'achat à télécharger.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
+    const rowHeight = 10;
+    const tableX = margin;
+
+    doc.setFontSize(12);
+    doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    filteredPurchases.forEach(purchase => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(purchase.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(purchase.type, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(purchase.payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text(purchase.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${purchase.amountTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+    });
+
+    y += 5;
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
+    filteredPurchases.forEach(purchase => {
+        if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
+        if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
+        if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
+        if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
+        if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
+    });
+    const totalTTC = totalFood + totalEquipment + totalOther;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Alimentaire TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalFood.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Matériel TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalEquipment.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Autre TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalOther.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Achats TTC', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Carte', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+    y += rowHeight;
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Espèce', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
+    doc.save('liste_achats_chez_barth.pdf');
+}
+
+
+
+// Initialisation au démarrage
+loadPurchases();
+updatePurchaseDisplay();
+
+// --- Personnel ---
+let personnelCurrentDate = new Date();
+let personnelRecords = [];
+let employees = ["Tom", "Marylou", "Florentin"]; // Ajout de Florentin comme employé existant
+
+const initialPersonnelRecords = [
+    { date: "2024-12-09T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-10T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-11T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-12T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-13T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-14T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-15T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-16T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-17T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-18T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-19T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-20T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-21T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-22T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-23T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-24T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-25T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-26T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2024-12-27T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2024-12-28T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2024-12-29T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2024-12-30T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "20", hours: 2.67 },
+    { date: "2024-12-31T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "20", hours: 3 },
+    { date: "2025-01-01T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-01-02T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-03T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-04T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-05T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-01-06T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-07T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-08T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-09T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-10T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-11T00:00:00Z", employee: "Florentin", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-12T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-01-13T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-14T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-15T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-16T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-17T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-18T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-19T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-01-20T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-21T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-22T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-23T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-24T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-25T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-26T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-01-27T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-28T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-01-29T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-30T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "44", hours: 2.67 },
+    { date: "2025-01-31T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "44", hours: 3 },
+    { date: "2025-02-01T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-02T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-03T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "60", hours: 2.67 },
+    { date: "2025-02-04T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-05T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "60", hours: 2.67 },
+    { date: "2025-02-06T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "60", hours: 2.67 },
+    { date: "2025-02-07T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-08T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-09T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-10T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "80", hours: 2.67 },
+    { date: "2025-02-11T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-12T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "80", hours: 2.67 },
+    { date: "2025-02-13T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "90", hours: 2.67 },
+    { date: "2025-02-14T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-15T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-16T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-17T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "80", hours: 2.67 },
+    { date: "2025-02-18T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-19T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "80", hours: 2.67 },
+    { date: "2025-02-20T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "90", hours: 2.67 },
+    { date: "2025-02-21T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "60", hours: 3 },
+    { date: "2025-02-22T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-23T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-02-24T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-02-25T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "50", hours: 3 },
+    { date: "2025-02-26T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "40", hours: 2.67 },
+    { date: "2025-02-27T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "40", hours: 2.67 },
+    { date: "2025-02-28T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "180", hours: 3 }
+];
+
+function loadEmployees() {
+    employees = loadFromStorage('employees', []);
+}
+
+function saveEmployees() {
+    saveToStorage('employees', employees);
+}
+
+function loadPersonnelRecords() {
+    personnelRecords = loadFromStorage('personnelRecords', []);
+}
+
+function savePersonnelRecords() {
+    saveToStorage('personnelRecords', personnelRecords);
+}
+
+loadEmployees();
+loadPersonnelRecords();
+
+const employeeSelect = document.getElementById('employeeSelect');
+const startTimeInput = document.getElementById('startTime');
+const endTimeInput = document.getElementById('endTime');
+const personnelCommentInput = document.getElementById('personnelComment');
+const hoursTotalInput = document.getElementById('hoursTotal');
+const prevPersonnelDay = document.getElementById('prevPersonnelDay');
+const nextPersonnelDay = document.getElementById('nextPersonnelDay');
+const currentPersonnelDateSpan = document.getElementById('currentPersonnelDate');
+
+function updateEmployeeSelect() {
+    employeeSelect.innerHTML = employees.map(emp => `<option value="${emp}">${emp}</option>`).join('');
+}
+
+function addEmployee() {
+    const newEmployee = prompt("Entrez le nom du nouvel employé :");
+    if (newEmployee && !employees.includes(newEmployee)) {
+        employees.push(newEmployee);
+        saveEmployees();
+        updateEmployeeSelect();
+    } else if (newEmployee) {
+        alert("Cet employé existe déjà.");
+    }
+}
+
+function deleteEmployee() {
+    const selectedEmployee = employeeSelect.value;
+    if (confirm(`Voulez-vous vraiment supprimer l'employé ${selectedEmployee} ?`)) {
+        employees = employees.filter(emp => emp !== selectedEmployee);
+        saveEmployees();
+        updateEmployeeSelect();
+    }
+}
+
+function formatPersonnelDate(date) {
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function getISODate(date) {
+    return date.toISOString();
+}
+
+function updatePersonnelDisplay() {
+    currentPersonnelDateSpan.textContent = formatPersonnelDate(personnelCurrentDate);
+    updateEmployeeSelect();
+    startTimeInput.value = '';
+    endTimeInput.value = '';
+    personnelCommentInput.value = '';
+    hoursTotalInput.value = '';
+}
+
+function parseTimeInput(input) {
+    let value = input.trim();
+    if (!value) return '00:00';
+
+    if (value.includes(':')) {
+        const parts = value.split(':');
+        let hours = parseInt(parts[0], 10) || 0;
+        let minutes = parts[1] ? parseInt(parts[1], 10) || 0 : 0;
+        if (hours > 23 || minutes > 59) return '00:00';
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    let num = parseInt(value, 10);
+    if (isNaN(num)) return '00:00';
+
+    let hours, minutes;
+    if (value.length === 1 || value.length === 2) {
+        hours = num;
+        minutes = 0;
+    } else if (value.length === 3) {
+        hours = Math.floor(num / 100);
+        minutes = num % 100;
+    } else if (value.length === 4) {
+        hours = Math.floor(num / 100);
+        minutes = num % 100;
+    } else {
+        return '00:00';
+    }
+
+    if (hours > 23 || minutes > 59) return '00:00';
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+function normalizeTimeInput(time) {
+    if (!time) return '00:00';
+    const parts = time.split(':');
+    if (parts.length === 1) return `${parts[0].padStart(2, '0')}:00`;
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+}
+
+function calculateHours() {
+    console.log('Raw Start:', startTimeInput.value, 'Raw End:', endTimeInput.value);
+
+    let start = normalizeTimeInput(parseTimeInput(startTimeInput.value));
+    let end = normalizeTimeInput(parseTimeInput(endTimeInput.value));
+
+    console.log('Formatted Start:', start, 'Formatted End:', end);
+
+    if (start && end) {
+        const startDate = new Date(`2024-01-01T${start}:00`);
+        let endDate = new Date(`2024-01-01T${end}:00`);
+        if (endDate < startDate) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+        const diffMs = endDate - startDate;
+        const hours = diffMs / (1000 * 60 * 60);
+        hoursTotalInput.value = hours.toFixed(2);
+        console.log('Hours:', hours);
+        return hours;
+    }
+    hoursTotalInput.value = '0.00';
+    return 0;
+}
+
+startTimeInput.addEventListener('blur', () => {
+    startTimeInput.value = parseTimeInput(startTimeInput.value);
+    calculateHours();
+});
+endTimeInput.addEventListener('blur', () => {
+    endTimeInput.value = parseTimeInput(endTimeInput.value);
+    calculateHours();
+});
+
+function addPersonnelHours() {
+    const employee = employeeSelect.value;
+    const start = normalizeTimeInput(startTimeInput.value);
+    const end = normalizeTimeInput(endTimeInput.value);
+    const comment = personnelCommentInput.value;
+    const hours = calculateHours();
+
+    if (!employee || !start || !end || hours <= 0) {
+        alert('Veuillez remplir tous les champs correctement.');
+        return;
+    }
+
+    const record = {
+        date: getISODate(personnelCurrentDate),
+        employee: employee,
+        startTime: start,
+        endTime: end,
+        comment: comment,
+        hours: hours
+    };
+
+    personnelRecords.push(record);
+    savePersonnelRecords();
+    alert('Heures de travail ajoutées avec succès !');
+    updatePersonnelDisplay();
+}
+
+prevPersonnelDay.addEventListener('click', () => {
+    personnelCurrentDate.setDate(personnelCurrentDate.getDate() - 1);
+    updatePersonnelDisplay();
+});
+
+nextPersonnelDay.addEventListener('click', () => {
+    personnelCurrentDate.setDate(personnelCurrentDate.getDate() + 1);
+    updatePersonnelDisplay();
+});
+
+function deletePersonnelRecord(index) {
+    if (confirm('Voulez-vous vraiment supprimer cette entrée ?')) {
+        personnelRecords.splice(index, 1);
+        savePersonnelRecords();
+        filterPersonnel();
+    }
+}
+
+function filterPersonnel() {
+    const startDateInput = document.getElementById('personnelStartDate').value;
+    const endDateInput = document.getElementById('personnelEndDate').value;
+    const showComments = document.getElementById('showComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredRecords = personnelRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const personnelList = document.getElementById('personnelList');
+    const totals = {};
+    const commentTotals = {};
+
+    filteredRecords.forEach(record => {
+        if (!totals[record.employee]) {
+            totals[record.employee] = 0;
+            commentTotals[record.employee] = 0;
+        }
+        totals[record.employee] += record.hours;
+        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) {
+            commentTotals[record.employee] += parseFloat(record.comment);
+        }
+    });
+
+    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
+
+    personnelList.innerHTML = `
+        <h2>Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Employé</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Heures</th>
+                ${showComments ? '<th>Commentaire</th>' : ''}
+                <th class="no-print">Action</th>
+            </tr>
+            ${filteredRecords.map((record, index) => `
+                <tr>
+                    <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
+                    <td>${record.employee}</td>
+                    <td>${record.startTime}</td>
+                    <td>${record.endTime}</td>
+                    <td>${record.hours.toFixed(2)}h</td>
+                    ${showComments ? `<td>${record.comment || ''}</td>` : ''}
+                    <td class="no-print"><button class="delete-btn" onclick="deletePersonnelRecord(${index})">Supprimer</button></td>
+                </tr>
+            `).join('')}
+            ${Object.keys(totals).map(employee => `
+                <tr>
+                    <td>Total ${employee}</td>
+                    <td></td><td></td><td></td>
+                    <td>${totals[employee].toFixed(2)}h</td>
+                    ${showComments ? `<td>${commentTotals[employee].toFixed(2)}</td>` : ''}
+                    <td class="no-print"></td>
+                </tr>
+            `).join('')}
+            <tr>
+                <td><strong>Total Général</strong></td>
+                <td></td><td></td><td></td>
+                <td><strong>${totalHours.toFixed(2)}h</strong></td>
+                ${showComments ? `<td><strong>${totalComments.toFixed(2)}</strong></td>` : ''}
+                <td class="no-print"></td>
+            </tr>
+        </table>
+    `;
+}
+
+function printPersonnel() {
+    const startDateInput = document.getElementById('personnelStartDate').value;
+    const endDateInput = document.getElementById('personnelEndDate').value;
+    const showComments = document.getElementById('showComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredRecords = personnelRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (filteredRecords.length === 0) {
+        alert("Aucune donnée du personnel à imprimer.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = showComments ? [30, 40, 30, 30, 30, 40] : [30, 40, 30, 30, 30];
+    const rowHeight = 10;
+    const tableX = margin;
+
+    doc.setFontSize(12);
+    doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    filteredRecords.forEach(record => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${record.hours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        y += rowHeight;
+    });
+
+    y += 5;
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    const totals = {};
+    const commentTotals = {};
+    filteredRecords.forEach(record => {
+        if (!totals[record.employee]) totals[record.employee] = 0;
+        if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
+        totals[record.employee] += record.hours;
+        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+    });
+    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
+
+    Object.keys(totals).forEach(employee => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totals[employee].toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        y += rowHeight;
+    });
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalHours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+
+    window.open(doc.output('bloburl'), '_blank');
+}
+
+function downloadPersonnelPDF() {
+    const startDateInput = document.getElementById('personnelStartDate').value;
+    const endDateInput = document.getElementById('personnelEndDate').value;
+    const showComments = document.getElementById('showComments').checked;
+
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredRecords = personnelRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (filteredRecords.length === 0) {
+        alert("Aucune donnée du personnel à télécharger.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = showComments ? [30, 40, 30, 30, 30, 40] : [30, 40, 30, 30, 30];
+    const rowHeight = 10;
+    const tableX = margin;
+
+    doc.setFontSize(12);
+    doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+    y += rowHeight;
+
+    doc.setFont('helvetica', 'normal');
+    filteredRecords.forEach(record => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+            doc.addPage();
+            y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Employé', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Début', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Fin', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Heures', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(record.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${record.hours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        y += rowHeight;
+    });
+
+    y += 5;
+    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    const totals = {};
+    const commentTotals = {};
+    filteredRecords.forEach(record => {
+        if (!totals[record.employee]) totals[record.employee] = 0;
+        if (!commentTotals[record.employee]) commentTotals[record.employee] = 0;
+        totals[record.employee] += record.hours;
+        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) commentTotals[record.employee] += parseFloat(record.comment);
+    });
+    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
+
+    Object.keys(totals).forEach(employee => {
+        if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(`Total ${employee}`, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totals[employee].toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+        y += rowHeight;
+    });
+
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Général', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalHours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
+
+    doc.save('liste_personnel_chez_barth.pdf');
+}
+
+
+
+// Gestion des clics hors dropdown
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdown button')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+};
+// Ajout pour iOS
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé');
+    const recipeBookBtn = document.getElementById('recipeBookBtn');
+    const purchasesBtn = document.getElementById('purchasesBtn');
+    const personnelBtn = document.getElementById('personnelBtn');
+    const invoiceBtn = document.getElementById('invoiceBtn');
+
+    function addEventListeners(element, func) {
+        // Gestion des clics pour PC
+        element.addEventListener('click', func);
+        // Gestion des touchers pour iPad/iPhone (Chrome et Safari)
+        element.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Empêche le comportement par défaut sur iOS
+            func(); // Déclenche la fonction immédiatement
+        });
+    }
+
+    addEventListeners(recipeBookBtn, showRecipeBook);
+    addEventListeners(purchasesBtn, showPurchases);
+    addEventListeners(personnelBtn, showPersonnel);
+    addEventListeners(invoiceBtn, showInvoice);
+});
+
+// Initialisation
+updatePersonnelDisplay();
+
+
+</script>
+    
+        </body>
+    </html>
