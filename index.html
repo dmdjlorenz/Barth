@@ -3,20 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-
     <title>GESTION - CHEZ BARTH</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-button {
-        -webkit-user-select: none; /* Empêche la sélection de texte */
-        touch-action: manipulation; /* Réduit le délai de clic sur iOS */
-    }
-button {
-    touch-action: manipulation;
-}
     body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -30,9 +20,6 @@ button {
     .hidden {
         display: none;
     }
-button, input {
-    -webkit-tap-highlight-color: transparent;
-}
     #homePage {
         max-width: 600px;
         margin: 0 auto;
@@ -121,8 +108,6 @@ button, input {
 #passwordPage button:hover {
     background: #0056b3;
 }
-
-
 
     #recipeBookPage, #recipeManagementPage, #invoicePage, #invoiceManagementPage, #invoiceDetailPage, #purchasesPage, #purchasesManagementPage, #personnelPage, #personnelManagementPage {
         max-width: 600px;
@@ -574,8 +559,8 @@ button, input {
     </style>
 </head>
 <body>
-
-<!-- Section de mot de passe -->
+<body>
+    <!-- Section de mot de passe -->
     <div id="passwordPage">
         <h2>Entrez le mot de passe</h2>
         <input type="password" id="passwordInput" placeholder="Mot de passe">
@@ -586,11 +571,12 @@ button, input {
     <!-- Page d'accueil (inchangée mais masquée au départ) -->
     <div id="homePage" class="hidden">
         <h2>GESTION          CHEZ BARTH</h2>
-        <button id="recipeBookBtn">Ventes</button>
-        <button id="purchasesBtn">Achats</button>
-        <button id="personnelBtn">Personnel</button>
-        <button id="invoiceBtn">Commande Facture</button>
+        <button id="recipeBookBtn" onclick="showRecipeBook()">Ventes</button>
+        <button id="purchasesBtn" onclick="showPurchases()">Achats</button>
+        <button id="personnelBtn" onclick="showPersonnel()">Personnel</button>
+        <button id="invoiceBtn" onclick="showInvoice()">Commande Facture</button>
     </div>
+    <!-- Le reste du HTML reste inchangé -->
 
     <!-- Ventes -->
     <div id="recipeBookPage" class="hidden">
@@ -644,8 +630,8 @@ button, input {
 <div id="invoicePage" class="hidden">
     <h1>GESTION DES FACTURES CLIENTS</h1>
     <div class="checkbox-group">
-        <label class="first-label">CA inférieur à 85000€ <input type="checkbox" id="caBelow85000" onchange="toggleCA(this)" checked></label>
-        <label>CA supérieur à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)"></label>
+        <label class="first-label">CA inférieur à 85000€ <input type="checkbox" id="caBelow85000" onchange="toggleCA(this)"></label>
+        <label>CA supérieur à 85000€ <input type="checkbox" id="caAbove85000" onchange="toggleCA(this)" checked></label>
     </div>
     <div class="dropdown">
         <button onclick="toggleDropdown('menuDropdown')">Le MENU Chez BARTH</button>
@@ -688,7 +674,7 @@ button, input {
         <button id="saveInvoiceBtn" onclick="saveInvoice()">Enregistrer</button>
         <button id="clearInvoiceBtn" onclick="clearOrder()">Effacer</button>
         <button id="exportInvoicePdfBtn" onclick="exportInvoiceToPdf()">Télécharger</button>
-       
+        <button id="printBluetoothBtn" onclick="printToBluetoothThermal()">Imprimer Bluetooth</button>
         <button id="printInvoiceBtn" onclick="printInvoice()">Imprimer</button>
         <button id="sendSmsInvoiceBtn" onclick="sendInvoiceBySms()">Envoyer SMS</button>
         <button id="sendEmailInvoiceBtn" onclick="sendInvoiceByEmail()">Envoyer Email (PC Mac)</button>
@@ -775,7 +761,7 @@ button, input {
     <div class="buttons no-print">
         <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger PDF</button>
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
-        
+        <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
         <button onclick="backToPurchases()">Retour</button>
     </div>
 </div>
@@ -833,52 +819,12 @@ button, input {
     <div class="buttons no-print">
         <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger PDF</button>
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
-        
+        <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
         <button onclick="backToPersonnel()">Retour</button>
     </div>
 </div>
 
 <script>
-// Vérification de la disponibilité de localStorage
-let storageAvailable = true;
-try {
-    localStorage.setItem('test', 'test');
-    localStorage.removeItem('test');
-} catch (e) {
-    storageAvailable = false;
-    console.warn('localStorage non disponible, utilisation du stockage en mémoire.');
-}
-
-// Stockage en mémoire comme secours
-let memoryStorage = {};
-
-// Fonctions génériques pour sauvegarder et charger
-function saveToStorage(key, data) {
-    try {
-        if (storageAvailable) {
-            localStorage.setItem(key, JSON.stringify(data));
-        } else {
-            memoryStorage[key] = data;
-        }
-    } catch (e) {
-        console.error(`Erreur lors de la sauvegarde de ${key}:`, e);
-        memoryStorage[key] = data; // Secours en cas d’erreur imprévue
-    }
-}
-
-function loadFromStorage(key, defaultValue) {
-    try {
-        if (storageAvailable) {
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : defaultValue;
-        } else {
-            return memoryStorage[key] || defaultValue;
-        }
-    } catch (e) {
-        console.error(`Erreur lors du chargement de ${key}:`, e);
-        return defaultValue;
-    }
-}
     const { jsPDF } = window.jspdf;
 
     // Initialisation globale des variables
@@ -886,7 +832,7 @@ let invoices = [];
 let invoiceCounter = 0;
 let order = [];
 let menu = [];
-let caBelow85000 = true; // Par défaut, CA inférieur à 85000€ (au lieu de false)
+let caBelow85000 = false; // Par défaut, CA supérieur à 85000€
 let currentPaymentMethod = 'Non spécifié'; // Mode de paiement global pour la facture en cours
 
 // Mot de passe défini
@@ -928,8 +874,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
 function updateMenuTvaRates() {
     console.log('Dans updateMenuTvaRates, caBelow85000 =', caBelow85000);
     menu.forEach(item => {
@@ -955,23 +899,51 @@ function updateMenuTvaRates() {
 }
 
 function saveMenuToStorage() {
-    saveToStorage('menu', menu);
+    try {
+        localStorage.setItem('menu', JSON.stringify(menu));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde du menu:', e);
+        alert('Erreur lors de la sauvegarde du menu.');
+    }
 }
 
 function loadMenuFromStorage() {
-    menu = loadFromStorage('menu', [
-        { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-        { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
-        { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
-        { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-        { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
-        { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
-        { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
-        { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
-        { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
-        { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
-    ]);
-    updateMenuTvaRates();
+    try {
+        const storedMenu = localStorage.getItem('menu');
+        if (storedMenu) {
+            menu = JSON.parse(storedMenu);
+        } else {
+            menu = [
+                { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+                { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+                { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+                { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+                { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+                { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+                { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+                { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+            ];
+            saveMenuToStorage();
+        }
+        updateMenuTvaRates(); // Initialiser les taux au chargement
+    } catch (e) {
+        console.error('Erreur lors du chargement du menu:', e);
+        menu = [
+            { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+            { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+            { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+            { name: "Pistachio Gelato-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+            { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+            { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+            { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+            { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+        ];
+        updateMenuTvaRates(); // Initialiser les taux au chargement
+    }
 }
 
 
@@ -982,19 +954,45 @@ function loadMenuFromStorage() {
 loadMenuFromStorage();
 
  // Charger les factures au démarrage
-  
-function loadInvoices() {
-    invoices = loadFromStorage('savedInvoices', []);
-    if (invoices.length > 0) {
-        invoiceCounter = Math.max(...invoices.map(i => i.number));
+    function loadInvoices() {
+        try {
+            const storedInvoices = localStorage.getItem('savedInvoices');
+            console.log('Données brutes de localStorage:', storedInvoices);
+            if (storedInvoices) {
+                invoices = JSON.parse(storedInvoices);
+                console.log('Factures chargées:', invoices);
+                if (!Array.isArray(invoices)) {
+                    throw new Error('Les données chargées ne sont pas un tableau');
+                }
+                if (invoices.length > 0) {
+                    invoiceCounter = Math.max(...invoices.map(i => {
+                        if (typeof i.number !== 'number') {
+                            throw new Error('Numéro de facture invalide dans les données');
+                        }
+                        return i.number;
+                    }));
+                }
+            }
+        } catch (e) {
+            console.error('Erreur lors du chargement des factures:', e);
+            alert('Erreur lors du chargement des factures. Réinitialisation des données.');
+            invoices = [];
+            invoiceCounter = 0;
+            localStorage.setItem('savedInvoices', JSON.stringify(invoices));
+        }
     }
-}
     loadInvoices();
 
     // Fonction dédiée pour sauvegarder dans localStorage
     function saveInvoicesToStorage() {
-    saveToStorage('savedInvoices', invoices);
-}
+        try {
+            localStorage.setItem('savedInvoices', JSON.stringify(invoices));
+            console.log('localStorage mis à jour avec:', JSON.parse(localStorage.getItem('savedInvoices')));
+        } catch (e) {
+            console.error('Erreur lors de la sauvegarde des factures dans localStorage:', e);
+            alert('Erreur lors de la sauvegarde des factures.');
+        }
+    }
 
     // Gestion des pages
     function showRecipeBook() {
@@ -2181,7 +2179,45 @@ function sendInvoiceByEmail() {
     window.open(emailUrl);
 }
 
+async function printToBluetoothThermal() {
+    if (!navigator.bluetooth) {
+        alert("Web Bluetooth API n'est pas disponible.");
+        return;
+    }
 
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+
+        let text = "CHEZ BARTH\n16 place des Precheurs\n13100 Aix en Provence\n\n";
+        text += `Facture du ${new Date().toLocaleDateString('fr-FR')}\n\n`;
+        text += "-------------------------------\n";
+        order.forEach(item => {
+            text += `${item.name.padEnd(20)} ${item.priceTTC.toFixed(2)}€\n`;
+        });
+        const totalTTC = order.reduce((sum, item) => sum + item.priceTTC, 0).toFixed(2);
+        text += "-------------------------------\n";
+        text += `Total TTC: ${totalTTC}€\n`;
+        text += `Paiement: ${currentPaymentMethod}\n\n`;
+        text += "\nMerci de votre visite !\n\n";
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00');
+        await characteristic.writeValue(data);
+
+        alert("Impression Bluetooth réussie !");
+        server.disconnect();
+    } catch (error) {
+        console.error("Erreur Bluetooth :", error);
+        alert("Erreur lors de l'impression Bluetooth : " + error.message);
+    }
+}
 
 function filterInvoices() {
     const startDateInput = document.getElementById('startDate').value;
@@ -2511,11 +2547,34 @@ const initialPurchases = [
 ];
 
 function loadPurchases() {
-    purchases = loadFromStorage('purchases', []);
+    try {
+        const storedPurchases = localStorage.getItem('purchases');
+        if (!storedPurchases || storedPurchases === '[]') {
+            // Si le localStorage est vide ou contient un tableau vide, on charge les données initiales
+            purchases = [...initialPurchases];
+            localStorage.setItem('purchases', JSON.stringify(purchases));
+            console.log('Données initiales chargées :', purchases);
+        } else {
+            purchases = JSON.parse(storedPurchases);
+            console.log('Données chargées depuis localStorage :', purchases);
+        }
+    } catch (e) {
+        console.error('Erreur avec localStorage pour les achats:', e);
+        // En cas d'erreur, on charge les données initiales par défaut
+        purchases = [...initialPurchases];
+        localStorage.setItem('purchases', JSON.stringify(purchases));
+    }
 }
 
 function savePurchases() {
-    saveToStorage('purchases', purchases);
+    try {
+        localStorage.setItem('purchases', JSON.stringify(purchases));
+        console.log('Données sauvegardées dans localStorage :', purchases);
+        alert('Données enregistrées avec succès !');
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde des achats:', e);
+        alert('Erreur lors de la sauvegarde des achats.');
+    }
 }
 
 function formatRecipeDate(date) {
@@ -2906,7 +2965,80 @@ function downloadPurchasesPDF() {
     doc.save('liste_achats_chez_barth.pdf');
 }
 
+async function printPurchasesToBluetooth() {
+    const startDateInput = document.getElementById('purchaseStartDate').value;
+    const endDateInput = document.getElementById('purchaseEndDate').value;
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
+    const filteredPurchases = purchases.filter(purchase => {
+        const purchaseDate = new Date(purchase.date);
+        return purchaseDate >= startDate && purchaseDate <= endDate;
+    });
+
+    if (filteredPurchases.length === 0) {
+        alert("Aucune donnée d'achat à imprimer.");
+        return;
+    }
+
+    if (!navigator.bluetooth) {
+        alert("Web Bluetooth API n'est pas disponible.");
+        return;
+    }
+
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+
+        let text = "CHEZ BARTH\n16 place des Precheurs\n13100 Aix en Provence\n\n";
+        text += `Achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}\n\n`;
+        text += "-------------------------------\n";
+        text += "Date   Type   Paiement   Montant\n";
+        text += "-------------------------------\n";
+
+        filteredPurchases.forEach(purchase => {
+            const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR').substring(0, 5);
+            const typeStr = purchase.type.substring(0, 6);
+            const paymentStr = purchase.payment.substring(0, 6);
+            text += `${dateStr} ${typeStr.padEnd(6)} ${paymentStr.padEnd(6)} ${purchase.amountTTC.toFixed(2)}€\n`;
+        });
+
+        text += "-------------------------------\n";
+        let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
+        filteredPurchases.forEach(purchase => {
+            if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
+            if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
+            if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
+            if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
+            if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
+        });
+        const totalTTC = totalFood + totalEquipment + totalOther;
+
+        text += `Total Alimentaire: ${totalFood.toFixed(2)}€\n`;
+        text += `Total Matériel: ${totalEquipment.toFixed(2)}€\n`;
+        text += `Total Autre: ${totalOther.toFixed(2)}€\n`;
+        text += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
+        text += `Par Carte: ${totalCard.toFixed(2)}€\n`;
+        text += `Par Espèce: ${totalCash.toFixed(2)}€\n`;
+        text += "\nMerci de votre gestion !\n\n";
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00');
+        await characteristic.writeValue(data);
+
+        alert("Impression Bluetooth réussie !");
+        server.disconnect();
+    } catch (error) {
+        console.error("Erreur Bluetooth :", error);
+        alert("Erreur lors de l'impression Bluetooth : " + error.message);
+    }
+}
 
 // Initialisation au démarrage
 loadPurchases();
@@ -3003,19 +3135,57 @@ const initialPersonnelRecords = [
 ];
 
 function loadEmployees() {
-    employees = loadFromStorage('employees', []);
+    try {
+        const storedEmployees = localStorage.getItem('employees');
+        if (storedEmployees) {
+            employees = JSON.parse(storedEmployees);
+        } else {
+            employees = ["Tom", "Marylou", "Florentin"];
+            localStorage.setItem('employees', JSON.stringify(employees));
+        }
+    } catch (e) {
+        console.error('Erreur avec localStorage pour les employés:', e);
+        employees = ["Tom", "Marylou", "Florentin"];
+        localStorage.setItem('employees', JSON.stringify(employees));
+    }
 }
 
 function saveEmployees() {
-    saveToStorage('employees', employees);
+    try {
+        localStorage.setItem('employees', JSON.stringify(employees));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde des employés:', e);
+        alert('Erreur lors de la sauvegarde des employés.');
+    }
 }
 
 function loadPersonnelRecords() {
-    personnelRecords = loadFromStorage('personnelRecords', []);
+    try {
+        const storedRecords = localStorage.getItem('personnelRecords');
+        if (!storedRecords || storedRecords === '[]') {
+            // Si le localStorage est vide ou contient un tableau vide, on charge les données initiales
+            personnelRecords = [...initialPersonnelRecords];
+            localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+            console.log('Données initiales du personnel chargées :', personnelRecords);
+        } else {
+            personnelRecords = JSON.parse(storedRecords);
+            console.log('Données du personnel chargées depuis localStorage :', personnelRecords);
+        }
+    } catch (e) {
+        console.error('Erreur avec localStorage pour le personnel:', e);
+        alert('Problème de stockage des données du personnel détecté.');
+        personnelRecords = [...initialPersonnelRecords];
+        localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+    }
 }
 
 function savePersonnelRecords() {
-    saveToStorage('personnelRecords', personnelRecords);
+    try {
+        localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde des données du personnel:', e);
+        alert('Erreur lors de la sauvegarde des données du personnel.');
+    }
 }
 
 loadEmployees();
@@ -3482,7 +3652,74 @@ function downloadPersonnelPDF() {
     doc.save('liste_personnel_chez_barth.pdf');
 }
 
+async function printPersonnelToBluetooth() {
+    const startDateInput = document.getElementById('personnelStartDate').value;
+    const endDateInput = document.getElementById('personnelEndDate').value;
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
+    const filteredRecords = personnelRecords.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+    });
+
+    if (filteredRecords.length === 0) {
+        alert("Aucune donnée du personnel à imprimer.");
+        return;
+    }
+
+    if (!navigator.bluetooth) {
+        alert("Web Bluetooth API n'est pas disponible.");
+        return;
+    }
+
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+
+        let text = "CHEZ BARTH\n16 place des Precheurs\n13100 Aix en Provence\n\n";
+        text += `Personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}\n\n`;
+        text += "-------------------------------\n";
+        text += "Date   Employé   Heures\n";
+        text += "-------------------------------\n";
+
+        filteredRecords.forEach(record => {
+            const dateStr = new Date(record.date).toLocaleDateString('fr-FR').substring(0, 5);
+            const employeeStr = record.employee.substring(0, 8).padEnd(8);
+            text += `${dateStr} ${employeeStr} ${record.hours.toFixed(2)}h\n`;
+        });
+
+        text += "-------------------------------\n";
+        const totals = {};
+        filteredRecords.forEach(record => {
+            if (!totals[record.employee]) totals[record.employee] = 0;
+            totals[record.employee] += record.hours;
+        });
+        const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+
+        for (const employee in totals) {
+            text += `Total ${employee}: ${totals[employee].toFixed(2)}h\n`;
+        }
+        text += `Total Général: ${totalHours.toFixed(2)}h\n`;
+        text += "\nBilan du personnel terminé !\n\n";
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00');
+        await characteristic.writeValue(data);
+
+        alert("Impression Bluetooth réussie !");
+        server.disconnect();
+    } catch (error) {
+        console.error("Erreur Bluetooth :", error);
+        alert("Erreur lors de l'impression Bluetooth : " + error.message);
+    }
+}
 
 // Gestion des clics hors dropdown
 window.onclick = function(event) {
@@ -3495,30 +3732,7 @@ window.onclick = function(event) {
             }
         }
     }
-};
-// Ajout pour iOS
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM chargé');
-    const recipeBookBtn = document.getElementById('recipeBookBtn');
-    const purchasesBtn = document.getElementById('purchasesBtn');
-    const personnelBtn = document.getElementById('personnelBtn');
-    const invoiceBtn = document.getElementById('invoiceBtn');
-
-    function addEventListeners(element, func) {
-        // Gestion des clics pour PC
-        element.addEventListener('click', func);
-        // Gestion des touchers pour iPad/iPhone (Chrome et Safari)
-        element.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Empêche le comportement par défaut sur iOS
-            func(); // Déclenche la fonction immédiatement
-        });
-    }
-
-    addEventListeners(recipeBookBtn, showRecipeBook);
-    addEventListeners(purchasesBtn, showPurchases);
-    addEventListeners(personnelBtn, showPersonnel);
-    addEventListeners(invoiceBtn, showInvoice);
-});
+}
 
 // Initialisation
 updatePersonnelDisplay();
