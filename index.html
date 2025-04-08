@@ -16,6 +16,7 @@
         flex-direction: column;
         min-height: 100vh;
         touch-action: manipulation;
+        overscroll-behavior-y: none;
     }
     .hidden {
         display: none;
@@ -3733,6 +3734,22 @@ window.onclick = function(event) {
         }
     }
 }
+
+// Désactiver le pull to refresh
+document.addEventListener('touchstart', function(e) {
+    // Stocker la position initiale du toucher
+    window.touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+    const touchY = e.touches[0].clientY;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+    // Si on est en haut de la page et qu'on tire vers le bas
+    if (scrollTop === 0 && touchY > window.touchStartY) {
+        e.preventDefault(); // Empêche le comportement par défaut (refresh)
+    }
+}, { passive: false }); // "passive: false" est nécessaire pour que preventDefault fonctionne
 
 // Initialisation
 updatePersonnelDisplay();
