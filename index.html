@@ -1008,6 +1008,7 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         updateRecipeDisplay();
+        window.history.pushState({ page: 'recipeBookPage', previous: 'homePage' }, 'Gestion des Ventes', '#ventes');
     }
 
     function showRecipeManagement() {
@@ -1022,6 +1023,7 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         filterRecipes();
+        window.history.pushState({ page: 'recipeManagementPage', previous: 'recipeBookPage' }, 'Bilan des Ventes', '#bilan-ventes');
     }
 
     function showInvoice() {
@@ -1035,6 +1037,7 @@ loadMenuFromStorage();
     document.getElementById('purchasesManagementPage').classList.add('hidden');
     document.getElementById('personnelPage').classList.add('hidden');
     document.getElementById('personnelManagementPage').classList.add('hidden');
+    window.history.pushState({ page: 'invoicePage', previous: 'homePage' }, 'Gestion des Factures', '#factures');
     loadCAStatus();
     updateProductList(); // Met à jour la liste et désélectionne les cases
     updateOrderList();
@@ -1056,6 +1059,7 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         filterInvoices();
+	window.history.pushState({ page: 'invoiceManagementPage', previous: 'invoicePage' }, 'Bilan des Factures', '#bilan-factures');
     }
 
     function showInvoiceDetail() {
@@ -1069,6 +1073,7 @@ loadMenuFromStorage();
         document.getElementById('purchasesManagementPage').classList.add('hidden');
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
+	window.history.pushState({ page: 'invoiceDetailPage', previous: 'invoiceManagementPage' }, 'Détail des Factures', '#Détail-factures');
     }
 
     function showPurchases() {
@@ -1083,6 +1088,7 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         updatePurchaseDisplay();
+        window.history.pushState({ page: 'purchasesPage', previous: 'homePage' }, 'Gestion des Achats', '#achats');
     }
 
     function showPurchasesManagement() {
@@ -1097,6 +1103,8 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         filterPurchases();
+        window.history.pushState({ page: 'purchasesManagementPage', previous: 'purchasesPage' }, 'Bilan des Achats', '#bilan-achats');
+}
     }
 
     function showPersonnel() {
@@ -1111,6 +1119,7 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.remove('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
         updatePersonnelDisplay();
+        window.history.pushState({ page: 'personnelPage', previous: 'homePage' }, 'Gestion du Personnel', '#personnel');
     }
 
     function showPersonnelManagement() {
@@ -1125,6 +1134,8 @@ loadMenuFromStorage();
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.remove('hidden');
         filterPersonnel();
+        window.history.pushState({ page: 'personnelManagementPage', previous: 'personnelPage' }, 'Bilan du Personnel', '#bilan-personnel');
+}
     }
 
     function backToHome() {
@@ -3750,6 +3761,91 @@ document.addEventListener('touchmove', function(e) {
         e.preventDefault(); // Empêche le comportement par défaut (refresh)
     }
 }, { passive: false }); // "passive: false" est nécessaire pour que preventDefault fonctionne
+
+// Ajoutez ceci à la fin de votre <script>
+window.addEventListener('popstate', function(event) {
+    const state = event.state;
+
+    if (!state || !state.page) {
+        // Si aucun état (par exemple, page de mot de passe ou premier chargement), ne rien faire
+        // Le comportement par défaut fermera l'application si l'historique est vide
+        return;
+    }
+
+    // Masquer toutes les pages
+    document.getElementById('passwordPage').classList.add('hidden');
+    document.getElementById('homePage').classList.add('hidden');
+    document.getElementById('recipeBookPage').classList.add('hidden');
+    document.getElementById('recipeManagementPage').classList.add('hidden');
+    document.getElementById('invoicePage').classList.add('hidden');
+    document.getElementById('invoiceManagementPage').classList.add('hidden');
+    document.getElementById('invoiceDetailPage').classList.add('hidden');
+    document.getElementById('purchasesPage').classList.add('hidden');
+    document.getElementById('purchasesManagementPage').classList.add('hidden');
+    document.getElementById('personnelPage').classList.add('hidden');
+    document.getElementById('personnelManagementPage').classList.add('hidden');
+
+    // Selon la page actuelle, revenir à la page précédente
+    switch (state.page) {
+        // Pages principales -> Retour à l'accueil
+        case 'recipeBookPage':
+        case 'purchasesPage':
+        case 'personnelPage':
+        case 'invoicePage':
+            document.getElementById('homePage').classList.remove('hidden');
+            break;
+
+        // Pages de bilan -> Retour à la page "Gestion" correspondante
+        case 'recipeManagementPage':
+            document.getElementById('recipeBookPage').classList.remove('hidden');
+            updateRecipeDisplay();
+            break;
+        case 'purchasesManagementPage':
+            document.getElementById('purchasesPage').classList.remove('hidden');
+            updatePurchaseDisplay();
+            break;
+        case 'personnelManagementPage':
+            document.getElementById('personnelPage').classList.remove('hidden');
+            updatePersonnelDisplay();
+            break;
+        case 'invoiceManagementPage':
+            document.getElementById('invoicePage').classList.remove('hidden');
+            break;
+
+       case 'invoiceDetailPage':
+            document.getElementById('invoiceManagementPage').classList.remove('hidden');
+            break;
+
+
+        // Page d'accueil -> Laisser le comportement par défaut (fermer si possible)
+        case 'homePage':
+            // Ne rien faire ici, le retour à "passwordPage" ou la fermeture dépendra de l'historique
+            document.getElementById('homePage').classList.remove('hidden');
+            break;
+    }
+});
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.history.state && window.history.state.page) {
+        document.getElementById(window.history.state.page).classList.remove('hidden');
+    } else {
+        // Démarrer sur la page de mot de passe
+        document.getElementById('passwordPage').classList.remove('hidden');
+        document.getElementById('homePage').classList.add('hidden');
+        document.getElementById('recipeBookPage').classList.add('hidden');
+        document.getElementById('recipeManagementPage').classList.add('hidden');
+        document.getElementById('invoicePage').classList.add('hidden');
+        document.getElementById('invoiceManagementPage').classList.add('hidden');
+        document.getElementById('invoiceDetailPage').classList.add('hidden');
+        document.getElementById('purchasesPage').classList.add('hidden');
+        document.getElementById('purchasesManagementPage').classList.add('hidden');
+        document.getElementById('personnelPage').classList.add('hidden');
+        document.getElementById('personnelManagementPage').classList.add('hidden');
+    }
+});
+
+
 
 // Initialisation
 updatePersonnelDisplay();
