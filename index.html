@@ -3806,7 +3806,15 @@ window.addEventListener('popstate', function(event) {
         'passwordPage'
     ];
 
-    if (event.state && event.state.page) {
+    const passwordPage = document.getElementById('passwordPage');
+    const homePage = document.getElementById('homePage');
+
+    if (!passwordPage.classList.contains('hidden')) {
+        // Si on est sur passwordPage, tenter de fermer immédiatement
+        window.close();
+        // Empêcher tout état supplémentaire dans l'historique
+        history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
+    } else if (event.state && event.state.page) {
         const currentPage = event.state.page;
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById(currentPage).classList.remove('hidden');
@@ -3819,17 +3827,10 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'invoiceManagementPage') filterInvoices();
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
+    } else if (!homePage.classList.contains('hidden')) {
+        navigateTo('passwordPage');
     } else {
-        const passwordPage = document.getElementById('passwordPage');
-        const homePage = document.getElementById('homePage');
-
-        if (!passwordPage.classList.contains('hidden')) {
-            window.close(); // Tente de fermer directement sans confirmation
-        } else if (!homePage.classList.contains('hidden')) {
-            navigateTo('passwordPage');
-        } else {
-            navigateTo('homePage');
-        }
+        navigateTo('homePage');
     }
 });
 </script>
