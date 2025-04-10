@@ -781,7 +781,7 @@
         <button onclick="addEmployee()">Rentrer nouvel employé</button>
         <button onclick="deleteEmployee()">Sortir ancien employé</button>
     </div>
-    <div class="input-group">
+  <div class="input-group">
     <div class="input-field">
         <label>Heure de début</label>
         <input type="text" id="startTime" placeholder="ex: 720 pour 07:20" required>
@@ -795,13 +795,13 @@
         <input type="text" id="personnelComment">
     </div>
     <div class="input-field" style="display: flex; align-items: center; gap: 10px;">
-        <div style="flex: 1;">
+        <div style="flex: 1; display: none;">
             <label>Total heures</label>
             <input type="text" id="hoursTotal" readonly style="width: 80px;">
         </div>
-        <span>soit</span>
+        <span style="display: none;">soit</span> <!-- Masquer aussi "soit" si inutile -->
         <div style="flex: 1;">
-            <label>Conversion</label>
+            <label>Total heures</label> <!-- Changement de label pour cohérence -->
             <input type="text" id="hoursTotalConverted" readonly style="width: 80px;">
         </div>
     </div>
