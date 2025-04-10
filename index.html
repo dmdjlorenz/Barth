@@ -3802,7 +3802,8 @@ window.addEventListener('popstate', function(event) {
     const pages = [
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
-        'purchasesManagementPage', 'personnelPage', 'personnelManagementPage'
+        'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
+        'passwordPage'
     ];
 
     if (event.state && event.state.page) {
@@ -3819,15 +3820,24 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
     } else {
+        // Si l'historique est vide, vérifier la page actuelle
+        const passwordPage = document.getElementById('passwordPage');
         const homePage = document.getElementById('homePage');
-        if (!homePage.classList.contains('hidden')) {
+
+        if (!passwordPage.classList.contains('hidden')) {
+            // Si on est sur passwordPage et qu'il n'y a plus d'historique, demander à quitter
             if (confirm('Voulez-vous vraiment quitter le programme ?')) {
-                window.close();
-                navigateTo('passwordPage'); // Fallback si window.close() échoue
+                window.close(); // Tente de fermer
+                // Si window.close() ne fonctionne pas, rester sur passwordPage sans ajouter d'état
             } else {
-                history.pushState({ page: 'homePage' }, '', '#homePage');
+                // Restaurer l'état de passwordPage si l'utilisateur annule
+                history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
             }
+        } else if (!homePage.classList.contains('hidden')) {
+            // Si on est sur homePage, aller à passwordPage
+            navigateTo('passwordPage');
         } else {
+            // Cas par défaut : revenir à homePage si on est perdu dans l'historique
             navigateTo('homePage');
         }
     }
