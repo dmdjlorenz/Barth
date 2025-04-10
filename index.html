@@ -782,23 +782,23 @@
         <button onclick="deleteEmployee()">Sortir ancien employé</button>
     </div>
     <div class="input-group">
-        <div class="input-field">
-            <label>Heure de début</label>
-            <input type="text" id="startTime" placeholder="ex: 720 pour 07:20" required>
-        </div>
-        <div class="input-field">
-            <label>Heure de fin</label>
-            <input type="text" id="endTime" placeholder="ex: 1450 pour 14:50" required>
-        </div>
-        <div class="input-field">
-            <label>Commentaire</label>
-            <input type="text" id="personnelComment">
-        </div>
-        <div class="input-field">
-            <label>Total heures</label>
-            <input type="text" id="hoursTotal" readonly>
-        </div>
+    <div class="input-field">
+        <label>Heure de début</label>
+        <input type="text" id="startTime" placeholder="ex: 720 pour 07:20" required>
     </div>
+    <div class="input-field">
+        <label>Heure de fin</label>
+        <input type="text" id="endTime" placeholder="ex: 1450 pour 14:50" required>
+    </div>
+    <div class="input-field">
+        <label>Commentaire</label>
+        <input type="text" id="personnelComment">
+    </div>
+    <div class="input-field">
+        <label>Total heures</label>
+        <input type="text" id="hoursTotalConverted" readonly style="width: 80px;">
+    </div>
+</div>
     <div class="buttons no-print">
         <button id="addPersonnelBtn" onclick="addPersonnelHours()">Ajouter</button>
         <button id="managePersonnelBtn" onclick="showPersonnelManagement()">Bilan du Personnel</button>
@@ -1486,6 +1486,7 @@ loadMenuFromStorage();
                     <th>Ventes Carte</th>
                     <th>Ventes Espèce</th>
                     <th>Total Ventes</th>
+		    <th class="no-print">Action</th> <!-- Colonne Action ajoutée -->
                 </tr>
                 ${filteredSales.map(([date, data]) => `
                     <tr>
@@ -1493,6 +1494,7 @@ loadMenuFromStorage();
                         <td>${data.card.toFixed(2)}€</td>
                         <td>${data.cash.toFixed(2)}€</td>
                         <td>${data.total.toFixed(2)}€</td>
+			<td class="no-print"><button class="delete-btn" onclick="deleteSale('${date}')">Supprimer</button></td>
                     </tr>
                 `).join('')}
                 <tr>
@@ -1504,6 +1506,31 @@ loadMenuFromStorage();
             </table>
         `;
     }
+
+function deleteSale(date) {
+    if (confirm('Voulez-vous vraiment supprimer cette entrée de vente ?')) {
+        delete salesData[date]; // Supprime l'entrée pour la date donnée
+        saveSalesData(); // Sauvegarde les modifications
+        filterRecipes(); // Met à jour l'affichage
+    }
+}
+function saveSalesData() {
+    try {
+        localStorage.setItem('salesData', JSON.stringify(salesData));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde des ventes:', e);
+        alert('Erreur lors de la sauvegarde des ventes.');
+    }
+}
+
+function deleteRecipe(index) {
+    if (confirm('Voulez-vous vraiment supprimer cette entrée de vente ?')) {
+        recipes.splice(index, 1); // Supprime l'entrée à l'index donné
+        saveRecipes(); // Sauvegarde les modifications dans localStorage
+        filterRecipes(); // Met à jour l'affichage
+    }
+}
+
 
     function printAllRecipes() {
         const startDateInput = document.getElementById('recipeStartDate').value;
@@ -3188,20 +3215,22 @@ function saveEmployees() {
 function loadPersonnelRecords() {
     try {
         const storedRecords = localStorage.getItem('personnelRecords');
+        console.log('Stored Records from localStorage:', storedRecords);
         if (!storedRecords || storedRecords === '[]') {
-            // Si le localStorage est vide ou contient un tableau vide, on charge les données initiales
+            console.log('Aucun enregistrement trouvé ou tableau vide, chargement des données initiales');
             personnelRecords = [...initialPersonnelRecords];
             localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
-            console.log('Données initiales du personnel chargées :', personnelRecords);
+            console.log('Données initiales chargées :', personnelRecords);
         } else {
             personnelRecords = JSON.parse(storedRecords);
-            console.log('Données du personnel chargées depuis localStorage :', personnelRecords);
+            console.log('Données chargées depuis localStorage :', personnelRecords);
         }
     } catch (e) {
         console.error('Erreur avec localStorage pour le personnel:', e);
         alert('Problème de stockage des données du personnel détecté.');
         personnelRecords = [...initialPersonnelRecords];
         localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+        console.log('Données réinitialisées aux valeurs initiales :', personnelRecords);
     }
 }
 
@@ -3265,6 +3294,7 @@ function updatePersonnelDisplay() {
     endTimeInput.value = '';
     personnelCommentInput.value = '';
     hoursTotalInput.value = '';
+    hoursTotalConvertedInput.value = '';
 }
 
 function parseTimeInput(input) {
@@ -3324,23 +3354,31 @@ function calculateHours() {
         }
         const diffMs = endDate - startDate;
         const hours = diffMs / (1000 * 60 * 60);
-        hoursTotalInput.value = hours.toFixed(2);
         console.log('Hours:', hours);
-        return hours;
+        return hours; // Retourne les heures décimales pour les calculs
     }
-    hoursTotalInput.value = '0.00';
-    return 0;
+    return 0; // Retourne 0 si invalide
 }
+
+function convertToHoursMinutes(decimalHours) {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    return `${hours}h${minutes}min`;
+}
+
+const hoursTotalConvertedInput = document.getElementById('hoursTotalConverted');
 
 startTimeInput.addEventListener('blur', () => {
     startTimeInput.value = parseTimeInput(startTimeInput.value);
-    calculateHours();
-});
-endTimeInput.addEventListener('blur', () => {
-    endTimeInput.value = parseTimeInput(endTimeInput.value);
-    calculateHours();
+    const hours = calculateHours();
+    hoursTotalConvertedInput.value = convertToHoursMinutes(hours);
 });
 
+endTimeInput.addEventListener('blur', () => {
+    endTimeInput.value = parseTimeInput(endTimeInput.value);
+    const hours = calculateHours();
+    hoursTotalConvertedInput.value = convertToHoursMinutes(hours);
+});
 function addPersonnelHours() {
     const employee = employeeSelect.value;
     const start = normalizeTimeInput(startTimeInput.value);
@@ -3399,7 +3437,15 @@ function filterPersonnel() {
         return recordDate >= startDate && recordDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    console.log('Filtered Records:', filteredRecords); // Ajout pour débogage
+
     const personnelList = document.getElementById('personnelList');
+    if (filteredRecords.length === 0) {
+        personnelList.innerHTML = '<p>Aucune donnée à afficher pour cette période.</p>';
+        console.log('Aucune donnée filtrée.');
+        return;
+    }
+
     const totals = {};
     const commentTotals = {};
 
@@ -3414,7 +3460,9 @@ function filterPersonnel() {
         }
     });
 
-    const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalHoursDecimal = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
+    const totalHours = Math.floor(totalHoursDecimal);
+    const totalMinutes = Math.round((totalHoursDecimal - totalHours) * 60);
     const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
 
     personnelList.innerHTML = `
@@ -3429,30 +3477,36 @@ function filterPersonnel() {
                 ${showComments ? '<th>Commentaire</th>' : ''}
                 <th class="no-print">Action</th>
             </tr>
-            ${filteredRecords.map((record, index) => `
+            ${filteredRecords.map((record, index) => {
+                const hours = Math.floor(record.hours);
+                const minutes = Math.round((record.hours - hours) * 60);
+                return `
                 <tr>
                     <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
                     <td>${record.employee}</td>
                     <td>${record.startTime}</td>
                     <td>${record.endTime}</td>
-                    <td>${record.hours.toFixed(2)}h</td>
+                    <td>${hours}h${minutes}min</td>
                     ${showComments ? `<td>${record.comment || ''}</td>` : ''}
                     <td class="no-print"><button class="delete-btn" onclick="deletePersonnelRecord(${index})">Supprimer</button></td>
                 </tr>
-            `).join('')}
-            ${Object.keys(totals).map(employee => `
+            `}).join('')}
+            ${Object.keys(totals).map(employee => {
+                const hours = Math.floor(totals[employee]);
+                const minutes = Math.round((totals[employee] - hours) * 60);
+                return `
                 <tr>
                     <td>Total ${employee}</td>
                     <td></td><td></td><td></td>
-                    <td>${totals[employee].toFixed(2)}h</td>
+                    <td>${hours}h${minutes}min</td>
                     ${showComments ? `<td>${commentTotals[employee].toFixed(2)}</td>` : ''}
                     <td class="no-print"></td>
                 </tr>
-            `).join('')}
+            `}).join('')}
             <tr>
                 <td><strong>Total Général</strong></td>
                 <td></td><td></td><td></td>
-                <td><strong>${totalHours.toFixed(2)}h</strong></td>
+                <td><strong>${totalHours}h${totalMinutes}min</strong></td>
                 ${showComments ? `<td><strong>${totalComments.toFixed(2)}</strong></td>` : ''}
                 <td class="no-print"></td>
             </tr>
