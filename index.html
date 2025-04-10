@@ -1493,6 +1493,7 @@ loadMenuFromStorage();
                     <th>Ventes Carte</th>
                     <th>Ventes Espèce</th>
                     <th>Total Ventes</th>
+		    <th class="no-print">Action</th>
                 </tr>
                 ${filteredSales.map(([date, data]) => `
                     <tr>
@@ -1507,10 +1508,28 @@ loadMenuFromStorage();
                     <td><strong>${totalCard.toFixed(2)}€</strong></td>
                     <td><strong>${totalCash.toFixed(2)}€</strong></td>
                     <td><strong>${totalSales.toFixed(2)}€</strong></td>
+                    <td class="no-print"><button class="delete-btn" onclick="deleteSale('${date}')">Supprimer</button></td>
                 </tr>
             </table>
         `;
     }
+
+function saveSalesData() {
+    try {
+        localStorage.setItem('salesData', JSON.stringify(salesData));
+    } catch (e) {
+        console.error('Erreur lors de la sauvegarde des ventes:', e);
+        alert('Erreur lors de la sauvegarde des ventes.');
+    }
+}
+
+function deleteSale(date) {
+    if (confirm('Voulez-vous vraiment supprimer cette entrée de vente ?')) {
+        delete salesData[date]; // Supprime l'entrée pour la date donnée
+        saveSalesData(); // Sauvegarde les modifications
+        filterRecipes(); // Met à jour l'affichage
+    }
+}
 
     function printAllRecipes() {
         const startDateInput = document.getElementById('recipeStartDate').value;
