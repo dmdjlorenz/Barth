@@ -3824,21 +3824,7 @@ window.addEventListener('popstate', function(event) {
         const homePage = document.getElementById('homePage');
 
         if (!passwordPage.classList.contains('hidden')) {
-            if (confirm('Voulez-vous vraiment quitter le programme ?')) {
-                // Tenter de fermer la fenêtre
-                window.close();
-                // Si window.close() échoue (ce qui est probable), rediriger vers une page vide
-                window.location.href = 'about:blank';
-                // Désactiver toute interaction supplémentaire
-                document.body.innerHTML = '<h1>Programme fermé</h1>';
-                document.body.style.backgroundColor = '#000';
-                document.body.style.color = '#fff';
-                document.body.style.textAlign = 'center';
-                document.body.style.paddingTop = '50%';
-            } else {
-                // Restaurer l'état de passwordPage si annulé
-                history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
-            }
+            window.close(); // Tente de fermer directement sans confirmation
         } else if (!homePage.classList.contains('hidden')) {
             navigateTo('passwordPage');
         } else {
