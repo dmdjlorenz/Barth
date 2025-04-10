@@ -3754,6 +3754,56 @@ document.addEventListener('touchmove', function(e) {
 // Initialisation
 updatePersonnelDisplay();
 
+// Gestion de la touche "Backspace" pour simuler le bouton "Retour"
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Backspace') {
+        event.preventDefault();
+
+        const homePage = document.getElementById('homePage');
+        const recipeBookPage = document.getElementById('recipeBookPage');
+        const purchasesPage = document.getElementById('purchasesPage');
+        const personnelPage = document.getElementById('personnelPage');
+        const invoicePage = document.getElementById('invoicePage');
+        const recipeManagementPage = document.getElementById('recipeManagementPage');
+        const purchasesManagementPage = document.getElementById('purchasesManagementPage');
+        const personnelManagementPage = document.getElementById('personnelManagementPage');
+        const invoiceManagementPage = document.getElementById('invoiceManagementPage');
+        const invoiceDetailPage = document.getElementById('invoiceDetailPage');
+
+        if (!homePage.classList.contains('hidden')) {
+            if (confirm('Voulez-vous vraiment quitter le programme ?')) {
+                window.close();
+            }
+        }
+        else if (!recipeBookPage.classList.contains('hidden')) {
+            backToHome();
+        }
+        else if (!purchasesPage.classList.contains('hidden')) {
+            backToHome();
+        }
+        else if (!personnelPage.classList.contains('hidden')) {
+            backToHome();
+        }
+        else if (!invoicePage.classList.contains('hidden')) {
+            backToHome();
+        }
+        else if (!recipeManagementPage.classList.contains('hidden')) {
+            backToRecipeBook();
+        }
+        else if (!purchasesManagementPage.classList.contains('hidden')) {
+            backToPurchases();
+        }
+        else if (!personnelManagementPage.classList.contains('hidden')) {
+            backToPersonnel();
+        }
+        else if (!invoiceManagementPage.classList.contains('hidden')) {
+            backToInvoice();
+        }
+        else if (!invoiceDetailPage.classList.contains('hidden')) {
+            backToInvoiceManagement();
+        }
+    }
+});
 
 </script>
     
