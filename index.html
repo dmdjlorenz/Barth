@@ -1501,6 +1501,7 @@ loadMenuFromStorage();
                         <td>${data.card.toFixed(2)}€</td>
                         <td>${data.cash.toFixed(2)}€</td>
                         <td>${data.total.toFixed(2)}€</td>
+                        <td class="no-print"><button class="delete-btn" onclick="deleteSale('${date}')">Supprimer</button></td>
                     </tr>
                 `).join('')}
                 <tr>
@@ -1508,7 +1509,7 @@ loadMenuFromStorage();
                     <td><strong>${totalCard.toFixed(2)}€</strong></td>
                     <td><strong>${totalCash.toFixed(2)}€</strong></td>
                     <td><strong>${totalSales.toFixed(2)}€</strong></td>
-                    <td class="no-print"><button class="delete-btn" onclick="deleteSale('${date}')">Supprimer</button></td>
+                    <td class="no-print"></td>
                 </tr>
             </table>
         `;
