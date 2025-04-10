@@ -781,7 +781,7 @@
         <button onclick="addEmployee()">Rentrer nouvel employé</button>
         <button onclick="deleteEmployee()">Sortir ancien employé</button>
     </div>
-  <div class="input-group">
+    <div class="input-group">
     <div class="input-field">
         <label>Heure de début</label>
         <input type="text" id="startTime" placeholder="ex: 720 pour 07:20" required>
@@ -794,12 +794,18 @@
         <label>Commentaire</label>
         <input type="text" id="personnelComment">
     </div>
-    <div class="input-field">
-        <label>Total heures</label>
-        <input type="text" id="hoursTotalConverted" readonly style="width: 80px;">
+    <div class="input-field" style="display: flex; align-items: center; gap: 10px;">
+        <div style="flex: 1;">
+            <label>Total heures</label>
+            <input type="text" id="hoursTotal" readonly style="width: 80px;">
+        </div>
+        <span>soit</span>
+        <div style="flex: 1;">
+            <label>Conversion</label>
+            <input type="text" id="hoursTotalConverted" readonly style="width: 80px;">
+        </div>
     </div>
- </div>
-
+</div>
     <div class="buttons no-print">
         <button id="addPersonnelBtn" onclick="addPersonnelHours()">Ajouter</button>
         <button id="managePersonnelBtn" onclick="showPersonnelManagement()">Bilan du Personnel</button>
@@ -3348,11 +3354,11 @@ function calculateHours() {
         }
         const diffMs = endDate - startDate;
         const hours = diffMs / (1000 * 60 * 60);
-        
+        hoursTotalInput.value = hours.toFixed(2);
         console.log('Hours:', hours);
         return hours;
     }
-    
+    hoursTotalInput.value = '0.00';
     return 0;
 }
 
