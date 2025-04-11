@@ -4031,7 +4031,7 @@ window.addEventListener('popstate', function(event) {
         const currentPage = event.state.page;
         // Ne pas revenir à passwordPage via popstate
         if (currentPage === 'passwordPage') {
-            navigateTo('homePage');
+            navigateTo('passwordPage');
             return;
         }
 
