@@ -4022,7 +4022,6 @@ window.addEventListener('popstate', function(event) {
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById(currentPage).classList.remove('hidden');
 
-        // Réinitialiser les affichages si nécessaire
         if (currentPage === 'recipeBookPage') updateRecipeDisplay();
         if (currentPage === 'purchasesPage') updatePurchaseDisplay();
         if (currentPage === 'personnelPage') updatePersonnelDisplay();
@@ -4031,21 +4030,17 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
 
-        // Si on revient à homePage, remplacer l’état pour préparer la fermeture
         if (currentPage === 'homePage') {
-            history.replaceState({ page: 'homePage' }, '', '#homePage');
+            history.replaceState(null, '', '#');
         }
     } else {
-        // Si aucun état valide ou si on est sur homePage, fermer directement
         if (!homePage.classList.contains('hidden')) {
             window.close();
-            // Si window.close() échoue, vider complètement l’historique
             history.replaceState(null, '', '#');
         } else {
-            // Par défaut, aller à homePage sans empiler un nouvel état
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
             homePage.classList.remove('hidden');
-            history.replaceState({ page: 'homePage' }, '', '#homePage');
+            history.replaceState(null, '', '#');
         }
     }
 });
