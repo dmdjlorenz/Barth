@@ -4031,20 +4031,22 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
 
-        // Si on revient à homePage, préparer la fermeture au prochain retour
+        // Si on revient à homePage, remplacer l'état pour éviter une pile inutile
         if (currentPage === 'homePage') {
-            history.replaceState({ page: 'homePage' }, '', '#homePage'); // Remplacer l'état
+            history.replaceState({ page: 'homePage' }, '', '#homePage');
         }
-    } else if (!homePage.classList.contains('hidden')) {
-        // Si on est sur homePage et qu'on appuie sur "Retour", fermer immédiatement
-        window.close();
-        document.body.innerHTML = '<h1>Application fermée</h1><p>Veuillez fermer l\'onglet manuellement.</p>';
-        history.replaceState(null, '', '#'); // Vider l'historique
     } else {
-        // Par défaut, aller à homePage sans empiler un nouvel état
-        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
-        homePage.classList.remove('hidden');
-        history.replaceState({ page: 'homePage' }, '', '#homePage');
+        // Si aucun état valide ou si on est sur homePage, fermer immédiatement
+        if (!homePage.classList.contains('hidden')) {
+            window.close();
+            document.body.innerHTML = '<h1>Application fermée</h1><p>Veuillez fermer l\'onglet manuellement.</p>';
+            history.replaceState(null, '', '#');
+        } else {
+            // Par défaut, aller à homePage sans empiler un nouvel état
+            pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+            homePage.classList.remove('hidden');
+            history.replaceState({ page: 'homePage' }, '', '#homePage');
+        }
     }
 });
 
