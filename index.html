@@ -6,6 +6,7 @@
     <title>GESTION - CHEZ BARTH</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -19,8 +20,8 @@
         overscroll-behavior-y: none;
     }
     .hidden {
-        display: none;
-    }
+    display: none !important;
+}
     #homePage {
         max-width: 600px;
         margin: 0 auto;
@@ -66,6 +67,12 @@
     #homePage #invoiceBtn:hover {
         background: #0000CC;
     }
+#homePage #budgetBtn {
+    background: #FFA500; /* Orange */
+}
+#homePage #budgetBtn:hover {
+    background: #E59400;
+}
 
 #passwordPage {
     max-width: 600px;
@@ -203,6 +210,7 @@
     #purchasesPage .buttons button[onclick="backToHome()"],
     #purchasesManagementPage .buttons button[onclick="backToPurchases()"],
     #personnelPage .buttons button[onclick="backToHome()"],
+    #budgetPage button[onclick="backToHome()"],
     #personnelManagementPage .buttons button[onclick="backToPersonnel()"] {
         background: #000000; /* Noir */
     }
@@ -214,6 +222,7 @@
     #purchasesPage .buttons button[onclick="backToHome()"]:hover,
     #purchasesManagementPage .buttons button[onclick="backToPurchases()"]:hover,
     #personnelPage .buttons button[onclick="backToHome()"]:hover,
+    #budgetPage button[onclick="backToHome()"]:hover,
     #personnelManagementPage .buttons button[onclick="backToPersonnel()"]:hover {
         background: #333333;
     }
@@ -375,7 +384,7 @@
         margin-top: 20px;
         box-sizing: border-box;
     }
-    #recipeBookPage .buttons, #recipeManagementPage .buttons, #invoicePage .buttons, #invoiceManagementPage .buttons, #purchasesPage .buttons, #purchasesManagementPage .buttons, #personnelPage .buttons, #personnelManagementPage .buttons {
+    #budgetPage .buttons, #recipeBookPage .buttons, #recipeManagementPage .buttons, #invoicePage .buttons, #invoiceManagementPage .buttons, #purchasesPage .buttons, #purchasesManagementPage .buttons, #personnelPage .buttons, #personnelManagementPage .buttons {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
@@ -557,6 +566,73 @@
         width: 1cm; /* Réduit de 2cm à 1cm */
     }
 
+/* Styles pour la page Budget */
+#budgetPage.hidden {
+    display: none !important;
+    visibility: hidden !important; /* Double sécurité */
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.container input, .container label {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.container input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.result {
+    margin-top: 20px;
+}
+.negative {
+    color: red;
+}
+.container table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+.container table, .container th, .container td {
+    border: 1px solid #ddd;
+}
+.container th, .container td {
+    padding: 10px;
+    text-align: center;
+}
+.container th {
+    background-color: #f2f2f2;
+}
+#exportPdf, #exportWord {
+    background-color: #87CEEB; /* Bleu ciel */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+}
+#exportPdf:hover, #exportWord:hover {
+    background-color: #00BFFF; /* Bleu profond au survol */
+}
+@media print {
+    .container {
+        page-break-inside: avoid;
+    }
+    .container table, .container tr, .container td, .container th {
+        page-break-inside: avoid;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -576,6 +652,7 @@
         <button id="purchasesBtn" onclick="showPurchases()">Achats</button>
         <button id="personnelBtn" onclick="showPersonnel()">Personnel</button>
         <button id="invoiceBtn" onclick="showInvoice()">Commande Facture</button>
+        <button id="budgetBtn" onclick="showBudget()">Budget</button>
     </div>
     <!-- Le reste du HTML reste inchangé -->
 
@@ -832,6 +909,71 @@
     </div>
 </div>
 
+<!-- Budget -->
+<div id="budgetPage" class="hidden">
+    <div class="container">
+        <h1>BUDGET PREVISIONNEL</h1>
+        <h1>Sandwicherie BARTH</h1>
+        <p>Entrepreneur :  Mathis MOUHOU</p>
+        <p>Enseigne / nom commercial :  CHEZ BARTH</p>
+        <p>Statut Juridique : Entreprise Individuelle</p>
+        <p>Régime fiscal/social :  Micro-entrepreneur</p>
+      
+        <p><strong>DONNEES D'ENTREE</strong> (à modifier si besoin) :  </p>
+        <label for="prix">Prix de vente du panier moyen (€):</label>
+        <input type="number" id="prix" value="10" oninput="calculerResultat()">
+        
+        <label for="cout">Coût de revient matière du panier moyen (€):</label>
+        <input type="number" id="cout" value="3.5" oninput="calculerResultat()">
+        
+        <label for="tva">Taux de TVA %:</label>
+        <input type="number" id="tva" value="10" oninput="calculerResultat()">
+
+        <label for="panier">Nombre de paniers par jour:</label>
+        <input type="number" id="panier" value="70" oninput="calculerResultat()">
+        
+        <label for="jours">Nombre de jours de travail par semaine:</label>
+        <input type="number" id="jours" value="5" oninput="calculerResultat()">
+        
+        <label for="semaines">Nombre de semaines de travail par an:</label>
+        <input type="number" id="semaines" value="48" oninput="calculerResultat()">
+        
+        <label for="loyer">Redevance ou loyer CC mensuel (€):</label>
+        <input type="number" id="loyer" value="1120" oninput="calculerResultat()">
+        
+        <label for="charges">Charges annuelles d'électricité, gaz, eau, téléphone, assurance (€):</label>
+        <input type="number" id="charges" value="3000" oninput="calculerResultat()">
+        
+        <label for="salaire">Salaire du personnel brut mensuel (temps partiel ou temps plein) (€):</label>
+        <input type="number" id="salaire" value="1800" oninput="calculerResultat()">
+        
+        <label for="patronales">Taux de cotisation des charges patronales (bas salaires)(%):</label>
+        <input type="number" id="patronales" value="25" oninput="calculerResultat()">
+        
+        <label for="externes">Charges annuelles externes (TPE, banque, commission CB, transport, entretien, honoraires, compta, pub, autres) (€):</label>
+        <input type="number" id="externes" value="10000" oninput="calculerResultat()">
+        
+        <label for="urssaf">Taux de cotisations sociales (12.415% reduit première année 6.2%) et impôt sur le revenu libératoire de 1% de Mathis et formation 0.3% (%):</label>
+        <input type="number" id="urssaf" value="7.5" oninput="calculerResultat()">
+        
+        <label for="apport">Apport financier ou emprunt (€):</label>
+        <input type="number" id="apport" value="75000" oninput="calculerResultat()">
+        
+        <div class="result" id="resultat">
+            <!-- Les résultats seront affichés ici -->
+        </div>
+        
+        <table id="tableauBenefices">
+            <!-- Le tableau des bénéfices nets sera affiché ici -->
+        </table>
+       <div class="buttons"> 
+        <button id="exportPdf">Exporter en PDF</button>
+        <button id="exportWord">Exporter en Word</button>
+        <button onclick="backToHome()">Retour</button>
+       </div>
+    </div>
+</div>
+
 <script>
     const { jsPDF } = window.jspdf;
 
@@ -852,7 +994,7 @@ function navigateTo(pageId) {
         'passwordPage', 'homePage', 'recipeBookPage', 'recipeManagementPage', 
         'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 
         'purchasesPage', 'purchasesManagementPage', 'personnelPage', 
-        'personnelManagementPage'
+        'personnelManagementPage', 'budgetPage'
     ];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
@@ -1170,6 +1312,8 @@ loadMenuFromStorage();
         document.getElementById('purchasesManagementPage').classList.add('hidden');
         document.getElementById('personnelPage').classList.add('hidden');
         document.getElementById('personnelManagementPage').classList.add('hidden');
+        document.getElementById('budgetPage').classList.add('hidden');
+        document.getElementById('homePage').classList.remove('hidden');
     }
 
     function backToRecipeBook() {
@@ -3860,7 +4004,7 @@ window.addEventListener('popstate', function(event) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage'
+        'passwordPage', 'budgetPage'
     ];
 
     const passwordPage = document.getElementById('passwordPage');
@@ -3890,6 +4034,325 @@ window.addEventListener('popstate', function(event) {
         navigateTo('homePage');
     }
 });
+
+// Fonction pour afficher la page Budget
+function showBudget() {
+    document.getElementById('homePage').classList.add('hidden');
+    document.getElementById('recipeBookPage').classList.add('hidden');
+    document.getElementById('recipeManagementPage').classList.add('hidden');
+    document.getElementById('invoicePage').classList.add('hidden');
+    document.getElementById('invoiceManagementPage').classList.add('hidden');
+    document.getElementById('invoiceDetailPage').classList.add('hidden');
+    document.getElementById('purchasesPage').classList.add('hidden');
+    document.getElementById('purchasesManagementPage').classList.add('hidden');
+    document.getElementById('personnelPage').classList.add('hidden');
+    document.getElementById('personnelManagementPage').classList.add('hidden');
+    document.getElementById('budgetPage').classList.remove('hidden');
+    calculerResultat(); // Calculer les résultats initiaux lors de l'affichage
+}
+
+function calculerResultat() {
+    // Récupération des valeurs des inputs
+    var prix = parseFloat(document.getElementById('prix').value);
+    var cout = parseFloat(document.getElementById('cout').value);
+    var tva = parseFloat(document.getElementById('tva').value) / 100;
+    var panier = parseFloat(document.getElementById('panier').value);
+    var jours = parseFloat(document.getElementById('jours').value);
+    var semaines = parseFloat(document.getElementById('semaines').value);
+    var loyerMensuel = parseFloat(document.getElementById('loyer').value);
+    var charges = parseFloat(document.getElementById('charges').value);
+    var salaire = parseFloat(document.getElementById('salaire').value);
+    var patronales = parseFloat(document.getElementById('patronales').value) / 100;
+    var externes = parseFloat(document.getElementById('externes').value);
+    var urssaf = parseFloat(document.getElementById('urssaf').value) / 100;
+    var apport = parseFloat(document.getElementById('apport').value);
+
+    // Calcul du chiffre d'affaires annuel
+    var chiffreAffaires = prix * panier * jours * semaines;
+
+    // Calcul de la TVA (à partir de 85000€ de CA)
+    var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * tva / (1 + tva) : 0;
+
+    // Calcul des charges de personnel (salaire brut annuel + charges patronales)
+    var chargesPersonnel = salaire * 12 * (1 + patronales);
+
+    // Calcul des charges d'exploitation
+    var loyerAnnuel = loyerMensuel * 12;
+    var coutMatieres = cout * panier * jours * semaines;
+    var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes + tvaCalcul;
+
+    // Calcul des charges sociales et impôts
+    var chargesUrssaf = chiffreAffaires * urssaf;
+
+    // Calcul du bénéfice net
+    var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+
+    // Calcul de l'amortissement annuel
+    var amortissement = apport / 7;
+
+    // Calcul du résultat financier
+    var resultatFinancier = beneficeNet - amortissement;
+
+    // Calcul de la rentabilité économique minimum (Nb ventes pour bénéfice net > 0)
+    var nbVentesEconomique = calculerRentabiliteMinimum('economique', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva);
+
+    // Calcul de la rentabilité financière minimum (Nb ventes pour résultat financier > 0)
+    var nbVentesFinanciere = calculerRentabiliteMinimum('financiere', prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
+
+    // Affichage des résultats avec formatage et vérification des valeurs négatives
+    var resultat = document.getElementById('resultat');
+    var beneficeNetClass = beneficeNet < 0 ? 'negative' : '';
+    
+    resultat.innerHTML = `
+        <p><strong>RESULTATS</strong> (calculés automatiquement) : </p>
+        <p><strong>   </p>
+        <h2>COMPTE DE RESULTAT PREVISIONNEL</h2>
+        <p><strong>   </p>
+        <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+ 
+        <ul>
+            <u>Détail des charges annuelles d'exploitation:</u>
+            <ul>
+                <li>Redevance ou loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
+                <li>Charges d'électricité, gaz, eau, téléphone: ${charges.toFixed(0)} €</li>
+                <li>Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+                <li>Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
+                <li>Charges externes: ${externes.toFixed(0)} €</li>
+		<li>TVA (si CA > 85000€): ${tvaCalcul.toFixed(0)} €</li>
+            </ul>
+        </ul>
+        <p><strong>* Total des charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (CE)</strong></p>
+        <p><strong>* Impôts sur le revenu et Cotisations sociales de Mathis: ${chargesUrssaf.toFixed(0)} € (IRCC)</strong></p>
+        <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-CE-IRCC)</span></strong></p>
+        
+        <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
+        <p>  </p>`;
+    
+    // Appel pour calculer et afficher le tableau des bénéfices nets mensuels
+    afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva);
+}
+
+
+
+function calculerRentabiliteMinimum(type, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, tva, amortissement = 0) {
+    for (let i = 1; i <= 300; i++) {
+        var chiffreAffaires = prix * i * jours * semaines;
+        var chargesPersonnel = salaire * 12 * (1 + patronales);
+        var loyerAnnuel = loyerMensuel * 12;
+        var coutMatieres = cout * i * jours * semaines;
+        var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes;
+        var chargesUrssaf = chiffreAffaires * urssaf;
+
+        // Calcul de la TVA seulement si le chiffre d'affaires dépasse 85 000€
+        var tvaCalcul = 0;
+        if (chiffreAffaires > 85000) {
+            tvaCalcul = (chiffreAffaires - 85000) * tva / (1 + tva);  // Calcul de la TVA
+        }
+
+        // Ajouter la TVA aux charges d'exploitation si elle est calculée
+        chargesExploitation += tvaCalcul;
+
+        // Calcul du bénéfice net
+        var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+
+        // Affichage pour le débogage
+        console.log(`Iteration: ${i} | Chiffre d'affaires: ${chiffreAffaires} | TVA: ${tvaCalcul} | Bénéfice net: ${beneficeNet}`);
+
+        // Vérification de la rentabilité en fonction du type
+        if (type === 'economique' && beneficeNet >= 0) {
+            console.log(`Rentabilité atteinte à l'itération ${i} avec un bénéfice net de ${beneficeNet}`);
+            return i;  // Retourne l'itération dès que rentabilité atteinte
+        } else if (type === 'financiere' && beneficeNet >= amortissement) {
+            console.log(`Rentabilité atteinte à l'itération ${i} avec un bénéfice net de ${beneficeNet}`);
+            return i;  // Retourne l'itération dès que rentabilité atteinte
+        }
+    }
+    return 300; // Valeur par défaut si aucune rentabilité n'est trouvée
+}
+
+
+
+
+
+
+
+function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
+    var tableau = document.getElementById('tableauBenefices');
+    
+    // Création du tableau des bénéfices
+    tableau.innerHTML = `
+    <tr>
+        <th>Revenu net mensuel Mathis</th>
+        <th>1000 €</th>
+        <th>1500 €</th>
+        <th>2000 €</th>
+        <th>2500 €</th>
+        <th>3000 €</th>
+ 	<th>4000 €</th>
+    </tr>
+    <tr>
+        <td>Nombre de ventes journalières nécessaire</td>
+        ${calculerVentesPourBenefices(1000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(1500, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(2000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(2500, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+        ${calculerVentesPourBenefices(3000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+ 	${calculerVentesPourBenefices(4000, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva)}
+    </tr>`;
+}
+
+function calculerVentesPourBenefices(beneficeMensuel, prix, cout, jours, semaines, loyerMensuel, charges, salaire, patronales, externes, urssaf, amortissement, tva) {
+    for (let i = 0; i <= 1000; i++) {
+        var chiffreAffaires = prix * i * jours * semaines;
+        var tvaCalcul = (chiffreAffaires > 85000) ? (chiffreAffaires - 85000) * tva / (1 + tva) : 0;
+        var chargesPersonnel = salaire * 12 * (1 + patronales);
+        var loyerAnnuel = loyerMensuel * 12;
+        var coutMatieres = cout * i * jours * semaines;
+        var chargesExploitation = loyerAnnuel + charges + chargesPersonnel + coutMatieres + externes + tvaCalcul;
+        var chargesUrssaf = chiffreAffaires * urssaf;
+        var beneficeNet = chiffreAffaires - (chargesExploitation + chargesUrssaf);
+        
+        if (beneficeNet >= (beneficeMensuel * 12)) {
+            return `<td>${i}</td>`;
+        }
+    }
+    return `<td>Non atteint</td>`;
+}
+
+// Appel initial pour afficher les résultats par défaut
+calculerResultat();
+
+// Fonction pour exporter en Word
+document.getElementById('exportWord').addEventListener('click', function () {
+    var header = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Export HTML To Doc</title>
+        <style>
+            @page { 
+                size: A4; 
+                margin: 1cm; /* Marges réduites à 1 cm */
+            }
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 0;
+                padding: 0;
+                font-size: 10pt; /* Réduction de la taille de police */
+                width: 100%;
+            }
+            h1 { 
+                text-align: center; 
+                border: 2px solid #000; 
+                padding: 10px; 
+                margin: 10px 0; 
+                font-size: 12pt; /* Réduction de la taille de police pour le titre */
+            }
+            h2 { 
+                text-align: center; 
+                margin: 5px 0; 
+                font-size: 11pt; /* Réduction de la taille de police pour les sous-titres */
+            }
+            p {
+                margin: 5px 0; 
+            }
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                font-size: 9pt; /* Réduction de la taille de police dans le tableau */
+            }
+            th, td { 
+                border: 1px solid #000; 
+                padding: 4px; 
+                text-align: center;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            .revenue-net { 
+                background-color: #d3d3d3; /* Gris clair pour les revenus nets */
+            }
+        </style>
+        </head><body>
+        <h1>BUDGET PREVISIONNEL</h1>
+        <h2>Sandwicherie BARTH</h2>
+        <p>Entrepreneur :  Mathis MOUHOU</p>
+        <p>Enseigne / nom commercial :  BARTH</p>
+        <p>Statut Juridique : Entreprise Individuelle</p>
+        <p>Régime fiscal/social :  Micro-entrepreneur</p>
+        <br><p><strong>DONNEES D'ENTREE</strong> :</p>
+        <br><p><strong> </p>
+    `;
+
+    // Récupérer les données quantitatives saisies par l'utilisateur
+    var data = `
+        <p>Prix de vente du panier moyen (€): ${document.getElementById('prix').value}</p>
+        <p>Coût de revient matière du panier moyen (€): ${document.getElementById('cout').value}</p>
+        <p>Taux de TVA (%): ${document.getElementById('tva').value}</p>
+        <p>Nombre de paniers par jour: ${document.getElementById('panier').value}</p>
+        <p>Nombre de jours de travail par semaine: ${document.getElementById('jours').value}</p>
+        <p>Nombre de semaines de travail par an: ${document.getElementById('semaines').value}</p>
+        <p>Redevance ou loyer CC mensuel (€): ${document.getElementById('loyer').value}</p>
+        <p>Charges annuelles d'électricité, gaz, eau, téléphone (€): ${document.getElementById('charges').value}</p>
+        <p>Salaire du personnel brut mensuel (temps partiel ou temps plein) (€): ${document.getElementById('salaire').value}</p>
+        <p>Taux de cotisation des charges patronales (%): ${document.getElementById('patronales').value}</p>
+        <p>Charges annuelles externes (€): ${document.getElementById('externes').value}</p>
+        <p>Taux de cotisations sociales (%): ${document.getElementById('urssaf').value}</p>
+        <p>Apport financier ou emprunt (€): ${document.getElementById('apport').value}</p>
+    `;
+
+    // Récupérer le contenu des résultats
+    var results = document.getElementById('resultat').innerHTML;
+
+    // Récupérer le contenu du tableau des bénéfices
+    var tableauBenefices = document.getElementById('tableauBenefices').outerHTML;
+
+    // Ajouter une classe CSS aux cellules "Revenu net mensuel"
+    tableauBenefices = tableauBenefices.replace(/<td>([^<]+ €)<\/td>/g, function (match, p1) {
+        return `<td class="revenue-net">${p1}</td>`;
+    });
+
+    // Construire le document Word avec des sauts de ligne et le tableau formaté
+    var footer = `
+       <br><p><strong> </p>
+        ${results}
+        <br><p><strong>TABLEAU DES BENEFICES NETS MENSUELS EN FONCTION DES VENTES QUOTIDIENES</strong> :</p>
+        ${tableauBenefices}
+        </body></html>
+    `;
+
+    var sourceHTML = header + data + footer;
+
+    var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+    var fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'Budget_Barth.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
+});
+
+
+// Fonction pour exporter le contenu HTML en PDF
+document.getElementById('exportPdf').addEventListener('click', function() {
+    var element = document.querySelector('.container');
+    var opt = {
+        margin:       0.5,
+        filename:     'Budget Barth.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
+        // Diviser en 3 pages
+        var totalPages = pdf.internal.getNumberOfPages();
+        if (totalPages > 3) {
+            // Ajuster le contenu ou la mise en page si nécessaire
+        }
+    }).save();
+});
+
+
+
 </script>
     
         </body>
