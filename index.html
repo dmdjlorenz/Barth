@@ -4007,8 +4007,6 @@ function checkPassword() {
     const errorMessage = document.getElementById('errorMessage');
     if (input === correctPassword) {
         navigateTo('homePage');
-        // Remplacer l'état initial pour éviter de revenir à passwordPage
-        history.replaceState({ page: 'homePage' }, '', '#homePage');
         errorMessage.style.display = 'none';
     } else {
         errorMessage.style.display = 'block';
@@ -4024,17 +4022,8 @@ window.addEventListener('popstate', function(event) {
         'passwordPage', 'budgetPage'
     ];
 
-    const passwordPage = document.getElementById('passwordPage');
-    const homePage = document.getElementById('homePage');
-
     if (event.state && event.state.page) {
         const currentPage = event.state.page;
-        // Ne pas revenir à passwordPage via popstate
-        if (currentPage === 'passwordPage') {
-            navigateTo('passwordPage');
-            return;
-        }
-
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById(currentPage).classList.remove('hidden');
 
@@ -4047,8 +4036,10 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
     } else {
-        // Si aucun état ou état inconnu, aller à homePage
-        navigateTo('homePage');
+        // Si aucun état valide, retourner à homePage
+        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById('homePage').classList.remove('hidden');
+        history.replaceState({ page: 'homePage' }, '', '#homePage');
     }
 });
 
