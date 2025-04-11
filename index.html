@@ -1017,7 +1017,15 @@ function checkPassword() {
     const input = document.getElementById('passwordInput').value;
     const errorMessage = document.getElementById('errorMessage');
     if (input === correctPassword) {
-        navigateTo('homePage'); // Utilise navigateTo pour gérer l'historique
+        const pages = [
+            'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
+            'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
+            'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
+            'passwordPage', 'budgetPage'
+        ];
+        pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById('homePage').classList.remove('hidden');
+        history.replaceState({ page: 'homePage' }, '', '#homePage'); // Remplacer au lieu d'ajouter
         errorMessage.style.display = 'none';
     } else {
         errorMessage.style.display = 'block';
@@ -4007,7 +4015,6 @@ window.addEventListener('popstate', function(event) {
         'passwordPage', 'budgetPage'
     ];
 
-    const passwordPage = document.getElementById('passwordPage');
     const homePage = document.getElementById('homePage');
 
     if (event.state && event.state.page) {
@@ -4024,13 +4031,15 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
 
-        // Si on revient à homePage et qu'il n'y a plus d'état précédent, tenter de fermer
-        if (currentPage === 'homePage' && history.length <= 1) {
-            window.close();
+        // Si on revient à homePage, préparer la fermeture au prochain retour
+        if (currentPage === 'homePage') {
+            history.replaceState({ page: 'homePage' }, '', '#homePage'); // Remplacer l'état
         }
     } else if (!homePage.classList.contains('hidden')) {
         // Si on est sur homePage et qu'on appuie sur "Retour", fermer immédiatement
         window.close();
+        document.body.innerHTML = '<h1>Application fermée</h1><p>Veuillez fermer l\'onglet manuellement.</p>';
+        history.replaceState(null, '', '#'); // Vider l'historique
     } else {
         // Par défaut, aller à homePage sans empiler un nouvel état
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
