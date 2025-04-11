@@ -4031,15 +4031,15 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
 
-        // Si on revient à homePage, remplacer l'état pour éviter une pile inutile
+        // Si on revient à homePage, remplacer l’état pour préparer la fermeture
         if (currentPage === 'homePage') {
             history.replaceState({ page: 'homePage' }, '', '#homePage');
         }
     } else {
-        // Si aucun état valide ou si on est sur homePage, fermer immédiatement
+        // Si aucun état valide ou si on est sur homePage, fermer directement
         if (!homePage.classList.contains('hidden')) {
             window.close();
-            document.body.innerHTML = '<h1>Application fermée</h1><p>Veuillez fermer l\'onglet manuellement.</p>';
+            // Si window.close() échoue, vider complètement l’historique
             history.replaceState(null, '', '#');
         } else {
             // Par défaut, aller à homePage sans empiler un nouvel état
