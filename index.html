@@ -1017,7 +1017,9 @@ function checkPassword() {
     const input = document.getElementById('passwordInput').value;
     const errorMessage = document.getElementById('errorMessage');
     if (input === correctPassword) {
-        navigateTo('homePage'); // Utilise navigateTo pour gérer l'historique
+        navigateTo('homePage');
+        // Remplacer l'état initial pour éviter de revenir à passwordPage
+        history.replaceState({ page: 'homePage' }, '', '#homePage');
         errorMessage.style.display = 'none';
     } else {
         errorMessage.style.display = 'block';
@@ -3999,6 +4001,19 @@ function showPersonnelManagement() { navigateTo('personnelManagementPage'); }
 function showInvoiceManagement() { navigateTo('invoiceManagementPage'); }
 
 // Gérer le bouton "Retour" (Android et iOS via popstate)
+// Fonction pour vérifier le mot de passe
+function checkPassword() {
+    const input = document.getElementById('passwordInput').value;
+    const errorMessage = document.getElementById('errorMessage');
+    if (input === correctPassword) {
+        navigateTo('homePage');
+        errorMessage.style.display = 'none';
+    } else {
+        errorMessage.style.display = 'block';
+    }
+}
+
+// Modifier l'écouteur popstate
 window.addEventListener('popstate', function(event) {
     const pages = [
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
@@ -4007,15 +4022,7 @@ window.addEventListener('popstate', function(event) {
         'passwordPage', 'budgetPage'
     ];
 
-    const passwordPage = document.getElementById('passwordPage');
-    const homePage = document.getElementById('homePage');
-
-    if (!passwordPage.classList.contains('hidden')) {
-        // Si on est sur passwordPage, tenter de fermer immédiatement
-        window.close();
-        // Empêcher tout état supplémentaire dans l'historique
-        history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
-    } else if (event.state && event.state.page) {
+    if (event.state && event.state.page) {
         const currentPage = event.state.page;
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById(currentPage).classList.remove('hidden');
@@ -4028,10 +4035,14 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'invoiceManagementPage') filterInvoices();
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
-    } else if (!homePage.classList.contains('hidden')) {
-        navigateTo('passwordPage');
     } else {
-        navigateTo('homePage');
+        // Si aucun état valide, vérifier la page actuelle
+        const homePage = document.getElementById('homePage');
+        if (!homePage.classList.contains('hidden')) {
+            navigateTo('passwordPage'); // Retourner à passwordPage depuis homePage
+        } else {
+            navigateTo('homePage'); // Par défaut, aller à homePage
+        }
     }
 });
 
