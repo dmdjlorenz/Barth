@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('personnelPage').classList.add('hidden');
     document.getElementById('personnelManagementPage').classList.add('hidden');
 
-    history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
+    history.pushState({ page: 'homePage' }, '', '#homePage');
 });
 
 
@@ -4014,7 +4014,7 @@ window.addEventListener('popstate', function(event) {
         // Si on est sur passwordPage, tenter de fermer immédiatement
         window.close();
         // Empêcher tout état supplémentaire dans l'historique
-        history.pushState({ page: 'passwordPage' }, '', '#passwordPage');
+        history.pushState({ page: 'homePage' }, '', '#homePage');
     } else if (event.state && event.state.page) {
         const currentPage = event.state.page;
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -4029,7 +4029,7 @@ window.addEventListener('popstate', function(event) {
         if (currentPage === 'purchasesManagementPage') filterPurchases();
         if (currentPage === 'personnelManagementPage') filterPersonnel();
     } else if (!homePage.classList.contains('hidden')) {
-        navigateTo('passwordPage');
+        navigateTo('homePage');
     } else {
         navigateTo('homePage');
     }
