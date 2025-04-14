@@ -180,13 +180,14 @@
         background: #0000CC;
     }
     /* Boutons "Imprimer" */
-    #printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn {
-        background: #FFFF00; /* Jaune */
-        color: #000; /* Texte noir pour lisibilité */
-    }
-    #printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover {
-        background: #CCCC00;
-    }
+#printInvoiceBtn, #printAllRecipesBtn, #printAllInvoicesBtn, #printPurchasesBtn, #printPersonnelBtn, #printDetailBtn, #printBluetoothBtn, #printBluetoothPurchasesBtn, #printBluetoothPersonnelBtn, #printBluetoothSalesBtn {
+    background: #FFFF00; /* Jaune */
+    color: #000; /* Texte noir pour lisibilité */
+}
+#printInvoiceBtn:hover, #printAllRecipesBtn:hover, #printAllInvoicesBtn:hover, #printPurchasesBtn:hover, #printPersonnelBtn:hover, #printDetailBtn:hover, #printBluetoothBtn:hover, #printBluetoothPurchasesBtn:hover, #printBluetoothPersonnelBtn:hover, #printBluetoothSalesBtn:hover {
+    background: #CCCC00;
+}
+
     /* Boutons "Envoyer" */
     #sendSmsInvoiceBtn, #sendEmailInvoiceBtn {
         background: #800080; /* Violet */
@@ -259,6 +260,9 @@
         flex-direction: column;
         gap: 10px;
         margin-bottom: 20px;
+
+
+
     }
     #invoicePage .checkbox-group label, #purchasesPage .radio-group label, #personnelPage .select-group label {
         display: flex;
@@ -680,29 +684,53 @@
         </div>
         <div class="buttons">
     <button id="saveRecipeBtn">Ajouter</button>
-    <button id="deleteRecipeBtn">Supprimer</button>
     <button id="manageRecipesBtn" onclick="showRecipeManagement()">Bilan des Ventes</button>
     <button onclick="backToHome()">Retour</button>
 </div>
     </div>
 
     <!-- Bilan des Ventes -->
-    <div id="recipeManagementPage" class="hidden">
-        <h1>Bilan des Ventes</h1>
-        <button id="exportRecipeBtn" onclick="exportRecipeToPdf()">Télécharger Livre des recettes complet (PDF)</button>
-        <div class="date-filter">
-            <label>Date de début :</label>
-            <input type="date" id="recipeStartDate" onchange="filterRecipes()">
-            <label>Date de fin :</label>
-            <input type="date" id="recipeEndDate" onchange="filterRecipes()">
-        </div>
-        <div id="recipeList"></div>
-        <div class="buttons no-print">
-            <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
-            <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger PDF</button>
-            <button onclick="backToRecipeBook()">Retour</button>
+    <!-- Bilan des Ventes -->
+<div id="recipeManagementPage" class="hidden">
+    <h1>Bilan des Ventes</h1>
+
+    <!-- Bouton export PDF -->
+    <button id="exportRecipeBtn" onclick="exportRecipeToPdf()">Télécharger Livre des recettes complet (PDF)</button>
+
+    <!-- Filtres par date -->
+    <div class="date-filter">
+        <label>Date de début :</label>
+        <input type="date" id="recipeStartDate" onchange="filterRecipes()">
+        <label>Date de fin :</label>
+        <input type="date" id="recipeEndDate" onchange="filterRecipes()">
+    </div>
+
+    <!-- Liste des ventes -->
+    <div id="recipeList"></div>
+
+    <!-- Boutons principaux -->
+    <div class="buttons no-print">
+    <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger PDF</button>
+    <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
+    <button id="printBluetoothSalesBtn" onclick="printSalesToBluetooth()">Imprimer Bluetooth</button>
+    <button onclick="backToRecipeBook()">Retour</button>
+</div>
+
+    <!-- Popup de détail de vente -->
+    <div id="recipeDetailPopup" class="hidden" style="position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+        background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius: 8px; z-index: 999;">
+        <h2>Détail de la vente</h2>
+        <p id="recipeDetailDate"></p>
+        <p id="recipeDetailCard"></p>
+        <p id="recipeDetailCash"></p>
+        <p id="recipeDetailTotal"></p>
+        <div class="buttons">
+            <button onclick="deleteSelectedRecipe()">Supprimer</button>
+            <button onclick="closeRecipeDetail()">Fermer</button>
         </div>
     </div>
+</div>
+
 
 <!-- Facture -->
 <div id="invoicePage" class="hidden">
@@ -802,16 +830,17 @@
         </div>
     </div>
     <div class="radio-group">
-        <label>Type d'achats</label>
-        <label><input type="radio" name="purchaseType" value="Alimentaire"> Alimentaire</label>
-        <label><input type="radio" name="purchaseType" value="Matériel"> Matériel</label>
-        <label><input type="radio" name="purchaseType" value="Autre"> Autre</label>
-    </div>
+    <label>Type d'achats</label>
+    <label><input type="radio" name="purchaseType" value="Pain"> Pain</label>
+    <label><input type="radio" name="purchaseType" value="Alimentaire"> Alimentaire</label>
+    <label><input type="radio" name="purchaseType" value="Matériel"> Matériel</label>
+    <label><input type="radio" name="purchaseType" value="Autre"> Autre</label>
+</div>
     <div class="radio-group">
-        <label>Paiement</label>
-        <label><input type="radio" name="paymentMethod" value="Carte"> Carte</label>
-        <label><input type="radio" name="paymentMethod" value="Espèce"> Espèce</label>
-    </div>
+    <label>Paiement</label>
+    <label><input type="radio" name="paymentMethod" value="Carte" checked> Carte</label>
+    <label><input type="radio" name="paymentMethod" value="Espèce"> Espèce</label>
+</div>
     <div class="input-group">
         <div class="input-field">
             <label>Commentaire</label>
@@ -828,21 +857,47 @@
 <!-- Bilan des Achats -->
 <div id="purchasesManagementPage" class="hidden">
     <h1>Bilan des Achats</h1>
+
+    <!-- Filtres de dates -->
     <div class="date-filter">
         <label>Date de début :</label>
         <input type="date" id="purchaseStartDate" onchange="filterPurchases()">
         <label>Date de fin :</label>
         <input type="date" id="purchaseEndDate" onchange="filterPurchases()">
     </div>
-    <label><input type="checkbox" id="showPurchaseComments" onchange="filterPurchases()"> Afficher commentaire</label>
+
+    <!-- Option afficher les commentaires -->
+    <label>
+        <input type="checkbox" id="showPurchaseComments" onchange="filterPurchases()"> Afficher commentaire
+    </label>
+
+    <!-- Liste des achats -->
     <div id="purchasesList"></div>
+
+    <!-- Boutons PDF et retour -->
     <div class="buttons no-print">
         <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger PDF</button>
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
         <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
         <button onclick="backToPurchases()">Retour</button>
     </div>
+
+    <!-- Popup de détail achat -->
+    <div id="purchaseDetailPopup" class="hidden" style="position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+        background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius: 8px; z-index: 999;">
+        <h2>Détail de l'achat</h2>
+        <p id="purchaseDetailDate"></p>
+        <p id="purchaseDetailAmount"></p>
+        <p id="purchaseDetailType"></p>
+        <p id="purchaseDetailPayment"></p>
+        <p id="purchaseDetailComment"></p>
+        <div class="buttons">
+            <button onclick="deleteSelectedPurchase()">Supprimer</button>
+            <button onclick="closePurchaseDetail()">Fermer</button>
+        </div>
+    </div>
 </div>
+
 
 <!-- Personnel -->
 <div id="personnelPage" class="hidden">
@@ -1253,19 +1308,32 @@ loadMenuFromStorage();
         document.getElementById('personnelManagementPage').classList.add('hidden');
     }
 
-    function showPurchases() {
-        document.getElementById('homePage').classList.add('hidden');
-        document.getElementById('recipeBookPage').classList.add('hidden');
-        document.getElementById('recipeManagementPage').classList.add('hidden');
-        document.getElementById('invoicePage').classList.add('hidden');
-        document.getElementById('invoiceManagementPage').classList.add('hidden');
-        document.getElementById('invoiceDetailPage').classList.add('hidden');
-        document.getElementById('purchasesPage').classList.remove('hidden');
-        document.getElementById('purchasesManagementPage').classList.add('hidden');
-        document.getElementById('personnelPage').classList.add('hidden');
-        document.getElementById('personnelManagementPage').classList.add('hidden');
-        updatePurchaseDisplay();
-    }
+function showPurchases() {
+    document.getElementById('homePage').classList.add('hidden');
+    document.getElementById('recipeBookPage').classList.add('hidden');
+    document.getElementById('recipeManagementPage').classList.add('hidden');
+    document.getElementById('invoicePage').classList.add('hidden');
+    document.getElementById('invoiceManagementPage').classList.add('hidden');
+    document.getElementById('invoiceDetailPage').classList.add('hidden');
+    document.getElementById('purchasesPage').classList.remove('hidden');
+    document.getElementById('purchasesManagementPage').classList.add('hidden');
+    document.getElementById('personnelPage').classList.add('hidden');
+    document.getElementById('personnelManagementPage').classList.add('hidden');
+
+    updatePurchaseDisplay();
+
+    // Forcer "Carte" à être sélectionné après l'affichage complet
+    setTimeout(() => {
+        const carteRadio = document.querySelector('#purchasesPage input[name="paymentMethod"][value="Carte"]');
+        if (carteRadio) {
+            carteRadio.checked = true;
+            carteRadio.dispatchEvent(new Event('change'));
+        }
+    }, 100);
+}
+
+
+
 
     function showPurchasesManagement() {
         document.getElementById('homePage').classList.add('hidden');
@@ -1616,56 +1684,120 @@ loadMenuFromStorage();
         doc.save('Livre_des_Recettes_Chez_Barth.pdf');
     }
 
-    function filterRecipes() {
-        const startDateInput = document.getElementById('recipeStartDate').value;
-        const endDateInput = document.getElementById('recipeEndDate').value;
 
-        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
-        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+let selectedRecipeDate = null;
 
-        const filteredSales = Object.entries(salesData).filter(([date]) => {
+function showRecipeDetail(date) {
+    selectedRecipeDate = date;
+    const data = salesData[date];
+
+    if (!data) return;
+
+    document.getElementById('recipeDetailDate').textContent = `Date : ${formatRecipeDate(new Date(date))}`;
+    document.getElementById('recipeDetailCard').textContent = `Carte : ${data.card} €`;
+    document.getElementById('recipeDetailCash').textContent = `Espèces : ${data.cash} €`;
+    document.getElementById('recipeDetailTotal').textContent = `Total : ${data.total} €`;
+
+    document.getElementById('recipeDetailPopup').classList.remove('hidden');
+}
+
+function closeRecipeDetail() {
+    document.getElementById('recipeDetailPopup').classList.add('hidden');
+    selectedRecipeDate = null;
+}
+
+function deleteSelectedRecipe() {
+    if (selectedRecipeDate && salesData[selectedRecipeDate]) {
+        if (confirm("Supprimer cette vente ?")) {
+            delete salesData[selectedRecipeDate];
+            localStorage.setItem('salesData', JSON.stringify(salesData));
+            closeRecipeDetail();
+            filterRecipes(); // met à jour la liste
+            alert("Vente supprimée !");
+        }
+    }
+}
+
+
+function filterRecipes() {
+    const start = document.getElementById('recipeStartDate').value;
+    const end = document.getElementById('recipeEndDate').value;
+    const list = document.getElementById('recipeList');
+    list.innerHTML = '';
+
+    const startDate = start ? new Date(start) : null;
+    const endDate = end ? new Date(end) : null;
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th>Date</th>
+            <th>Carte (€)</th>
+            <th>Espèces (€)</th>
+            <th>Total (€)</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    // Totaux à calculer
+    let totalCard = 0;
+    let totalCash = 0;
+    let totalGeneral = 0;
+
+    Object.keys(salesData)
+        .sort()
+        .forEach(date => {
             const saleDate = new Date(date);
-            return saleDate >= startDate && saleDate <= endDate;
-        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+            if (
+                (!startDate || saleDate >= startDate) &&
+                (!endDate || saleDate <= endDate)
+            ) {
+                const data = salesData[date];
+                const row = document.createElement('tr');
 
-        const recipeList = document.getElementById('recipeList');
-        let totalCard = 0, totalCash = 0, totalSales = 0;
+                // Ligne cliquable
+                row.style.cursor = 'pointer';
+                row.onclick = () => showRecipeDetail(date);
 
-        filteredSales.forEach(([_, data]) => {
-            totalCard += data.card;
-            totalCash += data.cash;
-            totalSales += data.total;
+                // Affichage avec arrondis et €
+                row.innerHTML = `
+                    <td>${formatRecipeDate(saleDate)}</td>
+                    <td>${Math.round(data.card)} €</td>
+                    <td>${Math.round(data.cash)} €</td>
+                    <td>${Math.round(data.total)} €</td>
+                `;
+
+                // Ajouter au total
+                totalCard += data.card;
+                totalCash += data.cash;
+                totalGeneral += data.total;
+
+                tbody.appendChild(row);
+            }
         });
 
-        recipeList.innerHTML = `
-            <h2>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
-            <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Ventes Carte</th>
-                    <th>Ventes Espèce</th>
-                    <th>Total Ventes</th>
-		    <th class="no-print">Action</th>
-                </tr>
-                ${filteredSales.map(([date, data]) => `
-                    <tr>
-                        <td>${new Date(date).toLocaleDateString('fr-FR')}</td>
-                        <td>${data.card.toFixed(2)}€</td>
-                        <td>${data.cash.toFixed(2)}€</td>
-                        <td>${data.total.toFixed(2)}€</td>
-                        <td class="no-print"><button class="delete-btn" onclick="deleteSale('${date}')">Supprimer</button></td>
-                    </tr>
-                `).join('')}
-                <tr>
-                    <td><strong>Total</strong></td>
-                    <td><strong>${totalCard.toFixed(2)}€</strong></td>
-                    <td><strong>${totalCash.toFixed(2)}€</strong></td>
-                    <td><strong>${totalSales.toFixed(2)}€</strong></td>
-                    <td class="no-print"></td>
-                </tr>
-            </table>
-        `;
-    }
+    table.appendChild(tbody);
+
+    // Pied du tableau avec les totaux arrondis + €
+    const tfoot = document.createElement('tfoot');
+    tfoot.innerHTML = `
+        <tr>
+            <th>Total</th>
+            <th>${Math.round(totalCard)} €</th>
+            <th>${Math.round(totalCash)} €</th>
+            <th>${Math.round(totalGeneral)} €</th>
+        </tr>
+    `;
+    table.appendChild(tfoot);
+
+    list.appendChild(table);
+}
+
+
+
 
 function saveSalesData() {
     try {
@@ -1685,160 +1817,160 @@ function deleteSale(date) {
 }
 
     function printAllRecipes() {
-        const startDateInput = document.getElementById('recipeStartDate').value;
-        const endDateInput = document.getElementById('recipeEndDate').value;
-        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
-        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+    const startDateInput = document.getElementById('recipeStartDate').value;
+    const endDateInput = document.getElementById('recipeEndDate').value;
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-        const filteredSales = Object.entries(salesData).filter(([date]) => {
-            const saleDate = new Date(date);
-            return saleDate >= startDate && saleDate <= endDate;
-        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+    const filteredSales = Object.entries(salesData).filter(([date]) => {
+        const saleDate = new Date(date);
+        return saleDate >= startDate && saleDate <= endDate;
+    }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
-        if (filteredSales.length === 0) {
-            alert("Aucune vente à imprimer dans cette période.");
-            return;
-        }
+    if (filteredSales.length === 0) {
+        alert("Aucune vente à télécharger dans cette période.");
+        return;
+    }
 
-        const doc = new jsPDF();
-        const margin = 10;
-        let y = margin;
-        const colWidths = [40, 40, 40, 40];
-        const rowHeight = 10;
-        const tableX = margin;
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = [40, 40, 40, 40];
+    const rowHeight = 10;
+    const tableX = margin;
 
-        doc.setFontSize(12);
-        doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-        y += 10;
+    doc.setFontSize(12);
+    doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
 
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        y += rowHeight;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    y += rowHeight;
 
-        doc.setFont('helvetica', 'normal');
-        filteredSales.forEach(([date, data]) => {
-            if (y > doc.internal.pageSize.getHeight() - margin - 20) {
-                doc.addPage();
-                y = margin;
-                doc.setFontSize(12);
-                doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-                y += 10;
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-                y += rowHeight;
-                doc.setFont('helvetica', 'normal');
-            }
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${data.card.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${data.cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${data.total.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            y += rowHeight;
-        });
-
+    doc.setFont('helvetica', 'normal');
+    filteredSales.forEach(([date, data]) => {
         if (y > doc.internal.pageSize.getHeight() - margin - 20) {
             doc.addPage();
             y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
         }
-        doc.setFont('helvetica', 'bold');
-        let totalCard = 0, totalCash = 0, totalSales = 0;
-        filteredSales.forEach(([_, data]) => {
-            totalCard += data.card;
-            totalCash += data.cash;
-            totalSales += data.total;
-        });
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        y += rowHeight;
+    });
 
-        window.open(doc.output('bloburl'), '_blank');
+    if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+        doc.addPage();
+        y = margin;
+    }
+    doc.setFont('helvetica', 'bold');
+    let totalCard = 0, totalCash = 0, totalSales = 0;
+    filteredSales.forEach(([_, data]) => {
+        totalCard += data.card;
+        totalCash += data.cash;
+        totalSales += data.total;
+    });
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(totalCard)}€`, tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+
+    window.open(doc.output('bloburl'), '_blank');
+}
+
+function downloadRecipesPDF() {
+    const startDateInput = document.getElementById('recipeStartDate').value;
+    const endDateInput = document.getElementById('recipeEndDate').value;
+    let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
+    let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+
+    const filteredSales = Object.entries(salesData).filter(([date]) => {
+        const saleDate = new Date(date);
+        return saleDate >= startDate && saleDate <= endDate;
+    }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+    if (filteredSales.length === 0) {
+        alert("Aucune vente à télécharger dans cette période.");
+        return;
     }
 
-    function downloadRecipesPDF() {
-        const startDateInput = document.getElementById('recipeStartDate').value;
-        const endDateInput = document.getElementById('recipeEndDate').value;
-        let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
-        let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
+    const doc = new jsPDF();
+    const margin = 10;
+    let y = margin;
+    const colWidths = [40, 40, 40, 40];
+    const rowHeight = 10;
+    const tableX = margin;
 
-        const filteredSales = Object.entries(salesData).filter(([date]) => {
-            const saleDate = new Date(date);
-            return saleDate >= startDate && saleDate <= endDate;
-        }).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+    doc.setFontSize(12);
+    doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    y += 10;
 
-        if (filteredSales.length === 0) {
-            alert("Aucune vente à télécharger dans cette période.");
-            return;
-        }
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+    y += rowHeight;
 
-        const doc = new jsPDF();
-        const margin = 10;
-        let y = margin;
-        const colWidths = [40, 40, 40, 40];
-        const rowHeight = 10;
-        const tableX = margin;
-
-        doc.setFontSize(12);
-        doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-        y += 10;
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        y += rowHeight;
-
-        doc.setFont('helvetica', 'normal');
-        filteredSales.forEach(([date, data]) => {
-            if (y > doc.internal.pageSize.getHeight() - margin - 20) {
-                doc.addPage();
-                y = margin;
-                doc.setFontSize(12);
-                doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-                y += 10;
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-                doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-                doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-                y += rowHeight;
-                doc.setFont('helvetica', 'normal');
-            }
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${data.card.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${data.cash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${data.total.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            y += rowHeight;
-        });
-
+    doc.setFont('helvetica', 'normal');
+    filteredSales.forEach(([date, data]) => {
         if (y > doc.internal.pageSize.getHeight() - margin - 20) {
             doc.addPage();
             y = margin;
+            doc.setFontSize(12);
+            doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            y += 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte', tableX + colWidths[0] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('Total Ventes', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+            y += rowHeight;
+            doc.setFont('helvetica', 'normal');
         }
-        doc.setFont('helvetica', 'bold');
-        let totalCard = 0, totalCash = 0, totalSales = 0;
-        filteredSales.forEach(([_, data]) => {
-            totalCard += data.card;
-            totalCash += data.cash;
-            totalSales += data.total;
-        });
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(data.card)}€`, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(data.cash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(data.total)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        y += rowHeight;
+    });
 
-        doc.save('liste_ventes_chez_barth.pdf');
+    if (y > doc.internal.pageSize.getHeight() - margin - 20) {
+        doc.addPage();
+        y = margin;
     }
+    doc.setFont('helvetica', 'bold');
+    let totalCard = 0, totalCash = 0, totalSales = 0;
+    filteredSales.forEach(([_, data]) => {
+        totalCard += data.card;
+        totalCash += data.cash;
+        totalSales += data.total;
+    });
+    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total', tableX + 2, y + 6);
+    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${Math.round(totalCard)}€`, tableX + colWidths[0] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+
+    doc.save('liste_ventes_chez_barth.pdf');
+}
 
     // --- Facture ---
     function loadMenuFromStorage() {
@@ -2247,7 +2379,7 @@ function exportInvoiceToPdf() {
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: 'a5'
         });
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
@@ -2268,7 +2400,7 @@ function printInvoice() {
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: 'a5'
         });
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
@@ -2794,8 +2926,8 @@ function updatePurchaseDisplay() {
     document.getElementById('currentPurchaseDate').textContent = formatRecipeDate(purchaseCurrentDate);
     document.getElementById('purchaseAmount').value = '';
     document.querySelectorAll('input[name="purchaseType"]').forEach(input => input.checked = false);
-    document.querySelectorAll('input[name="paymentMethod"]').forEach(input => input.checked = false);
     document.getElementById('purchaseComment').value = '';
+
 }
 
 function addPurchase() {
@@ -2856,7 +2988,7 @@ function filterPurchases() {
     const purchasesList = document.getElementById('purchasesList');
 
     // Calculate subtotals by type and payment method
-    const totalsByType = { Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
     const totalsByPayment = { Carte: 0, Espèce: 0 };
     let grandTotal = 0;
 
@@ -2876,52 +3008,80 @@ function filterPurchases() {
                 <th>Type</th>
                 <th>Paiement</th>
                 ${showComments ? '<th>Commentaire</th>' : ''}
-                <th class="no-print">Action</th>
             </tr>
             ${filteredPurchases.map((purchase, index) => `
-                <tr>
+                <tr style="cursor:pointer" onclick="showPurchaseDetailFromIndex(${index})">
                     <td>${new Date(purchase.date).toLocaleDateString('fr-FR')}</td>
-                    <td>${purchase.amountTTC.toFixed(2)}</td>
+                    <td>${Math.round(purchase.amountTTC)} €</td>
                     <td>${purchase.type}</td>
                     <td>${purchase.payment}</td>
                     ${showComments ? `<td>${purchase.comment || ''}</td>` : ''}
-                    <td class="no-print"><button class="delete-btn" onclick="deletePurchase(${index})">Supprimer</button></td>
                 </tr>
             `).join('')}
-            <!-- Subtotals by Type -->
             ${Object.keys(totalsByType).map(type => `
                 <tr>
-                    <td>Total ${type}</td>
-                    <td>${totalsByType[type].toFixed(2)}</td>
+                    <td style="color:#003366; font-weight:bold;">Total ${type}</td>
+                    <td style="color:#003366; font-weight:bold;">${Math.round(totalsByType[type])} €</td>
                     <td></td><td></td>
                     ${showComments ? '<td></td>' : ''}
-                    <td class="no-print"></td>
                 </tr>
             `).join('')}
-            <!-- Subtotals by Payment Method -->
             ${Object.keys(totalsByPayment).map(payment => `
                 <tr>
-                    <td>Total ${payment}</td>
-                    <td>${totalsByPayment[payment].toFixed(2)}</td>
+                    <td style="color:green; font-weight:bold;">Total ${payment}</td>
+                    <td style="color:green; font-weight:bold;">${Math.round(totalsByPayment[payment])} €</td>
                     <td></td><td></td>
                     ${showComments ? '<td></td>' : ''}
-                    <td class="no-print"></td>
                 </tr>
             `).join('')}
-            <!-- Grand Total -->
             <tr>
-                <td><strong>Total Général</strong></td>
-                <td><strong>${grandTotal.toFixed(2)}</strong></td>
+                <td style="font-weight:bold;">Total Général</td>
+                <td style="font-weight:bold;">${Math.round(grandTotal)} €</td>
                 <td></td><td></td>
                 ${showComments ? '<td></td>' : ''}
-                <td class="no-print"></td>
             </tr>
         </table>
     `;
 }
 
+
+let selectedPurchaseIndex = null;
+
+function showPurchaseDetailFromIndex(index) {
+    selectedPurchaseIndex = index;
+    const purchase = purchases[index];
+    if (!purchase) return;
+
+    document.getElementById('purchaseDetailDate').textContent = `Date : ${formatRecipeDate(new Date(purchase.date))}`;
+    document.getElementById('purchaseDetailAmount').textContent = `Montant : ${purchase.amountTTC.toFixed(2)} €`;
+    document.getElementById('purchaseDetailType').textContent = `Type : ${purchase.type}`;
+    document.getElementById('purchaseDetailPayment').textContent = `Paiement : ${purchase.payment}`;
+    document.getElementById('purchaseDetailComment').textContent = `Commentaire : ${purchase.comment || 'Aucun'}`;
+
+    document.getElementById('purchaseDetailPopup').classList.remove('hidden');
+}
+
+function closePurchaseDetail() {
+    document.getElementById('purchaseDetailPopup').classList.add('hidden');
+    selectedPurchaseIndex = null;
+}
+
+function deleteSelectedPurchase() {
+    if (selectedPurchaseIndex !== null) {
+        if (confirm("Supprimer cet achat ?")) {
+            purchases.splice(selectedPurchaseIndex, 1);
+            savePurchases();
+            filterPurchases();
+            closePurchaseDetail();
+            alert("Achat supprimé !");
+        }
+    }
+}
+
+
+
 function printPurchases() {
-    const startDateInput = document.getElementById('purchaseStartDate').value;
+   const startDateInput = document.getElementById('purchaseStartDate').value;
     const endDateInput = document.getElementById('purchaseEndDate').value;
     const showComments = document.getElementById('showPurchaseComments').checked;
 
@@ -2934,114 +3094,108 @@ function printPurchases() {
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (filteredPurchases.length === 0) {
-        alert("Aucune donnée d'achat à imprimer.");
+        alert("Aucune donnée d'achat à télécharger.");
         return;
     }
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
+    const pageHeight = doc.internal.pageSize.height;
     let y = margin;
     const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
     const rowHeight = 10;
     const tableX = margin;
 
+    const drawHeader = () => {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+            doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        }
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+    };
+
+    // Totaux
+    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalTTC = 0;
+
+    // Titre
     doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
     doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
+    drawHeader();
     doc.setFont('helvetica', 'normal');
-    filteredPurchases.forEach(purchase => {
-        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+
+    for (let i = 0; i < filteredPurchases.length; i++) {
+        const purchase = filteredPurchases[i];
+        const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR');
+        const type = purchase.type;
+        const payment = purchase.payment;
+        const comment = purchase.comment || '';
+        const amount = Math.round(purchase.amountTTC);
+
+        totalsByType[type] += purchase.amountTTC;
+        totalsByPayment[payment] += purchase.amountTTC;
+        totalTTC += purchase.amountTTC;
+
+        // Vérifie si une nouvelle page est nécessaire
+        if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
-            doc.setFontSize(12);
-            doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-            y += 10;
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-            y += rowHeight;
-            doc.setFont('helvetica', 'normal');
+            drawHeader();
         }
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(purchase.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(purchase.type, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(purchase.payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text(purchase.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${purchase.amountTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+            doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        }
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
         y += rowHeight;
-    });
-
-    y += 5;
-    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
-        doc.addPage();
-        y = margin;
     }
-    doc.setFont('helvetica', 'bold');
-    let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
-    filteredPurchases.forEach(purchase => {
-        if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
-        if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
-        if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
-        if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
-        if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
+
+    // Totaux (type, paiement, général)
+    const printTotalRow = (label, value, color = 'black') => {
+        if (y + rowHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(color);
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text(`${Math.round(value)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+        doc.setTextColor('black');
+    };
+
+    ['Pain', 'Alimentaire', 'Matériel', 'Autre'].forEach(type => {
+        printTotalRow(`Total ${type}`, totalsByType[type], '#003366');
     });
-    const totalTTC = totalFood + totalEquipment + totalOther;
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Alimentaire TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalFood.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
+    printTotalRow('Par Carte', totalsByPayment['Carte'], 'green');
+    printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
+    printTotalRow('Total Général', totalTTC, 'black');
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Matériel TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalEquipment.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Autre TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalOther.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Achats TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Carte', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Espèce', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-
+    // Afficher dans un nouvel onglet
     window.open(doc.output('bloburl'), '_blank');
 }
 
@@ -3066,109 +3220,107 @@ function downloadPurchasesPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const margin = 10;
+    const pageHeight = doc.internal.pageSize.height;
     let y = margin;
     const colWidths = showComments ? [40, 40, 40, 40, 40] : [40, 40, 40, 40];
     const rowHeight = 10;
     const tableX = margin;
 
+    const drawHeader = () => {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+            doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        }
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+    };
+
+    // Totaux
+    const totalsByType = { Pain: 0, Alimentaire: 0, Matériel: 0, Autre: 0 };
+    const totalsByPayment = { Carte: 0, Espèce: 0 };
+    let totalTTC = 0;
+
+    // Titre
     doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
     doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
+    drawHeader();
     doc.setFont('helvetica', 'normal');
-    filteredPurchases.forEach(purchase => {
-        if (y > doc.internal.pageSize.getHeight() - margin - 40) {
+
+    for (let i = 0; i < filteredPurchases.length; i++) {
+        const purchase = filteredPurchases[i];
+        const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR');
+        const type = purchase.type;
+        const payment = purchase.payment;
+        const comment = purchase.comment || '';
+        const amount = Math.round(purchase.amountTTC);
+
+        totalsByType[type] += purchase.amountTTC;
+        totalsByPayment[payment] += purchase.amountTTC;
+        totalTTC += purchase.amountTTC;
+
+        // Vérifie si une nouvelle page est nécessaire
+        if (y + rowHeight > pageHeight - margin) {
             doc.addPage();
             y = margin;
-            doc.setFontSize(12);
-            doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
-            y += 10;
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Date', tableX + 2, y + 6);
-            doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text('Type', tableX + colWidths[0] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Paiement', tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-            if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text('Commentaire', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text('Montant TTC', tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-            y += rowHeight;
-            doc.setFont('helvetica', 'normal');
+            drawHeader();
         }
-        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(new Date(purchase.date).toLocaleDateString('fr-FR'), tableX + 2, y + 6);
-        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(purchase.type, tableX + colWidths[0] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(purchase.payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
-        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); if (showComments) doc.text(purchase.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${purchase.amountTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(dateStr, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(type, tableX + colWidths[0] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(payment, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
+        if (showComments) {
+            doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+            doc.text(comment, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        }
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text(`${amount}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+
         y += rowHeight;
-    });
-
-    y += 5;
-    if (y > doc.internal.pageSize.getHeight() - margin - 40) {
-        doc.addPage();
-        y = margin;
     }
-    doc.setFont('helvetica', 'bold');
-    let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
-    filteredPurchases.forEach(purchase => {
-        if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
-        if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
-        if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
-        if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
-        if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
+
+    // Totaux (type, paiement, général)
+    const printTotalRow = (label, value, color = 'black') => {
+        if (y + rowHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(color);
+        doc.rect(tableX, y, colWidths[0], rowHeight); doc.text(label, tableX + 2, y + 6);
+        doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
+        if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight);
+        doc.text(`${Math.round(value)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
+        y += rowHeight;
+        doc.setTextColor('black');
+    };
+
+    ['Pain', 'Alimentaire', 'Matériel', 'Autre'].forEach(type => {
+        printTotalRow(`Total ${type}`, totalsByType[type], '#003366');
     });
-    const totalTTC = totalFood + totalEquipment + totalOther;
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Alimentaire TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalFood.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
+    printTotalRow('Par Carte', totalsByPayment['Carte'], 'green');
+    printTotalRow('Par Espèce', totalsByPayment['Espèce'], 'green');
+    printTotalRow('Total Général', totalTTC, 'black');
 
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Matériel TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalEquipment.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Autre TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalOther.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Total Achats TTC', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalTTC.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Carte', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCard.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-    y += rowHeight;
-
-    doc.rect(tableX, y, colWidths[0], rowHeight); doc.text('Par Espèce', tableX + 2, y + 6);
-    doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
-    if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0), y, colWidths[showComments ? 4 : 3], rowHeight); doc.text(`${totalCash.toFixed(2)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + (showComments ? colWidths[3] : 0) + 2, y + 6);
-
-    doc.save('liste_achats_chez_barth.pdf');
+  const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
+  const endStr = endDate.toLocaleDateString('fr-CA');
+  doc.save(`Achats_${startStr}_au_${endStr}.pdf`);
+  window.open(doc.output('bloburl'), '_blank');
 }
+
+
 
 async function printPurchasesToBluetooth() {
     const startDateInput = document.getElementById('purchaseStartDate').value;
@@ -3202,39 +3354,48 @@ async function printPurchasesToBluetooth() {
         const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
 
         let text = "CHEZ BARTH\n16 place des Precheurs\n13100 Aix en Provence\n\n";
-        text += `Achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}\n\n`;
+        text += `Achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}\n`;
         text += "-------------------------------\n";
         text += "Date   Type   Paiement   Montant\n";
         text += "-------------------------------\n";
 
+        // Totaux
+        let totalPain = 0, totalFood = 0, totalEquipment = 0, totalOther = 0;
+        let totalCard = 0, totalCash = 0;
+        let grandTotal = 0;
+
         filteredPurchases.forEach(purchase => {
             const dateStr = new Date(purchase.date).toLocaleDateString('fr-FR').substring(0, 5);
-            const typeStr = purchase.type.substring(0, 6);
-            const paymentStr = purchase.payment.substring(0, 6);
-            text += `${dateStr} ${typeStr.padEnd(6)} ${paymentStr.padEnd(6)} ${purchase.amountTTC.toFixed(2)}€\n`;
-        });
+            const typeStr = purchase.type.substring(0, 6).padEnd(6);
+            const paymentStr = purchase.payment.substring(0, 6).padEnd(6);
+            const amount = Math.round(purchase.amountTTC);
 
-        text += "-------------------------------\n";
-        let totalFood = 0, totalEquipment = 0, totalOther = 0, totalCard = 0, totalCash = 0;
-        filteredPurchases.forEach(purchase => {
+            text += `${dateStr} ${typeStr} ${paymentStr} ${amount}€\n`;
+
+            if (purchase.type === 'Pain') totalPain += purchase.amountTTC;
             if (purchase.type === 'Alimentaire') totalFood += purchase.amountTTC;
             if (purchase.type === 'Matériel') totalEquipment += purchase.amountTTC;
             if (purchase.type === 'Autre') totalOther += purchase.amountTTC;
+
             if (purchase.payment === 'Carte') totalCard += purchase.amountTTC;
             if (purchase.payment === 'Espèce') totalCash += purchase.amountTTC;
-        });
-        const totalTTC = totalFood + totalEquipment + totalOther;
 
-        text += `Total Alimentaire: ${totalFood.toFixed(2)}€\n`;
-        text += `Total Matériel: ${totalEquipment.toFixed(2)}€\n`;
-        text += `Total Autre: ${totalOther.toFixed(2)}€\n`;
-        text += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
-        text += `Par Carte: ${totalCard.toFixed(2)}€\n`;
-        text += `Par Espèce: ${totalCash.toFixed(2)}€\n`;
-        text += "\nMerci de votre gestion !\n\n";
+            grandTotal += purchase.amountTTC;
+        });
+
+        text += "-------------------------------\n";
+        text += `Total Pain       : ${Math.round(totalPain)}€\n`;
+        text += `Total Alimentaire: ${Math.round(totalFood)}€\n`;
+        text += `Total Matériel   : ${Math.round(totalEquipment)}€\n`;
+        text += `Total Autre      : ${Math.round(totalOther)}€\n`;
+        text += `-------------------------------\n`;
+        text += `Par Carte        : ${Math.round(totalCard)}€\n`;
+        text += `Par Espèce       : ${Math.round(totalCash)}€\n`;
+        text += `-------------------------------\n`;
+        text += `TOTAL GÉNÉRAL    : ${Math.round(grandTotal)}€\n\n`;
 
         const encoder = new TextEncoder();
-        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00');
+        const data = encoder.encode(text + '\x1B\x64\x02\x1D\x56\x00'); // Fin + découpe ticket
         await characteristic.writeValue(data);
 
         alert("Impression Bluetooth réussie !");
@@ -3244,6 +3405,59 @@ async function printPurchasesToBluetooth() {
         alert("Erreur lors de l'impression Bluetooth : " + error.message);
     }
 }
+
+async function printSalesToBluetooth() {
+    if (!navigator.bluetooth) {
+        alert("Bluetooth non supporté sur ce navigateur.");
+        return;
+    }
+
+    // Génération du texte à imprimer
+    const startDate = document.getElementById('recipeStartDate').value;
+    const endDate = document.getElementById('recipeEndDate').value;
+    let filtered = Object.entries(salesData)
+        .filter(([date]) => {
+            if (!startDate && !endDate) return true;
+            const d = new Date(date);
+            return (!startDate || d >= new Date(startDate)) &&
+                   (!endDate || d <= new Date(endDate));
+        })
+        .sort(([a], [b]) => new Date(a) - new Date(b));
+
+    let total = 0;
+    let text = "BILAN DES VENTES\n";
+    text += `Du ${startDate || "début"} au ${endDate || "aujourd'hui"}\n\n`;
+
+    filtered.forEach(([date, data]) => {
+        const jour = new Date(date).toLocaleDateString('fr-FR');
+        const montant = Math.round(data.total);
+        total += montant;
+        text += `${jour} : ${montant}€\n`;
+    });
+
+    text += `\nTOTAL GÉNÉRAL : ${Math.round(total)}€\n`;
+
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // ou le bon UUID de ton imprimante
+        });
+
+        console.log("Imprimante sélectionnée :", device.name);
+
+        // 🔧 À adapter selon ton imprimante : ici, on alerte seulement
+        alert("Texte à imprimer :\n\n" + text);
+
+        // 👉 Si tu as déjà une fonction `sendTextToPrinter(text, device)` comme pour les achats,
+        // tu peux l'appeler ici :
+        // await sendTextToPrinter(text, device);
+
+    } catch (error) {
+        console.error("Erreur Bluetooth :", error);
+        alert("Erreur lors de la connexion à l'imprimante Bluetooth.");
+    }
+}
+
 
 // Initialisation au démarrage
 loadPurchases();
@@ -3336,7 +3550,52 @@ const initialPersonnelRecords = [
     { date: "2025-02-25T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "50", hours: 3 },
     { date: "2025-02-26T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "40", hours: 2.67 },
     { date: "2025-02-27T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "40", hours: 2.67 },
-    { date: "2025-02-28T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "180", hours: 3 }
+    { date: "2025-02-28T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "180", hours: 3 },
+    { date: "2025-03-01T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-02T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-03T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "10", hours: 2.67 },
+    { date: "2025-03-04T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-03-05T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "50", hours: 2.67 },
+    { date: "2025-03-06T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-03-07T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-08T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-09T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-10T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-03-11T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-03-12T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "40", hours: 2.67 },
+    { date: "2025-03-13T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2025-03-14T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "80", hours: 3 },
+    { date: "2025-03-15T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-16T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-17T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-03-18T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-03-19T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "80", hours: 2.67 },
+    { date: "2025-03-20T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "90", hours: 2.67 },
+    { date: "2025-03-21T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "30", hours: 3 },
+    { date: "2025-03-22T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-23T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-24T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-03-25T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-03-26T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "30", hours: 2.67 },
+    { date: "2025-03-27T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "148", hours: 2.67 },
+    { date: "2025-03-28T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "65", hours: 3 },
+    { date: "2025-03-29T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-30T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-03-31T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "200", hours: 2.67 },
+    { date: "2025-04-01T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-04-02T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-04-03T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-04-04T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-04-05T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-04-06T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-04-07T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-04-08T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-04-09T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-04-10T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 },
+    { date: "2025-04-11T00:00:00Z", employee: "Marylou", startTime: "12:00", endTime: "15:00", comment: "", hours: 3 },
+    { date: "2025-04-12T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-04-13T00:00:00Z", employee: "", startTime: "", endTime: "", comment: "", hours: 0 },
+    { date: "2025-04-14T00:00:00Z", employee: "Tom", startTime: "12:00", endTime: "14:40", comment: "", hours: 2.67 }
 ];
 
 function loadEmployees() {
