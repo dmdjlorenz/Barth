@@ -725,7 +725,7 @@
         <p id="recipeDetailCash"></p>
         <p id="recipeDetailTotal"></p>
         <div class="buttons">
-            <button onclick="deleteSelectedRecipe()">Supprimer</button>
+            <button onclick="deleteSelectedRecipe()" style="background:#FF0000; color:white;">Supprimer</button>
             <button onclick="closeRecipeDetail()">Fermer</button>
         </div>
     </div>
@@ -892,7 +892,7 @@
         <p id="purchaseDetailPayment"></p>
         <p id="purchaseDetailComment"></p>
         <div class="buttons">
-            <button onclick="deleteSelectedPurchase()">Supprimer</button>
+            <button onclick="deleteSelectedPurchase()" style="background:#FF0000; color:white;">Supprimer</button>
             <button onclick="closePurchaseDetail()">Fermer</button>
         </div>
     </div>
@@ -948,21 +948,51 @@
 <!-- Bilan du Personnel -->
 <div id="personnelManagementPage" class="hidden">
     <h1>Bilan du Personnel</h1>
+
     <div class="date-filter">
         <label>Date de début :</label>
         <input type="date" id="personnelStartDate" onchange="filterPersonnel()">
         <label>Date de fin :</label>
         <input type="date" id="personnelEndDate" onchange="filterPersonnel()">
     </div>
+
     <label><input type="checkbox" id="showComments" onchange="filterPersonnel()"> Afficher commentaire</label>
+
     <div id="personnelList"></div>
+
     <div class="buttons no-print">
         <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger PDF</button>
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
         <button onclick="backToPersonnel()">Retour</button>
     </div>
+
+    <!-- Popup de détail personnel -->
+    <div id="personnelDetailPopup" class="hidden" style="
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        z-index: 999;
+        min-width: 250px;
+        max-width: 90%;
+    ">
+        <h2>Détail du personnel</h2>
+        <p id="personnelDetailDate"></p>
+        <p id="personnelDetailEmployee"></p>
+        <p id="personnelDetailHours"></p>
+
+        <div class="buttons no-print" style="margin-top: 15px;">
+            <button onclick="deleteSelectedPersonnel()" style="background:#FF0000; color:white;">Supprimer</button>
+            <button onclick="closePersonnelDetail()">Fermer</button>
+        </div>
+    </div>
 </div>
+
 
 <!-- Budget -->
 <div id="budgetPage" class="hidden">
@@ -1039,6 +1069,11 @@ let order = [];
 let menu = [];
 let caBelow85000 = false; // Par défaut, CA supérieur à 85000€
 let currentPaymentMethod = 'Non spécifié'; // Mode de paiement global pour la facture en cours
+let filteredPersonnelRecords = [];
+let selectedPersonnelRecord = null;
+
+
+
 
 // Mot de passe défini
 const correctPassword = "mathis";
@@ -3846,24 +3881,22 @@ function filterPersonnel() {
     let startDate = startDateInput ? new Date(startDateInput + 'T00:00:00') : new Date('2024-01-01');
     let endDate = endDateInput ? new Date(endDateInput + 'T23:59:59') : new Date();
 
-    const filteredRecords = personnelRecords.filter(record => {
+    filteredPersonnelRecords = personnelRecords.filter(record => {
         const recordDate = new Date(record.date);
         return recordDate >= startDate && recordDate <= endDate;
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    console.log('Filtered Records:', filteredRecords); // Ajout pour débogage
-
     const personnelList = document.getElementById('personnelList');
-    if (filteredRecords.length === 0) {
+
+    if (filteredPersonnelRecords.length === 0) {
         personnelList.innerHTML = '<p>Aucune donnée à afficher pour cette période.</p>';
-        console.log('Aucune donnée filtrée.');
         return;
     }
 
     const totals = {};
     const commentTotals = {};
 
-    filteredRecords.forEach(record => {
+    filteredPersonnelRecords.forEach(record => {
         if (!totals[record.employee]) {
             totals[record.employee] = 0;
             commentTotals[record.employee] = 0;
@@ -3889,43 +3922,95 @@ function filterPersonnel() {
                 <th>Fin</th>
                 <th>Heures</th>
                 ${showComments ? '<th>Commentaire</th>' : ''}
-                <th class="no-print">Action</th>
             </tr>
-            ${filteredRecords.map((record, index) => {
+            ${filteredPersonnelRecords.map((record, index) => {
                 const hours = Math.floor(record.hours);
                 const minutes = Math.round((record.hours - hours) * 60);
+                let hourLabel = `${hours}h`;
+                if (minutes !== 0) {
+                    hourLabel += `${minutes.toString().padStart(2, '0')}min`;
+                }
                 return `
-                <tr>
+                <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
                     <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
                     <td>${record.employee}</td>
                     <td>${record.startTime}</td>
                     <td>${record.endTime}</td>
-                    <td>${hours}h${minutes}min</td>
+                    <td>${hourLabel}</td>
                     ${showComments ? `<td>${record.comment || ''}</td>` : ''}
-                    <td class="no-print"><button class="delete-btn" onclick="deletePersonnelRecord(${index})">Supprimer</button></td>
-                </tr>
-            `}).join('')}
+                </tr>`;
+            }).join('')}
             ${Object.keys(totals).map(employee => {
                 const hours = Math.floor(totals[employee]);
                 const minutes = Math.round((totals[employee] - hours) * 60);
+                let hourLabel = `${hours}h`;
+                if (minutes !== 0) {
+                    hourLabel += `${minutes.toString().padStart(2, '0')}min`;
+                }
                 return `
                 <tr>
                     <td>Total ${employee}</td>
                     <td></td><td></td><td></td>
-                    <td>${hours}h${minutes}min</td>
+                    <td>${hourLabel}</td>
                     ${showComments ? `<td>${commentTotals[employee].toFixed(2)}</td>` : ''}
-                    <td class="no-print"></td>
-                </tr>
-            `}).join('')}
+                </tr>`;
+            }).join('')}
             <tr>
                 <td><strong>Total Général</strong></td>
                 <td></td><td></td><td></td>
-                <td><strong>${totalHours}h${totalMinutes}min</strong></td>
+                <td><strong>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</strong></td>
                 ${showComments ? `<td><strong>${totalComments.toFixed(2)}</strong></td>` : ''}
-                <td class="no-print"></td>
             </tr>
         </table>
     `;
+}
+
+
+function showPersonnelDetailFromIndex(index) {
+    const record = filteredPersonnelRecords[index];
+    selectedPersonnelRecord = record;
+
+    document.getElementById('personnelDetailDate').textContent = `Date : ${new Date(record.date).toLocaleDateString('fr-FR')}`;
+    document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
+    document.getElementById('personnelDetailHours').textContent = `Heures : ${record.hours}`;
+
+    document.getElementById('personnelDetailPopup').classList.remove('hidden');
+}
+function closePersonnelDetail() {
+    document.getElementById('personnelDetailPopup').classList.add('hidden');
+    selectedPersonnelRecord = null;
+}
+
+function deleteSelectedPersonnel() {
+    if (selectedPersonnelRecord) {
+        if (confirm("Supprimer cet enregistrement ?")) {
+            const idx = personnelRecords.findIndex(p =>
+                p.date === selectedPersonnelRecord.date &&
+                p.employee === selectedPersonnelRecord.employee &&
+                p.hours === selectedPersonnelRecord.hours
+            );
+
+            if (idx !== -1) {
+                personnelRecords.splice(idx, 1);
+                localStorage.setItem('personnelRecords', JSON.stringify(personnelRecords));
+                closePersonnelDetail();
+                filterPersonnel();
+                alert("Enregistrement supprimé !");
+            }
+        }
+    }
+}
+
+
+// Fonction utilitaire pour formater les heures
+function formatHours(hours) {
+    const totalMinutes = Math.round(hours * 60); // Convertir en minutes et arrondir
+    const h = Math.floor(totalMinutes / 60);
+    const min = totalMinutes % 60;
+    if (min === 0) {
+        return `${h}h`;
+    }
+    return `${h}h${min.toString().padStart(2, '0')}min`;
 }
 
 function printPersonnel() {
@@ -3991,7 +4076,7 @@ function printPersonnel() {
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${record.hours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(record.hours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
         if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
@@ -4022,7 +4107,7 @@ function printPersonnel() {
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totals[employee].toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totals[employee]), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
         if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
@@ -4031,7 +4116,7 @@ function printPersonnel() {
     doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalHours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totalHours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
     if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
 
     window.open(doc.output('bloburl'), '_blank');
@@ -4100,7 +4185,7 @@ function downloadPersonnelPDF() {
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight); doc.text(record.employee, tableX + colWidths[0] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(record.startTime, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(record.endTime, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${record.hours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(record.hours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
         if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(record.comment || '', tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
@@ -4131,7 +4216,7 @@ function downloadPersonnelPDF() {
         doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
         doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totals[employee].toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totals[employee]), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
         if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${commentTotals[employee].toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
         y += rowHeight;
     });
@@ -4140,7 +4225,7 @@ function downloadPersonnelPDF() {
     doc.rect(tableX + colWidths[0], y, colWidths[1], rowHeight);
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight);
-    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(`${totalHours.toFixed(2)}h`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+    doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text(formatHours(totalHours), tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
     if (showComments) doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], y, colWidths[5], rowHeight); if (showComments) doc.text(`${totalComments.toFixed(2)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
 
     doc.save('liste_personnel_chez_barth.pdf');
@@ -4186,7 +4271,7 @@ async function printPersonnelToBluetooth() {
         filteredRecords.forEach(record => {
             const dateStr = new Date(record.date).toLocaleDateString('fr-FR').substring(0, 5);
             const employeeStr = record.employee.substring(0, 8).padEnd(8);
-            text += `${dateStr} ${employeeStr} ${record.hours.toFixed(2)}h\n`;
+            text += `${dateStr} ${employeeStr} ${formatHours(record.hours)}\n`;
         });
 
         text += "-------------------------------\n";
@@ -4198,9 +4283,9 @@ async function printPersonnelToBluetooth() {
         const totalHours = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
 
         for (const employee in totals) {
-            text += `Total ${employee}: ${totals[employee].toFixed(2)}h\n`;
+            text += `Total ${employee}: ${formatHours(totals[employee])}\n`;
         }
-        text += `Total Général: ${totalHours.toFixed(2)}h\n`;
+        text += `Total Général: ${formatHours(totalHours)}\n`;
         text += "\nBilan du personnel terminé !\n\n";
 
         const encoder = new TextEncoder();
