@@ -22,6 +22,22 @@
     .hidden {
     display: none !important;
 }
+
+.standard-popup {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+}
+
+
     #homePage {
         max-width: 600px;
         margin: 0 auto;
@@ -717,18 +733,29 @@
 </div>
 
     <!-- Popup de détail de vente -->
-    <div id="recipeDetailPopup" class="hidden" style="position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-        background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius: 8px; z-index: 999;">
-        <h2>Détail de la vente</h2>
-        <p id="recipeDetailDate"></p>
-        <p id="recipeDetailCard"></p>
-        <p id="recipeDetailCash"></p>
-        <p id="recipeDetailTotal"></p>
-        <div class="buttons">
-            <button onclick="deleteSelectedRecipe()" style="background:#FF0000; color:white;">Supprimer</button>
-            <button onclick="closeRecipeDetail()">Fermer</button>
-        </div>
+<div id="recipeDetailPopup" class="hidden" style="
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+">
+    <h2>Détail de la vente</h2>
+    <p id="recipeDetailDate"></p>
+    <p id="recipeDetailCard"></p>
+    <p id="recipeDetailCash"></p>
+    <p id="recipeDetailTotal"></p>
+    <div class="buttons">
+        <button onclick="deleteSelectedRecipe()" style="background:#FF0000; color:white;">Supprimer</button>
+        <button onclick="closeRecipeDetail()" style="background:#000000; color:white;">Fermer</button>
     </div>
+</div>
 </div>
 
 
@@ -883,19 +910,30 @@
     </div>
 
     <!-- Popup de détail achat -->
-    <div id="purchaseDetailPopup" class="hidden" style="position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-        background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.2); border-radius: 8px; z-index: 999;">
-        <h2>Détail de l'achat</h2>
-        <p id="purchaseDetailDate"></p>
-        <p id="purchaseDetailAmount"></p>
-        <p id="purchaseDetailType"></p>
-        <p id="purchaseDetailPayment"></p>
-        <p id="purchaseDetailComment"></p>
-        <div class="buttons">
-            <button onclick="deleteSelectedPurchase()" style="background:#FF0000; color:white;">Supprimer</button>
-            <button onclick="closePurchaseDetail()">Fermer</button>
-        </div>
+<div id="purchaseDetailPopup" class="hidden" style="
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+">
+    <h2>Détail de l'achat</h2>
+    <p id="purchaseDetailDate"></p>
+    <p id="purchaseDetailAmount"></p>
+    <p id="purchaseDetailType"></p>
+    <p id="purchaseDetailPayment"></p>
+    <p id="purchaseDetailComment"></p>
+    <div class="buttons">
+        <button onclick="deleteSelectedPurchase()" style="background:#FF0000; color:white;">Supprimer</button>
+        <button onclick="closePurchaseDetail()" style="background:#000000; color:white;">Fermer</button>
     </div>
+</div>
 </div>
 
 
@@ -968,29 +1006,31 @@
     </div>
 
     <!-- Popup de détail personnel -->
-    <div id="personnelDetailPopup" class="hidden" style="
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        border-radius: 8px;
-        z-index: 999;
-        min-width: 250px;
-        max-width: 90%;
-    ">
-        <h2>Détail du personnel</h2>
-        <p id="personnelDetailDate"></p>
-        <p id="personnelDetailEmployee"></p>
-        <p id="personnelDetailHours"></p>
-
-        <div class="buttons no-print" style="margin-top: 15px;">
-            <button onclick="deleteSelectedPersonnel()" style="background:#FF0000; color:white;">Supprimer</button>
-            <button onclick="closePersonnelDetail()">Fermer</button>
-        </div>
+<div id="personnelDetailPopup" class="hidden" style="
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 999;
+    min-width: 250px;
+    max-width: 90%;
+">
+    <h2>Détail du personnel</h2>
+    <p id="personnelDetailDate"></p>
+    <p id="personnelDetailEmployee"></p>
+    <p id="personnelDetailStartTime"></p>
+    <p id="personnelDetailEndTime"></p>
+    <p id="personnelDetailHours"></p>
+    <p id="personnelDetailComment"></p>
+    <div class="buttons no-print" style="margin-top: 15px;">
+        <button onclick="deleteSelectedPersonnel()" style="background:#FF0000; color:white;">Supprimer</button>
+        <button onclick="closePersonnelDetail()" style="background:#000000; color:white;">Fermer</button>
     </div>
+</div>
 </div>
 
 
@@ -3972,7 +4012,10 @@ function showPersonnelDetailFromIndex(index) {
 
     document.getElementById('personnelDetailDate').textContent = `Date : ${new Date(record.date).toLocaleDateString('fr-FR')}`;
     document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
+    document.getElementById("personnelDetailStartTime").textContent = "Début : " + record.startTime;
+    document.getElementById("personnelDetailEndTime").textContent = "Fin : " + record.endTime;
     document.getElementById('personnelDetailHours').textContent = `Heures : ${record.hours}`;
+    document.getElementById("personnelDetailComment").textContent = "Commentaire : " + record.comment;
 
     document.getElementById('personnelDetailPopup').classList.remove('hidden');
 }
