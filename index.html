@@ -4909,6 +4909,7 @@ const initialMenu = [
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
+        input.accept = '.json,application/json';
         input.onchange = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -4967,7 +4968,7 @@ const initialMenu = [
 
     
 
-</script>
+      </script>
     
-        </body>
-    </html>
+    </body>
+</html>
