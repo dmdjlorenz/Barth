@@ -702,7 +702,18 @@
         <button onclick="resetData()" style="background:#FF0000; color:white;"> ! Réinitialiser et supprimer toutes les données saisies </button>
         <button onclick="importData()" style="background:#0000FF; color:white;">Importer des données sauvegardées sur fichier "chez_Barth_backup ().json"</button>
         <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
+       <div id="importInstructions" class="hidden" style="margin-top: 10px; text-align: left; font-size: 14px; color: #333;">
+        <p><strong>Instructions pour importer :</strong></p>
+        <ul>
+         <li><strong>Android :</strong> Sélectionnez "Fichiers" ou "Explorateur de fichiers" dans le sélecteur, puis naviguez vers le dossier <strong>Téléchargements</strong>.</li>
+         <li><strong>iOS :</strong> Choisissez "Parcourir" dans l'application Fichiers, puis allez dans <strong>Téléchargements</strong> ou <strong>Sur mon iPhone</strong>.</li>
+         <li><strong>PC/Mac :</strong> Naviguez vers le dossier où se trouve <strong>chez_barth_backup.json</strong> (généralement Téléchargements).</li>
+        </ul>
+      </div>
     </div>
+
+
+
 <!-- ... Reste du HTML ... -->
 
     <!-- Ventes -->
@@ -4906,67 +4917,215 @@ const initialMenu = [
     }
 
     function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.accept = '.json,application/json';
-        input.onchange = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
+    // Afficher les instructions contextuelles
+    const instructions = document.getElementById('importInstructions');
+    if (instructions) {
+        instructions.classList.remove('hidden');
+    }
+
+    // Créer un input de type fichier
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json'; // Spécifier explicitement les fichiers JSON
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            alert("Aucun fichier sélectionné.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Valider les données importées
+                if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
+                    alert("Fichier invalide : structure de données incorrecte.");
+                    return;
+                }
+
+                // Mettre à jour le localStorage
+                localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
+                localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
+                localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
+                localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
+                localStorage.setItem('menu', JSON.stringify(importedData.menu));
+
+                // Synchroniser les variables globales
+                invoices = importedData.invoices || [];
+                invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
+                menu = importedData.menu || [...initialMenu];
+
+                console.log("Données importées :", importedData);
+                alert("Données importées avec succès !");
+
+                // Rafraîchir les affichages
+                filterRecipes();
+                filterPurchases();
+                filterPersonnel();
+                loadInvoices();
+                filterInvoices();
+                updateInvoiceDisplay();
+                showInvoice();
+
+                // Naviguer vers la page d'accueil
+                navigateTo('homePage');
+
+                // Masquer les instructions après importation
+                if (instructions) {
+                    instructions.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'importation :", error);
+                alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    // Déclencher le sélecteur de fichiers
+    input.click();
+}
+
+async function importData() {
+    // Afficher les instructions contextuelles
+    const instructions = document.getElementById('importInstructions');
+    if (instructions) {
+        instructions.classList.remove('hidden');
+    }
+
+    // Vérifier si l'API File System Access est disponible
+    if ('showOpenFilePicker' in window) {
+        try {
+            const [fileHandle] = await window.showOpenFilePicker({
+                types: [
+                    {
+                        description: 'Fichiers JSON',
+                        accept: { 'application/json': ['.json'] }
+                    }
+                ],
+                excludeAcceptAllOption: true,
+                multiple: false
+            });
+            const file = await fileHandle.getFile();
             const reader = new FileReader();
+
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    
+
                     // Valider les données importées
                     if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
                         alert("Fichier invalide : structure de données incorrecte.");
                         return;
                     }
-                    
+
                     // Mettre à jour le localStorage
                     localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
                     localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
                     localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
-                    localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices)); // Utiliser savedInvoices
+                    localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
                     localStorage.setItem('menu', JSON.stringify(importedData.menu));
-                    
-                    // Synchroniser la variable globale invoices
-                    if (typeof invoices !== 'undefined') invoices = importedData.invoices;
-                    if (typeof invoiceCounter !== 'undefined' && Array.isArray(importedData.invoices) && importedData.invoices.length > 0) {
-                        invoiceCounter = Math.max(...importedData.invoices.map(i => i.number || 0));
-                    }
-                    
-                    // Débogage : Afficher le contenu importé
-                    console.log("Contenu de 'savedInvoices' après importation :", localStorage.getItem('savedInvoices'));
-                    
+
+                    // Synchroniser les variables globales
+                    invoices = importedData.invoices || [];
+                    invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
+                    menu = importedData.menu || [...initialMenu];
+
+                    console.log("Données importées via File System Access :", importedData);
                     alert("Données importées avec succès !");
-                    
+
                     // Rafraîchir les affichages
-                    if (typeof filterRecipes === 'function') filterRecipes();
-                    if (typeof filterPurchases === 'function') filterPurchases();
-                    if (typeof filterPersonnel === 'function') filterPersonnel();
-                    if (typeof loadInvoices === 'function') loadInvoices(); // Synchroniser invoices
-                    if (typeof filterInvoices === 'function') filterInvoices();
-                    if (typeof updateInvoiceDisplay === 'function') updateInvoiceDisplay();
-                    if (typeof showInvoice === 'function') showInvoice();
-                    
-                    // Forcer la navigation vers la page des factures si ouverte
-                    if (document.getElementById('invoicePage') && typeof navigateTo === 'function') {
-                        navigateTo('invoicePage');
+                    filterRecipes();
+                    filterPurchases();
+                    filterPersonnel();
+                    loadInvoices();
+                    filterInvoices();
+                    updateInvoiceDisplay();
+                    showInvoice();
+
+                    // Naviguer vers la page d'accueil
+                    navigateTo('homePage');
+
+                    // Masquer les instructions
+                    if (instructions) {
+                        instructions.classList.add('hidden');
                     }
                 } catch (error) {
-                    console.error("Erreur lors de l'importation :", error);
-                    alert("Erreur lors de l'importation : fichier JSON invalide.");
+                    console.error("Erreur lors de l'importation via File System Access :", error);
+                    alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
                 }
             };
             reader.readAsText(file);
-        };
-        input.click();
+            return;
+        } catch (error) {
+            console.warn("Échec de l'API File System Access, repli sur input file :", error);
+        }
     }
 
-    
+    // Repli sur l'input file standard
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            alert("Aucun fichier sélectionné.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Valider les données importées
+                if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
+                    alert("Fichier invalide : structure de données incorrecte.");
+                    return;
+                }
+
+                // Mettre à jour le localStorage
+                localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
+                localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
+                localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
+                localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
+                localStorage.setItem('menu', JSON.stringify(importedData.menu));
+
+                // Synchroniser les variables globales
+                invoices = importedData.invoices || [];
+                invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
+                menu = importedData.menu || [...initialMenu];
+
+                console.log("Données importées via input file :", importedData);
+                alert("Données importées avec succès !");
+
+                // Rafraîchir les affichages
+                filterRecipes();
+                filterPurchases();
+                filterPersonnel();
+                loadInvoices();
+                filterInvoices();
+                updateInvoiceDisplay();
+                showInvoice();
+
+                // Naviguer vers la page d'accueil
+                navigateTo('homePage');
+
+                // Masquer les instructions
+                if (instructions) {
+                    instructions.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Erreur lors de l'importation via input file :", error);
+                alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}    
 
       </script>
     
