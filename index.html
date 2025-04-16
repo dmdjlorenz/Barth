@@ -653,6 +653,24 @@
     }
 }
 
+/* Style pour la page Paramètres (ajouter à la fin) */
+        #settingsPage {
+            text-align: center;
+            padding: 20px;
+        }
+        #settingsPage button {
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+
     </style>
 </head>
 <body>
@@ -666,15 +684,26 @@
     </div>
 
     <!-- Page d'accueil (inchangée mais masquée au départ) -->
-    <div id="homePage" class="hidden">
+   <!-- ... Autre code HTML ... -->
+<div id="homePage" class="hidden">
         <h2>GESTION          CHEZ BARTH</h2>
         <button id="recipeBookBtn" onclick="showRecipeBook()">Ventes</button>
         <button id="purchasesBtn" onclick="showPurchases()">Achats</button>
         <button id="personnelBtn" onclick="showPersonnel()">Personnel</button>
         <button id="invoiceBtn" onclick="showInvoice()">Commande Facture</button>
         <button id="budgetBtn" onclick="showBudget()">Budget</button>
+        <button onclick="showSettings()" style="background:#808080; color:white;">Paramètres</button>
     </div>
-    <!-- Le reste du HTML reste inchangé -->
+
+    <!-- Nouvelle page Paramètres -->
+    <div id="settingsPage" class="page hidden">
+        <h2>Paramètres</h2>
+        <button onclick="backupData()" style="background:#32CD32; color:white;">Sauvegarder et exporter les données actuelles dans un fichier "chez_barth_backup ().json"</button>
+        <button onclick="resetData()" style="background:#FF0000; color:white;"> ! Réinitialiser et supprimer toutes les données saisies </button>
+        <button onclick="importData()" style="background:#0000FF; color:white;">Importer des données sauvegardées sur fichier "chez_Barth_backup ().json"</button>
+        <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
+    </div>
+<!-- ... Reste du HTML ... -->
 
     <!-- Ventes -->
     <div id="recipeBookPage" class="hidden">
@@ -1124,7 +1153,7 @@ function navigateTo(pageId) {
         'passwordPage', 'homePage', 'recipeBookPage', 'recipeManagementPage', 
         'invoicePage', 'invoiceManagementPage', 'invoiceDetailPage', 
         'purchasesPage', 'purchasesManagementPage', 'personnelPage', 
-        'personnelManagementPage', 'budgetPage'
+        'personnelManagementPage', 'budgetPage', 'settingsPage'
     ];
     pages.forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
@@ -1151,7 +1180,7 @@ function checkPassword() {
             'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
             'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
             'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-            'passwordPage', 'budgetPage'
+            'passwordPage', 'budgetPage', 'settingsPage'
         ];
         pages.forEach(id => document.getElementById(id).classList.add('hidden'));
         document.getElementById('homePage').classList.remove('hidden');
@@ -1186,6 +1215,9 @@ document.addEventListener('DOMContentLoaded', () => {
     history.pushState({ page: 'homePage' }, '', '#homePage');
 });
 
+function showSettings() {
+        navigateTo('settingsPage');
+    }
 
 function updateMenuTvaRates() {
     console.log('Dans updateMenuTvaRates, caBelow85000 =', caBelow85000);
@@ -4435,7 +4467,7 @@ window.addEventListener('popstate', function(event) {
         'homePage', 'recipeBookPage', 'recipeManagementPage', 'invoicePage', 
         'invoiceManagementPage', 'invoiceDetailPage', 'purchasesPage', 
         'purchasesManagementPage', 'personnelPage', 'personnelManagementPage',
-        'passwordPage', 'budgetPage'
+        'passwordPage', 'budgetPage', 'settingsPage'
     ];
 
     const homePage = document.getElementById('homePage');
@@ -4784,7 +4816,156 @@ document.getElementById('exportPdf').addEventListener('click', function() {
     }).save();
 });
 
+// Fonctions pour la gestion des données (remplacez les versions existantes)
+    function backupData() {
+        try {
+            const allData = {
+                salesData: JSON.parse(localStorage.getItem('salesData')) || (typeof initialSalesData !== 'undefined' ? initialSalesData : {}),
+                purchases: JSON.parse(localStorage.getItem('purchases')) || (typeof initialPurchases !== 'undefined' ? initialPurchases : []),
+                personnelRecords: JSON.parse(localStorage.getItem('personnelRecords')) || (typeof initialPersonnelRecords !== 'undefined' ? initialPersonnelRecords : []),
+                invoices: JSON.parse(localStorage.getItem('savedInvoices')) || [], // Utiliser savedInvoices
+                menu: JSON.parse(localStorage.getItem('menu')) || (typeof initialMenu !== 'undefined' ? initialMenu : [])
+            };
+            
+            const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chez_barth_backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert("Données sauvegardées ! Vérifiez votre dossier Téléchargements pour le fichier chez_barth_backup.json.");
+        } catch (error) {
+            console.error("Erreur lors de la sauvegarde des données :", error);
+            alert("Une erreur s'est produite lors de la sauvegarde des données. Vérifiez la console pour plus de détails.");
+        }
+    }
 
+const initialMenu = [
+    { name: "Pulled Beef-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Prosciutto al Tartufo-Sandwich", priceTTC: 9.0, priceHT: 8.18, type: "S", tvaRate: 0.1 },
+    { name: "Cheesy Veggie-Bacon-Sandwich", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 },
+    { name: "Chicken Azul-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Philly Cheesesteak-Sandwich", priceTTC: 11.0, priceHT: 10.0, type: "S", tvaRate: 0.1 },
+    { name: "Gelato à la pistache-Dessert", priceTTC: 4.5, priceHT: 4.09, type: "S", tvaRate: 0.1 },
+    { name: "Nocciolata-Dessert", priceTTC: 3.0, priceHT: 2.73, type: "S", tvaRate: 0.1 },
+    { name: "Boisson Sodas", priceTTC: 2.5, priceHT: 2.37, type: "B", tvaRate: 0.055 },
+    { name: "Boisson Eau", priceTTC: 1.5, priceHT: 1.42, type: "B", tvaRate: 0.055 },
+    { name: "Offre étudiante", priceTTC: 10.0, priceHT: 9.09, type: "S", tvaRate: 0.1 }
+];
+
+
+
+    function resetData() {
+        if (confirm("Êtes-vous sûr de vouloir réinitialiser toutes les données ? Cette action supprimera toutes les données stockées et restaurera les données initiales.")) {
+            if (confirm("Confirmez une dernière fois : toutes les données seront perdues. Continuer ?")) {
+                try {
+                    // Débogage : Afficher les clés actuelles
+                    console.log("Clés localStorage avant réinitialisation :", Object.keys(localStorage));
+                    
+                    // Vider complètement le localStorage
+                    localStorage.clear();
+                    
+                    // Restaurer les données initiales
+                    localStorage.setItem('salesData', JSON.stringify(typeof initialSalesData !== 'undefined' ? initialSalesData : {}));
+                    localStorage.setItem('purchases', JSON.stringify(typeof initialPurchases !== 'undefined' ? initialPurchases : []));
+                    localStorage.setItem('personnelRecords', JSON.stringify(typeof initialPersonnelRecords !== 'undefined' ? initialPersonnelRecords : []));
+                    localStorage.setItem('savedInvoices', JSON.stringify([])); // Vider savedInvoices
+                    localStorage.setItem('menu', JSON.stringify(typeof initialMenu !== 'undefined' ? initialMenu : []));
+                    
+                    // Réinitialiser la variable globale invoices et le compteur
+                    if (typeof invoices !== 'undefined') invoices = [];
+                    if (typeof invoiceCounter !== 'undefined') invoiceCounter = 0;
+                    
+                    // Débogage : Afficher les clés après réinitialisation
+                    console.log("Clés localStorage après réinitialisation :", Object.keys(localStorage));
+                    console.log("Contenu de 'savedInvoices' après réinitialisation :", localStorage.getItem('savedInvoices'));
+                    
+                    alert("Données réinitialisées avec succès !");
+                    
+                    // Rafraîchir les affichages
+                    if (typeof filterRecipes === 'function') filterRecipes();
+                    if (typeof filterPurchases === 'function') filterPurchases();
+                    if (typeof filterPersonnel === 'function') filterPersonnel();
+                    if (typeof loadInvoices === 'function') loadInvoices(); // Synchroniser invoices
+                    if (typeof filterInvoices === 'function') filterInvoices();
+                    if (typeof updateInvoiceDisplay === 'function') updateInvoiceDisplay();
+                    if (typeof showInvoice === 'function') showInvoice();
+                    
+                    // Forcer la navigation vers la page des factures si ouverte
+                    if (document.getElementById('invoicePage') && typeof navigateTo === 'function') {
+                        navigateTo('invoicePage');
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de la réinitialisation des données :", error);
+                    alert("Une erreur s'est produite lors de la réinitialisation. Vérifiez la console pour plus de détails.");
+                }
+            }
+        }
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Valider les données importées
+                    if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
+                        alert("Fichier invalide : structure de données incorrecte.");
+                        return;
+                    }
+                    
+                    // Mettre à jour le localStorage
+                    localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
+                    localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
+                    localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
+                    localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices)); // Utiliser savedInvoices
+                    localStorage.setItem('menu', JSON.stringify(importedData.menu));
+                    
+                    // Synchroniser la variable globale invoices
+                    if (typeof invoices !== 'undefined') invoices = importedData.invoices;
+                    if (typeof invoiceCounter !== 'undefined' && Array.isArray(importedData.invoices) && importedData.invoices.length > 0) {
+                        invoiceCounter = Math.max(...importedData.invoices.map(i => i.number || 0));
+                    }
+                    
+                    // Débogage : Afficher le contenu importé
+                    console.log("Contenu de 'savedInvoices' après importation :", localStorage.getItem('savedInvoices'));
+                    
+                    alert("Données importées avec succès !");
+                    
+                    // Rafraîchir les affichages
+                    if (typeof filterRecipes === 'function') filterRecipes();
+                    if (typeof filterPurchases === 'function') filterPurchases();
+                    if (typeof filterPersonnel === 'function') filterPersonnel();
+                    if (typeof loadInvoices === 'function') loadInvoices(); // Synchroniser invoices
+                    if (typeof filterInvoices === 'function') filterInvoices();
+                    if (typeof updateInvoiceDisplay === 'function') updateInvoiceDisplay();
+                    if (typeof showInvoice === 'function') showInvoice();
+                    
+                    // Forcer la navigation vers la page des factures si ouverte
+                    if (document.getElementById('invoicePage') && typeof navigateTo === 'function') {
+                        navigateTo('invoicePage');
+                    }
+                } catch (error) {
+                    console.error("Erreur lors de l'importation :", error);
+                    alert("Erreur lors de l'importation : fichier JSON invalide.");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    
 
 </script>
     
