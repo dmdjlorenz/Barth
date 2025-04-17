@@ -1723,111 +1723,113 @@ function showPurchases() {
         updateRecipeDisplay();
     });
 
-    function exportRecipeToPdf() {
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 10;
-        let y = margin;
+   function exportRecipeToPdf() {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 10;
+    let y = margin;
 
-        const colWidths = [30, 35, 35, 35, 60];
-        const rowHeight = 8;
-        const tableX = margin;
+    const colWidths = [30, 35, 35, 35, 60];
+    const rowHeight = 8;
+    const tableX = margin;
 
-        const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-        const dataByMonth = {};
-        Object.keys(salesData).forEach(dateKey => {
-            const [year, month] = dateKey.split('-');
-            const monthYear = `${year}-${month}`;
-            if (!dataByMonth[monthYear]) {
-                dataByMonth[monthYear] = [];
-            }
-            dataByMonth[monthYear].push({
-                date: dateKey,
-                ...salesData[dateKey]
-            });
-        });
-
-        const drawTableHeader = (x, y, month, year) => {
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.rect(margin, y, pageWidth - 2 * margin, 20);
-            doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
-            doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence', pageWidth / 2, y + 16, { align: 'center' });
-            y += 25;
-            doc.setFontSize(10);
-            doc.rect(x, y, colWidths[0], rowHeight); doc.text('Date', x + 2, y + 6);
-            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte B', x + colWidths[0] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', x + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TOTAL Ventes', x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Origine', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            return y + rowHeight;
-        };
-
-        const drawTableRow = (x, y, date, card, cash, total) => {
-            doc.setFont('helvetica', 'normal');
-            const dateParts = date.split('-');
-            const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-            doc.rect(x, y, colWidths[0], rowHeight); doc.text(dateStr, x + 2, y + 6);
-            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${card} €`, x + colWidths[0] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${cash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${total} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight);
-            doc.text('Vente Sandwichs à emporter', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            return y + rowHeight;
-        };
-
-        const drawTotalRow = (x, y, totalCard, totalCash, totalSales, month) => {
-            doc.setFont('helvetica', 'bold');
-            doc.rect(x, y, colWidths[0], rowHeight); doc.text(`Total ${month}`, x + 2, y + 6);
-            doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard} €`, x + colWidths[0] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
-            doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
-            return y + rowHeight;
-        };
-
-        const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
-            const [yearA, monthA] = a.split('-');
-            const [yearB, monthB] = b.split('-');
-            return yearA.localeCompare(yearB) || monthA.localeCompare(monthB);
-        });
-
-        sortedMonths.forEach(monthYear => {
-            const [year, month] = monthYear.split('-');
-            const monthName = monthNames[parseInt(month) - 1];
-            let totalCard = 0;
-            let totalCash = 0;
-            let totalSales = 0;
-
-            y = drawTableHeader(tableX, y, monthName, year);
-
-            const monthData = dataByMonth[monthYear].sort((a, b) => a.date.localeCompare(b.date));
-            monthData.forEach(data => {
-                y = drawTableRow(tableX, y, data.date, data.card, data.cash, data.total);
-                totalCard += data.card;
-                totalCash += data.cash;
-                totalSales += data.total;
-
-                if (y > doc.internal.pageSize.getHeight() - 20) {
-                    doc.addPage();
-                    y = margin;
-                    y = drawTableHeader(tableX, y, monthName, year);
-                }
-            });
-
-            y += 5;
-            y = drawTotalRow(tableX, y, totalCard, totalCash, totalSales, monthName);
-            doc.addPage();
-            y = margin;
-        });
-
-        if (doc.getNumberOfPages() > 1 && y === margin) {
-            doc.deletePage(doc.getNumberOfPages());
+    const dataByMonth = {};
+    Object.keys(salesData).forEach(dateKey => {
+        const [year, month] = dateKey.split('-');
+        const monthYear = `${year}-${month}`;
+        if (!dataByMonth[monthYear]) {
+            dataByMonth[monthYear] = [];
         }
+        dataByMonth[monthYear].push({
+            date: dateKey,
+            ...salesData[dateKey]
+        });
+    });
 
-        doc.save('Livre_des_Recettes_Chez_Barth.pdf');
+    const drawTableHeader = (x, y, month, year) => {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.rect(margin, y, pageWidth - 2 * margin, 20);
+        doc.text(`LIVRE DES RECETTES ${month} ${year}`, pageWidth / 2, y + 8, { align: 'center' });
+        doc.text('Chez BARTH 16 place des Prêcheurs 13100 Aix en Provence', pageWidth / 2, y + 16, { align: 'center' });
+        y += 25;
+        doc.setFontSize(10);
+        doc.rect(x, y, colWidths[0], rowHeight); doc.text('Date', x + 2, y + 6);
+        doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text('Ventes Carte B', x + colWidths[0] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text('Ventes Espèce', x + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text('TOTAL Ventes', x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('Origine', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        return y + rowHeight;
+    };
+
+    const drawTableRow = (x, y, date, card, cash, total) => {
+        doc.setFont('helvetica', 'normal');
+        // Extract only YYYY-MM-DD from date string
+        const cleanDate = date.split('T')[0];
+        const dateParts = cleanDate.split('-');
+        const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        doc.rect(x, y, colWidths[0], rowHeight); doc.text(dateStr, x + 2, y + 6);
+        doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${card} €`, x + colWidths[0] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${cash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${total} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight);
+        doc.text('Vente Sandwichs à emporter', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        return y + rowHeight;
+    };
+
+    const drawTotalRow = (x, y, totalCard, totalCash, totalSales, month) => {
+        doc.setFont('helvetica', 'bold');
+        doc.rect(x, y, colWidths[0], rowHeight); doc.text(`Total ${month}`, x + 2, y + 6);
+        doc.rect(x + colWidths[0], y, colWidths[1], rowHeight); doc.text(`${totalCard} €`, x + colWidths[0] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${totalCash} €`, x + colWidths[0] + colWidths[1] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${totalSales} €`, x + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
+        doc.rect(x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y, colWidths[4], rowHeight); doc.text('', x + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2, y + 6);
+        return y + rowHeight;
+    };
+
+    const sortedMonths = Object.keys(dataByMonth).sort((a, b) => {
+        const [yearA, monthA] = a.split('-');
+        const [yearB, monthB] = b.split('-');
+        return yearA.localeCompare(yearB) || monthA.localeCompare(monthB);
+    });
+
+    sortedMonths.forEach(monthYear => {
+        const [year, month] = monthYear.split('-');
+        const monthName = monthNames[parseInt(month) - 1];
+        let totalCard = 0;
+        let totalCash = 0;
+        let totalSales = 0;
+
+        y = drawTableHeader(tableX, y, monthName, year);
+
+        const monthData = dataByMonth[monthYear].sort((a, b) => a.date.localeCompare(b.date));
+        monthData.forEach(data => {
+            y = drawTableRow(tableX, y, data.date, data.card, data.cash, data.total);
+            totalCard += data.card;
+            totalCash += data.cash;
+            totalSales += data.total;
+
+            if (y > doc.internal.pageSize.getHeight() - 20) {
+                doc.addPage();
+                y = margin;
+                y = drawTableHeader(tableX, y, monthName, year);
+            }
+        });
+
+        y += 5;
+        y = drawTotalRow(tableX, y, totalCard, totalCash, totalSales, monthName);
+        doc.addPage();
+        y = margin;
+    });
+
+    if (doc.getNumberOfPages() > 1 && y === margin) {
+        doc.deletePage(doc.getNumberOfPages());
     }
+
+    doc.save('Livre_des_Recettes_Chez_Barth.pdf');
+}
 
 function exportRecipeToPdfofficiel() {
     const doc = new jsPDF();
@@ -1872,7 +1874,9 @@ function exportRecipeToPdfofficiel() {
 
     const drawTableRow = (x, y, date, card, cash, total) => {
         doc.setFont('helvetica', 'normal');
-        const dateParts = date.split('-');
+        // Extract only YYYY-MM-DD from date string
+        const cleanDate = date.split('T')[0];
+        const dateParts = cleanDate.split('-');
         const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
         const adjustedCash = Math.floor(cash / 2);
         const adjustedTotal = card + adjustedCash;
@@ -4226,20 +4230,22 @@ function filterPersonnel() {
     const commentTotals = {};
 
     filteredPersonnelRecords.forEach(record => {
-        if (!totals[record.employee]) {
-            totals[record.employee] = 0;
-            commentTotals[record.employee] = 0;
-        }
-        totals[record.employee] += record.hours;
-        if (showComments && record.comment && !isNaN(parseFloat(record.comment))) {
-            commentTotals[record.employee] += parseFloat(record.comment);
+        if (record.employee && record.employee.trim() !== '') {
+            if (!totals[record.employee]) {
+                totals[record.employee] = 0;
+                commentTotals[record.employee] = 0;
+            }
+            totals[record.employee] += record.hours;
+            if (showComments && record.comment && !isNaN(parseFloat(record.comment))) {
+                commentTotals[record.employee] += parseFloat(record.comment);
+            }
         }
     });
 
     const totalHoursDecimal = Object.values(totals).reduce((sum, hours) => sum + hours, 0);
     const totalHours = Math.floor(totalHoursDecimal);
     const totalMinutes = Math.round((totalHoursDecimal - totalHours) * 60);
-    const totalComments = Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0);
+    const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0));
 
     personnelList.innerHTML = `
         <h2>Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
@@ -4262,7 +4268,7 @@ function filterPersonnel() {
                 return `
                 <tr style="cursor:pointer" onclick="showPersonnelDetailFromIndex(${index})">
                     <td>${new Date(record.date).toLocaleDateString('fr-FR')}</td>
-                    <td>${record.employee}</td>
+                    <td>${record.employee || ''}</td>
                     <td>${record.startTime}</td>
                     <td>${record.endTime}</td>
                     <td>${hourLabel}</td>
@@ -4277,18 +4283,18 @@ function filterPersonnel() {
                     hourLabel += `${minutes.toString().padStart(2, '0')}min`;
                 }
                 return `
-                <tr>
+                <tr style="font-weight: bold; color: black;">
                     <td>Total ${employee}</td>
                     <td></td><td></td><td></td>
                     <td>${hourLabel}</td>
-                    ${showComments ? `<td>${commentTotals[employee].toFixed(2)}</td>` : ''}
+                    ${showComments ? `<td>${Math.round(commentTotals[employee])}</td>` : ''}
                 </tr>`;
             }).join('')}
-            <tr>
-                <td><strong>Total Général</strong></td>
+            <tr style="font-weight: bold; color: black; font-size: 16px;">
+                <td>Total Général</td>
                 <td></td><td></td><td></td>
-                <td><strong>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</strong></td>
-                ${showComments ? `<td><strong>${totalComments.toFixed(2)}</strong></td>` : ''}
+                <td>${totalHours}h${totalMinutes.toString().padStart(2, '0')}min</td>
+                ${showComments ? `<td>${totalComments}</td>` : ''}
             </tr>
         </table>
     `;
