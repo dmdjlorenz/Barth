@@ -702,18 +702,7 @@
         <button onclick="resetData()" style="background:#FF0000; color:white;"> ! Réinitialiser et supprimer toutes les données saisies </button>
         <button onclick="importData()" style="background:#0000FF; color:white;">Importer des données sauvegardées sur fichier "chez_Barth_backup ().json"</button>
         <button onclick="navigateTo('homePage')" style="background:#000000; color:white;">Retour</button>
-       <div id="importInstructions" class="hidden" style="margin-top: 10px; text-align: left; font-size: 14px; color: #333;">
-        <p><strong>Instructions pour importer :</strong></p>
-        <ul>
-         <li><strong>Android :</strong> Sélectionnez "Fichiers" ou "Explorateur de fichiers" dans le sélecteur, puis naviguez vers le dossier <strong>Téléchargements</strong>.</li>
-         <li><strong>iOS :</strong> Choisissez "Parcourir" dans l'application Fichiers, puis allez dans <strong>Téléchargements</strong> ou <strong>Sur mon iPhone</strong>.</li>
-         <li><strong>PC/Mac :</strong> Naviguez vers le dossier où se trouve <strong>chez_barth_backup.json</strong> (généralement Téléchargements).</li>
-        </ul>
-      </div>
     </div>
-
-
-
 <!-- ... Reste du HTML ... -->
 
     <!-- Ventes -->
@@ -2969,73 +2958,185 @@ let purchaseCurrentDate = new Date();
 let purchases = [];
 
 const initialPurchases = [
-    { date: "2024-12-09T00:00:00Z", amountTTC: 940, type: "Alimentaire", payment: "Espèce", comment: "" },
-    { date: "2024-12-10T00:00:00Z", amountTTC: 1747, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-11T00:00:00Z", amountTTC: 157, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-12T00:00:00Z", amountTTC: 275, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-13T00:00:00Z", amountTTC: 13, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-14T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-16T00:00:00Z", amountTTC: 257, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-17T00:00:00Z", amountTTC: 21, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-18T00:00:00Z", amountTTC: 210, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-19T00:00:00Z", amountTTC: 137, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-20T00:00:00Z", amountTTC: 12, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-21T00:00:00Z", amountTTC: 21, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-23T00:00:00Z", amountTTC: 308, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-24T00:00:00Z", amountTTC: 14, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-27T00:00:00Z", amountTTC: 268, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-28T00:00:00Z", amountTTC: 17, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-30T00:00:00Z", amountTTC: 427, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2024-12-31T00:00:00Z", amountTTC: 17, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-02T00:00:00Z", amountTTC: 13, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-03T00:00:00Z", amountTTC: 252, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-04T00:00:00Z", amountTTC: 15, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-06T00:00:00Z", amountTTC: 307, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-07T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-08T00:00:00Z", amountTTC: 545, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-09T00:00:00Z", amountTTC: 22, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-10T00:00:00Z", amountTTC: 414, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-11T00:00:00Z", amountTTC: 23, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-13T00:00:00Z", amountTTC: 28, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-14T00:00:00Z", amountTTC: 16, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-15T00:00:00Z", amountTTC: 326, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-16T00:00:00Z", amountTTC: 24, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-17T00:00:00Z", amountTTC: 29, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-18T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-20T00:00:00Z", amountTTC: 396, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-21T00:00:00Z", amountTTC: 27, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-22T00:00:00Z", amountTTC: 431, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-23T00:00:00Z", amountTTC: 18, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-24T00:00:00Z", amountTTC: 47, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-25T00:00:00Z", amountTTC: 43, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-27T00:00:00Z", amountTTC: 807, type: "Alimentaire", payment: "Espèce", comment: "" },
-    { date: "2025-01-28T00:00:00Z", amountTTC: 366, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-29T00:00:00Z", amountTTC: 49, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-30T00:00:00Z", amountTTC: 29, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-01-31T00:00:00Z", amountTTC: 177, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-01T00:00:00Z", amountTTC: 529, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-03T00:00:00Z", amountTTC: 317, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-04T00:00:00Z", amountTTC: 25, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-05T00:00:00Z", amountTTC: 422, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-06T00:00:00Z", amountTTC: 47, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-07T00:00:00Z", amountTTC: 514, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-08T00:00:00Z", amountTTC: 30, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-10T00:00:00Z", amountTTC: 982, type: "Alimentaire", payment: "Espèce", comment: "" },
-    { date: "2025-02-11T00:00:00Z", amountTTC: 358, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-12T00:00:00Z", amountTTC: 969, type: "Alimentaire", payment: "Espèce", comment: "" },
-    { date: "2025-02-13T00:00:00Z", amountTTC: 505, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-14T00:00:00Z", amountTTC: 113, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-17T00:00:00Z", amountTTC: 1301, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-18T00:00:00Z", amountTTC: 352, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-19T00:00:00Z", amountTTC: 142, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-20T00:00:00Z", amountTTC: 464, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-21T00:00:00Z", amountTTC: 94, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-24T00:00:00Z", amountTTC: 481, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-25T00:00:00Z", amountTTC: 84, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-26T00:00:00Z", amountTTC: 409, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-27T00:00:00Z", amountTTC: 110, type: "Alimentaire", payment: "Carte", comment: "" },
-    { date: "2025-02-28T00:00:00Z", amountTTC: 56, type: "Alimentaire", payment: "Carte", comment: "" }
-];
+    { "date": "2024-12-09T00:00:00Z", "amountTTC": 940, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
+    { "date": "2024-12-10T00:00:00Z", "amountTTC": 1747, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-11T00:00:00Z", "amountTTC": 35, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-11T00:00:00Z", "amountTTC": 122, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-12T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-12T00:00:00Z", "amountTTC": 259, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-13T00:00:00Z", "amountTTC": 13, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-14T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-16T00:00:00Z", "amountTTC": 31, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-16T00:00:00Z", "amountTTC": 226, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-17T00:00:00Z", "amountTTC": 21, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-18T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-18T00:00:00Z", "amountTTC": 192, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-19T00:00:00Z", "amountTTC": 23, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-19T00:00:00Z", "amountTTC": 114, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-20T00:00:00Z", "amountTTC": 12, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-21T00:00:00Z", "amountTTC": 21, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-23T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-23T00:00:00Z", "amountTTC": 292, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-24T00:00:00Z", "amountTTC": 14, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-27T00:00:00Z", "amountTTC": 5, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-27T00:00:00Z", "amountTTC": 263, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-28T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-30T00:00:00Z", "amountTTC": 20, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-30T00:00:00Z", "amountTTC": 407, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2024-12-31T00:00:00Z", "amountTTC": 17, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-02T00:00:00Z", "amountTTC": 13, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-03T00:00:00Z", "amountTTC": 19, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-03T00:00:00Z", "amountTTC": 233, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-04T00:00:00Z", "amountTTC": 15, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-06T00:00:00Z", "amountTTC": 10, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-06T00:00:00Z", "amountTTC": 297, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-07T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-08T00:00:00Z", "amountTTC": 26, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-08T00:00:00Z", "amountTTC": 519, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-09T00:00:00Z", "amountTTC": 22, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-10T00:00:00Z", "amountTTC": 33, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-10T00:00:00Z", "amountTTC": 381, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-11T00:00:00Z", "amountTTC": 23, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-13T00:00:00Z", "amountTTC": 28, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-14T00:00:00Z", "amountTTC": 16, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-15T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-15T00:00:00Z", "amountTTC": 301, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-16T00:00:00Z", "amountTTC": 24, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-17T00:00:00Z", "amountTTC": 29, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-18T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-20T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-20T00:00:00Z", "amountTTC": 371, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-21T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-22T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-22T00:00:00Z", "amountTTC": 404, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-23T00:00:00Z", "amountTTC": 18, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-24T00:00:00Z", "amountTTC": 47, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-25T00:00:00Z", "amountTTC": 43, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-27T00:00:00Z", "amountTTC": 49, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-27T00:00:00Z", "amountTTC": 758, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-28T00:00:00Z", "amountTTC": 22, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-28T00:00:00Z", "amountTTC": 344, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-29T00:00:00Z", "amountTTC": 49, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-30T00:00:00Z", "amountTTC": 29, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-31T00:00:00Z", "amountTTC": 43, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-01-31T00:00:00Z", "amountTTC": 134, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-01T00:00:00Z", "amountTTC": 27, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-01T00:00:00Z", "amountTTC": 502, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-03T00:00:00Z", "amountTTC": 31, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-03T00:00:00Z", "amountTTC": 286, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-04T00:00:00Z", "amountTTC": 25, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-05T00:00:00Z", "amountTTC": 41, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-05T00:00:00Z", "amountTTC": 380, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-06T00:00:00Z", "amountTTC": 47, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-07T00:00:00Z", "amountTTC": 40, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-07T00:00:00Z", "amountTTC": 473, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-08T00:00:00Z", "amountTTC": 30, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-10T00:00:00Z", "amountTTC": 52, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-10T00:00:00Z", "amountTTC": 930, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-10T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
+    { "date": "2025-02-11T00:00:00Z", "amountTTC": 88, "type": "Pain", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-11T00:00:00Z", "amountTTC": 270, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-11T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
+    { "date": "2025-02-12T00:00:00Z", "amountTTC": 123, "type": "Pain", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-12T00:00:00Z", "amountTTC": 845, "type": "Alimentaire", "payment": "Espèce", "comment": "" },
+    { "date": "2025-02-12T00:00:00Z", "amountTTC": 400, "type": "Autre", "payment": "Carte", "comment": "pub" },
+    { "date": "2025-02-13T00:00:00Z", "amountTTC": 129, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-13T00:00:00Z", "amountTTC": 376, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-13T00:00:00Z", "amountTTC": 570, "type": "Autre", "payment": "Carte", "comment": "enseigne carte" },
+    { "date": "2025-02-14T00:00:00Z", "amountTTC": 113, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-14T00:00:00Z", "amountTTC": 100, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-15T00:00:00Z", "amountTTC": 900, "type": "Autre", "payment": "Espèce", "comment": "Rançon et enseigne" },
+    { "date": "2025-02-17T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-17T00:00:00Z", "amountTTC": 1206, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-18T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-18T00:00:00Z", "amountTTC": 258, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-18T00:00:00Z", "amountTTC": 44, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-19T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-19T00:00:00Z", "amountTTC": 48, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-20T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-20T00:00:00Z", "amountTTC": 369, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-21T00:00:00Z", "amountTTC": 94, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-22T00:00:00Z", "amountTTC": 259, "type": "Autre", "payment": "Carte", "comment": "Frigo" },
+    { "date": "2025-02-24T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-24T00:00:00Z", "amountTTC": 397, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-24T00:00:00Z", "amountTTC": 82, "type": "Autre", "payment": "Carte", "comment": "Action" },
+    { "date": "2025-02-25T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-25T00:00:00Z", "amountTTC": 29, "type": "Autre", "payment": "Carte", "comment": "Tampon" },
+    { "date": "2025-02-26T00:00:00Z", "amountTTC": 84, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-02-26T00:00:00Z", "amountTTC": 19, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-01T00:00:00Z", "amountTTC": 404, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-02T00:00:00Z", "amountTTC": 353, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-03T00:00:00Z", "amountTTC": 960, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-04T00:00:00Z", "amountTTC": 72, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-04T00:00:00Z", "amountTTC": 100, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-05T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-05T00:00:00Z", "amountTTC": 95, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-06T00:00:00Z", "amountTTC": 83, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-06T00:00:00Z", "amountTTC": 201, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-07T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-07T00:00:00Z", "amountTTC": 266, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-09T00:00:00Z", "amountTTC": 12, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-10T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-10T00:00:00Z", "amountTTC": 207, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-11T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-11T00:00:00Z", "amountTTC": 131, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-11T00:00:00Z", "amountTTC": 41, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-12T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-12T00:00:00Z", "amountTTC": 148, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-13T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-13T00:00:00Z", "amountTTC": 117, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-13T00:00:00Z", "amountTTC": 140, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-14T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-14T00:00:00Z", "amountTTC": 17, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-16T00:00:00Z", "amountTTC": 254, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-17T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-17T00:00:00Z", "amountTTC": 155, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-18T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-18T00:00:00Z", "amountTTC": 167, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-19T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-19T00:00:00Z", "amountTTC": 25, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-19T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
+    { "date": "2025-03-20T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-20T00:00:00Z", "amountTTC": 170, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-21T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-24T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-24T00:00:00Z", "amountTTC": 256, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-25T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-25T00:00:00Z", "amountTTC": 441, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-25T00:00:00Z", "amountTTC": 30, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-26T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-26T00:00:00Z", "amountTTC": 204, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-27T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-27T00:00:00Z", "amountTTC": 334, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-27T00:00:00Z", "amountTTC": 18, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-27T00:00:00Z", "amountTTC": 500, "type": "Autre", "payment": "Carte", "comment": "pub" },
+    { "date": "2025-03-28T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-28T00:00:00Z", "amountTTC": 292, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-28T00:00:00Z", "amountTTC": 193, "type": "Autre", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-29T00:00:00Z", "amountTTC": 432, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-03-31T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-01T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-01T00:00:00Z", "amountTTC": 420, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-02T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-03T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-03T00:00:00Z", "amountTTC": 456, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-04T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-04T00:00:00Z", "amountTTC": 5, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-07T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-07T00:00:00Z", "amountTTC": 108, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-08T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-08T00:00:00Z", "amountTTC": 631, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-09T00:00:00Z", "amountTTC": 438, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-10T00:00:00Z", "amountTTC": 44, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-11T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-11T00:00:00Z", "amountTTC": 185, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-14T00:00:00Z", "amountTTC": 56, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-14T00:00:00Z", "amountTTC": 267, "type": "Alimentaire", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-15T00:00:00Z", "amountTTC": 45, "type": "Pain", "payment": "Carte", "comment": "" },
+    { "date": "2025-04-15T00:00:00Z", "amountTTC": 239, "type": "Alimentaire", "payment": "Carte", "comment": "" }
+  ];
+
+
 
 function loadPurchases() {
     try {
@@ -4093,7 +4194,7 @@ function showPersonnelDetailFromIndex(index) {
     document.getElementById('personnelDetailEmployee').textContent = `Employé : ${record.employee}`;
     document.getElementById("personnelDetailStartTime").textContent = "Début : " + record.startTime;
     document.getElementById("personnelDetailEndTime").textContent = "Fin : " + record.endTime;
-    document.getElementById('personnelDetailHours').textContent = `Heures : ${record.hours}`;
+    document.getElementById('personnelDetailHours').textContent = `Heures : ${formatHours(record.hours)}`;
     document.getElementById("personnelDetailComment").textContent = "Commentaire : " + record.comment;
 
     document.getElementById('personnelDetailPopup').classList.remove('hidden');
@@ -4917,215 +5018,67 @@ const initialMenu = [
     }
 
     function importData() {
-    // Afficher les instructions contextuelles
-    const instructions = document.getElementById('importInstructions');
-    if (instructions) {
-        instructions.classList.remove('hidden');
-    }
-
-    // Créer un input de type fichier
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json,.json'; // Spécifier explicitement les fichiers JSON
-    input.onchange = function(event) {
-        const file = event.target.files[0];
-        if (!file) {
-            alert("Aucun fichier sélectionné.");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-
-                // Valider les données importées
-                if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
-                    alert("Fichier invalide : structure de données incorrecte.");
-                    return;
-                }
-
-                // Mettre à jour le localStorage
-                localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
-                localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
-                localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
-                localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
-                localStorage.setItem('menu', JSON.stringify(importedData.menu));
-
-                // Synchroniser les variables globales
-                invoices = importedData.invoices || [];
-                invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
-                menu = importedData.menu || [...initialMenu];
-
-                console.log("Données importées :", importedData);
-                alert("Données importées avec succès !");
-
-                // Rafraîchir les affichages
-                filterRecipes();
-                filterPurchases();
-                filterPersonnel();
-                loadInvoices();
-                filterInvoices();
-                updateInvoiceDisplay();
-                showInvoice();
-
-                // Naviguer vers la page d'accueil
-                navigateTo('homePage');
-
-                // Masquer les instructions après importation
-                if (instructions) {
-                    instructions.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error("Erreur lors de l'importation :", error);
-                alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
-            }
-        };
-        reader.readAsText(file);
-    };
-
-    // Déclencher le sélecteur de fichiers
-    input.click();
-}
-
-async function importData() {
-    // Afficher les instructions contextuelles
-    const instructions = document.getElementById('importInstructions');
-    if (instructions) {
-        instructions.classList.remove('hidden');
-    }
-
-    // Vérifier si l'API File System Access est disponible
-    if ('showOpenFilePicker' in window) {
-        try {
-            const [fileHandle] = await window.showOpenFilePicker({
-                types: [
-                    {
-                        description: 'Fichiers JSON',
-                        accept: { 'application/json': ['.json'] }
-                    }
-                ],
-                excludeAcceptAllOption: true,
-                multiple: false
-            });
-            const file = await fileHandle.getFile();
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.accept = '.json,application/json';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
             const reader = new FileReader();
-
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-
+                    
                     // Valider les données importées
                     if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
                         alert("Fichier invalide : structure de données incorrecte.");
                         return;
                     }
-
+                    
                     // Mettre à jour le localStorage
                     localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
                     localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
                     localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
-                    localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
+                    localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices)); // Utiliser savedInvoices
                     localStorage.setItem('menu', JSON.stringify(importedData.menu));
-
-                    // Synchroniser les variables globales
-                    invoices = importedData.invoices || [];
-                    invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
-                    menu = importedData.menu || [...initialMenu];
-
-                    console.log("Données importées via File System Access :", importedData);
+                    
+                    // Synchroniser la variable globale invoices
+                    if (typeof invoices !== 'undefined') invoices = importedData.invoices;
+                    if (typeof invoiceCounter !== 'undefined' && Array.isArray(importedData.invoices) && importedData.invoices.length > 0) {
+                        invoiceCounter = Math.max(...importedData.invoices.map(i => i.number || 0));
+                    }
+                    
+                    // Débogage : Afficher le contenu importé
+                    console.log("Contenu de 'savedInvoices' après importation :", localStorage.getItem('savedInvoices'));
+                    
                     alert("Données importées avec succès !");
-
+                    
                     // Rafraîchir les affichages
-                    filterRecipes();
-                    filterPurchases();
-                    filterPersonnel();
-                    loadInvoices();
-                    filterInvoices();
-                    updateInvoiceDisplay();
-                    showInvoice();
-
-                    // Naviguer vers la page d'accueil
-                    navigateTo('homePage');
-
-                    // Masquer les instructions
-                    if (instructions) {
-                        instructions.classList.add('hidden');
+                    if (typeof filterRecipes === 'function') filterRecipes();
+                    if (typeof filterPurchases === 'function') filterPurchases();
+                    if (typeof filterPersonnel === 'function') filterPersonnel();
+                    if (typeof loadInvoices === 'function') loadInvoices(); // Synchroniser invoices
+                    if (typeof filterInvoices === 'function') filterInvoices();
+                    if (typeof updateInvoiceDisplay === 'function') updateInvoiceDisplay();
+                    if (typeof showInvoice === 'function') showInvoice();
+                    
+                    // Forcer la navigation vers la page des factures si ouverte
+                    if (document.getElementById('invoicePage') && typeof navigateTo === 'function') {
+                        navigateTo('invoicePage');
                     }
                 } catch (error) {
-                    console.error("Erreur lors de l'importation via File System Access :", error);
-                    alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
+                    console.error("Erreur lors de l'importation :", error);
+                    alert("Erreur lors de l'importation : fichier JSON invalide.");
                 }
             };
             reader.readAsText(file);
-            return;
-        } catch (error) {
-            console.warn("Échec de l'API File System Access, repli sur input file :", error);
-        }
+        };
+        input.click();
     }
 
-    // Repli sur l'input file standard
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json,.json';
-    input.onchange = function(event) {
-        const file = event.target.files[0];
-        if (!file) {
-            alert("Aucun fichier sélectionné.");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-
-                // Valider les données importées
-                if (!importedData.salesData || !importedData.purchases || !importedData.personnelRecords || !importedData.invoices || !importedData.menu) {
-                    alert("Fichier invalide : structure de données incorrecte.");
-                    return;
-                }
-
-                // Mettre à jour le localStorage
-                localStorage.setItem('salesData', JSON.stringify(importedData.salesData));
-                localStorage.setItem('purchases', JSON.stringify(importedData.purchases));
-                localStorage.setItem('personnelRecords', JSON.stringify(importedData.personnelRecords));
-                localStorage.setItem('savedInvoices', JSON.stringify(importedData.invoices));
-                localStorage.setItem('menu', JSON.stringify(importedData.menu));
-
-                // Synchroniser les variables globales
-                invoices = importedData.invoices || [];
-                invoiceCounter = invoices.length > 0 ? Math.max(...invoices.map(i => i.number || 0)) : 0;
-                menu = importedData.menu || [...initialMenu];
-
-                console.log("Données importées via input file :", importedData);
-                alert("Données importées avec succès !");
-
-                // Rafraîchir les affichages
-                filterRecipes();
-                filterPurchases();
-                filterPersonnel();
-                loadInvoices();
-                filterInvoices();
-                updateInvoiceDisplay();
-                showInvoice();
-
-                // Naviguer vers la page d'accueil
-                navigateTo('homePage');
-
-                // Masquer les instructions
-                if (instructions) {
-                    instructions.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error("Erreur lors de l'importation via input file :", error);
-                alert("Erreur lors de l'importation : fichier JSON invalide ou corrompu.");
-            }
-        };
-        reader.readAsText(file);
-    };
-    input.click();
-}    
+    
 
       </script>
     
