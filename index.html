@@ -3348,8 +3348,8 @@ function viewInvoiceDetail(number) {
 
     // Appliquer styles fixes pour un rendu homogène
     invoiceDetailContainer.style.fontFamily = 'Arial, sans-serif';
-    invoiceDetailContainer.style.fontSize = '12px';
-    invoiceDetailContainer.style.lineHeight = '1.5';
+    invoiceDetailContainer.style.fontSize = '10px';
+    invoiceDetailContainer.style.lineHeight = '1.4';
     invoiceDetailContainer.style.color = '#000';
 
     invoiceDetailContainer.dataset.invoiceNumber = invoice.number;
@@ -3363,12 +3363,12 @@ function viewInvoiceDetail(number) {
             Téléphone : 09 77 53 78 71<br>
             Ent Indiv SIRET : 93253222900014<br>
             APE : 56.10C<br>
-            <br>
+            <div style="height: 6px;"></div>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
             <div class="invoice-number" style="margin-top: 10px; font-weight: bold;">
                 ${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}
             </div>
-            <br>
+            <div style="height: 6px;"></div>
         </div>
         <div id="orderList">
             ${invoice.caBelow ? `
@@ -3393,7 +3393,7 @@ function viewInvoiceDetail(number) {
                     `).join('')}
                 </table>
             `}
-            <br>
+            <div style="height: 6px;"></div>
         </div>
         <div id="orderTotal">
             ${invoice.caBelow ? `
@@ -3410,7 +3410,7 @@ function viewInvoiceDetail(number) {
                 </table>
             `}
         </div>
-        <div id="invoiceFooter" style="text-align: left; margin-top: 20px; font-style: italic;">
+        <div id="invoiceFooter" style="text-align: left; margin-top: 10px; font-style: italic;">
             Chez Barth vous remercie de votre visite.<br>A bientôt !
         </div>
     `;
