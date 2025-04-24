@@ -26,6 +26,25 @@
     width: 100vw;
     overflow-x: hidden;
 }
+
+#invoiceDetailContainer {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #000;
+}
+#invoiceDetailContainer table {
+    font-size: 12px;
+}
+
+#invoiceDetailContainer .invoice-number {
+    font-size: 13px;
+}
+
+#invoiceFooter {
+    font-size: 11px;
+}
+
 /* Styles spécifiques pour les boutons de la section facture */
 .invoice-button-group.buttons.no-print {
     display: flex;
@@ -890,18 +909,24 @@
 .container th {
     background-color: #f2f2f2;
 }
-#exportPdf, #exportWord {
-    background-color: #87CEEB; /* Bleu ciel */
+
+/* Style des boutons d'export */
+.export-button {
+    background: #FFA500; /* Orange */
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 10px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 16px;
-    margin-right: 10px;
+    transition: background 0.3s ease;
 }
-#exportPdf:hover, #exportWord:hover {
-    background-color: #00BFFF; /* Bleu profond au survol */
+
+.export-button:hover {
+    background: #E59400;
+}
+
+
+
 }
 @media print {
     .container {
@@ -1026,7 +1051,7 @@
     <div id="recipeList"></div>
 
     <!-- Boutons principaux -->
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
     <button id="printAllRecipesBtn" onclick="printAllRecipes()">Imprimer</button>
     <button id="printBluetoothSalesBtn" onclick="printSalesToBluetooth()">Imprimer Bluetooth</button>
     <button id="exportPurchasesPdfBtn" onclick="downloadRecipesPDF()">Télécharger</button>
@@ -1217,7 +1242,7 @@
     <div id="purchasesList"></div>
 
     <!-- Boutons PDF et retour -->
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
         <button id="printPurchasesBtn" onclick="printPurchases()">Imprimer</button>
         <button id="printBluetoothPurchasesBtn" onclick="printPurchasesToBluetooth()">Imprimer Bluetooth</button>
         <button id="exportPurchasesPdfBtn" onclick="downloadPurchasesPDF()">Télécharger</button>
@@ -1313,7 +1338,7 @@
 
     <div id="personnelList"></div>
 
-    <div class="buttons no-print">
+    <div class="buttons no-print" style="margin-top: 10px;">
         <button id="printPersonnelBtn" onclick="printPersonnel()">Imprimer</button>
         <button id="printBluetoothPersonnelBtn" onclick="printPersonnelToBluetooth()">Imprimer Bluetooth</button>
         <button id="exportPersonnelPdfBtn" onclick="downloadPersonnelPDF()">Télécharger</button>
@@ -1407,11 +1432,12 @@
     <!-- Le tableau des bénéfices nets sera affiché ici -->
 </table>
 
-<div class="buttons" style="margin-top: 10px;">
-    <button id="exportPdf">Exporter en PDF</button>
-    <button id="exportWord">Exporter en Word</button>
+<div class="buttons no-print" style="margin-top: 10px;">
+    <button id="exportPdf" class="export-button">Télécharger PDF</button>
+    <button id="exportWord" class="export-button">Télécharger Word</button>
     <button onclick="backToHome()">Retour</button>
 </div>
+
     </div>
 </div>
 
@@ -2010,7 +2036,7 @@ function showPurchases() {
         updateRecipeDisplay();
     });
 
-   function exportRecipeToPdf() {
+  function exportRecipeToPdf() {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 10;
@@ -2053,7 +2079,6 @@ function showPurchases() {
 
     const drawTableRow = (x, y, date, card, cash, total) => {
         doc.setFont('helvetica', 'normal');
-        // Extract only YYYY-MM-DD from date string
         const cleanDate = date.split('T')[0];
         const dateParts = cleanDate.split('-');
         const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
@@ -2115,8 +2140,20 @@ function showPurchases() {
         doc.deletePage(doc.getNumberOfPages());
     }
 
-    doc.save('Livre_des_Recettes_Chez_Barth.pdf');
+    const fileName = 'Perso_Livre_des_Recettes_Chez_Barth.pdf';
+    doc.save(fileName);
+
+// Message de confirmation
+setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // 🧪 Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+}, 500);
 }
+
 
 function exportRecipeToPdfofficiel() {
     const doc = new jsPDF();
@@ -2225,7 +2262,19 @@ function exportRecipeToPdfofficiel() {
         doc.deletePage(doc.getNumberOfPages());
     }
 
-    doc.save('Livre_des_Recettes_officiel_Chez_Barth.pdf');
+    const fileName = 'Livre_des_Recettes_officiel_Chez_Barth.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
 }
 
 let selectedRecipeDate = null;
@@ -2268,8 +2317,9 @@ function filterRecipes() {
     const list = document.getElementById('recipeList');
     list.innerHTML = '';
 
-    const startDate = start ? new Date(start) : null;
-    const endDate = end ? new Date(end) : null;
+    // Définir les dates avec valeurs par défaut comme dans filterPurchases
+    const startDate = start ? new Date(start + 'T00:00:00') : new Date('2024-01-01');
+    const endDate = end ? new Date(end + 'T23:59:59') : new Date();
 
     const table = document.createElement('table');
     const thead = document.createElement('thead');
@@ -2295,8 +2345,8 @@ function filterRecipes() {
         .forEach(date => {
             const saleDate = new Date(date);
             if (
-                (!startDate || saleDate >= startDate) &&
-                (!endDate || saleDate <= endDate)
+                (!start || saleDate >= startDate) &&
+                (!end || saleDate <= endDate)
             ) {
                 const data = salesData[date];
                 const row = document.createElement('tr');
@@ -2336,6 +2386,8 @@ function filterRecipes() {
     `;
     table.appendChild(tfoot);
 
+    // Ajouter le titre avec les dates formatées comme dans filterPurchases
+    list.innerHTML = `<h3>Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>`;
     list.appendChild(table);
 }
 
@@ -2383,7 +2435,7 @@ function deleteSale(date) {
     const tableX = margin;
 
     doc.setFontSize(12);
-    doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -2400,7 +2452,7 @@ function deleteSale(date) {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -2461,7 +2513,7 @@ function downloadRecipesPDF() {
     const tableX = margin;
 
     doc.setFontSize(12);
-    doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -2478,7 +2530,7 @@ function downloadRecipesPDF() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Liste des ventes du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -2512,8 +2564,19 @@ function downloadRecipesPDF() {
     doc.rect(tableX + colWidths[0] + colWidths[1], y, colWidths[2], rowHeight); doc.text(`${Math.round(totalCash)}€`, tableX + colWidths[0] + colWidths[1] + 2, y + 6);
     doc.rect(tableX + colWidths[0] + colWidths[1] + colWidths[2], y, colWidths[3], rowHeight); doc.text(`${Math.round(totalSales)}€`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y + 6);
 
-    doc.save('liste_ventes_chez_barth.pdf');
-    window.open(doc.output('bloburl'), '_blank');
+    const fileName = 'Liste_ventes_Chez_Barth.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
 }
 
     // --- Facture ---
@@ -2811,50 +2874,84 @@ function updateOrderList() {
     const totalTTC = totalHT + totalTVA55 + totalTVA10;
 
     invoiceHeader.innerHTML = `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 100%; max-width: 600px; margin: 0 auto 8px auto; font-size: 12px; border-collapse: collapse;">
             <tr>
-                <td style="text-align: center;">
-                    <div style="width: 100%; margin: 0 auto;">
-                        <div>CHEZ BARTH</div>
-                        <div>16 place des Prêcheurs 13100 Aix en Provence</div>
-                        <div>Téléphone : 09 77 53 78 71</div>
-                        <div>Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
+                <td style="text-align: center; padding: 0;">
+                    <div style="margin: 0; padding: 0; line-height: 1.3;">
+                        <div style="margin: 0; padding: 0;">CHEZ BARTH</div>
+                        <div style="margin: 0; padding: 0;">16 place des Prêcheurs 13100 Aix en Provence</div>
+                        <div style="margin: 0; padding: 0;">Téléphone : 09 77 53 78 71</div>
+                        <div style="margin: 0; padding: 0;">Ent Indiv SIRET : 93253222900014 - APE : 56.10C</div>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td style="text-align: center;">Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
+                <td style="text-align: center; padding: 4px 0 0 0;">
+                    Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}
+                    ${caBelow ? '<div style="margin-top: 4px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
+                </td>
             </tr>
         </table>
     `;
 
     orderList.innerHTML = caBelow ? `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto;">
-            <tr><th>Produit</th><th>Prix TTC</th></tr>
-            ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+        <table style="width: 100%; max-width: 600px; margin: 0 auto 6px auto; font-size: 12px; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #000;">
+                <th style="text-align: left; padding-bottom: 2px;">Produit</th>
+                <th style="text-align: right; padding-bottom: 2px;">Prix TTC</th>
+            </tr>
+            ${order.map(item => `
+                <tr>
+                    <td style="padding-right: 20px; padding-top: 2px;">${item.name}</td>
+                    <td style="text-align: right; padding-top: 2px;">${item.priceTTC.toFixed(2)}€</td>
+                </tr>
+            `).join('')}
         </table>
     ` : `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto;">
-            <tr><th>Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
-            ${order.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+        <table style="width: 100%; max-width: 600px; margin: 0 auto 6px auto; font-size: 12px; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #000;">
+                <th style="text-align: left; padding-bottom: 2px;">Produit</th>
+                <th style="text-align: right; padding-bottom: 2px;">Prix HT</th>
+                <th style="text-align: right; padding-bottom: 2px;">Prix TTC</th>
+            </tr>
+            ${order.map(item => `
+                <tr>
+                    <td style="padding-right: 20px; padding-top: 2px;">${item.name}</td>
+                    <td style="text-align: right; padding-top: 2px;">${item.priceHT.toFixed(2)}€</td>
+                    <td style="text-align: right; padding-top: 2px;">${item.priceTTC.toFixed(2)}€</td>
+                </tr>
+            `).join('')}
         </table>
     `;
 
     orderTotal.innerHTML = caBelow ? `
-        <table class="total-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
-            <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
-            <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
+            <tr><td><strong>Total TTC:</strong></td><td style="text-align: right;"><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
+            <tr><td>Paiement</td><td style="text-align: right;">${currentPaymentMethod}</td></tr>
+            <tr>
+                <td colspan="2" style="text-align: left; font-style: italic; padding-top: 4px;">
+                    Chez Barth vous remercie de votre visite.<br>A bientôt !
+                </td>
+            </tr>
         </table>
     ` : `
-        <table class="total-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
-            <tr><td>Total HT:</td><td>${totalHT.toFixed(2)}€</td></tr>
-            <tr><td>TVA 5.5%:</td><td>${totalTVA55.toFixed(2)}€</td></tr>
-            <tr><td>TVA 10%:</td><td>${totalTVA10.toFixed(2)}€</td></tr>
-            <tr><td><strong>Total TTC:</strong></td><td><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
-            <tr><td>Paiement</td><td>${currentPaymentMethod}</td></tr>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
+            <tr><td>Total HT:</td><td style="text-align: right;">${totalHT.toFixed(2)}€</td></tr>
+            <tr><td>TVA 5.5%:</td><td style="text-align: right;">${totalTVA55.toFixed(2)}€</td></tr>
+            <tr><td>TVA 10%:</td><td style="text-align: right;">${totalTVA10.toFixed(2)}€</td></tr>
+            <tr><td><strong>Total TTC:</strong></td><td style="text-align: right;"><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
+            <tr><td>Paiement</td><td style="text-align: right;">${currentPaymentMethod}</td></tr>
+            <tr>
+                <td colspan="2" style="text-align: left; font-style: italic; padding-top: 4px;">
+                    Chez Barth vous remercie de votre visite.<br>A bientôt !
+                </td>
+            </tr>
         </table>
     `;
 }
+
+
+
 
 
 
@@ -2899,7 +2996,7 @@ function saveInvoice() {
     invoices.push(invoice);
     saveInvoicesToStorage();
 
-    const invoiceHeader = document.getElementById('invoiceHeader');
+     const invoiceHeader = document.getElementById('invoiceHeader');
     invoiceHeader.innerHTML = `
         <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse; box-sizing: border-box;">
             <tr>
@@ -2913,7 +3010,10 @@ function saveInvoice() {
                 </td>
             </tr>
             <tr>
-                <td style="text-align: center;">Fact N° ${invoiceNumber} Facture du ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' <strong>TVA non applicable art 293B du CGI</strong>' : ''}</td>
+                <td style="text-align: center;">
+                    Fact N° ${invoiceNumber} Facture du ${new Date().toLocaleDateString('fr-FR')}
+                    ${caBelow ? '<div style="margin-top: 10px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
+                </td>
             </tr>
         </table>
     `;
@@ -2923,6 +3023,17 @@ function saveInvoice() {
 
 function exportInvoiceToPdf() {
     const invoiceContainer = document.getElementById('invoiceContainer');
+
+    // 1. Extraction du numéro de facture depuis l'élément affiché
+    // Supposons que tu as quelque part dans l'invoiceContainer du texte comme "Fact N°12345"
+    const invoiceNumberMatch = invoiceContainer.innerText.match(/Fact(?:ure)? N°\s*(\d+)/i);
+    const invoiceNumber = invoiceNumberMatch ? invoiceNumberMatch[1] : 'Inconnue';
+
+    // 2. Générer un nom de fichier avec date + numéro de facture
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `Fact_N°${invoiceNumber}_${dateStr}_Facture_Chez_Barth.pdf`;
+
+    // 3. Génération du PDF
     html2canvas(invoiceContainer, {
         scale: 2,
         useCORS: true,
@@ -2934,13 +3045,26 @@ function exportInvoiceToPdf() {
             unit: 'mm',
             format: 'a5'
         });
+
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
         pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-        pdf.save(`Facture_Chez_Barth_${new Date().toISOString().split('T')[0]}.pdf`);
+        pdf.save(fileName);
+
+        // Message et ouverture
+        setTimeout(() => {
+            alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+            const blob = pdf.output('blob');
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+        }, 500);
     });
 }
+
+
 
 function printInvoice() {
     const invoiceContainer = document.getElementById('invoiceContainer');
@@ -2964,70 +3088,84 @@ function printInvoice() {
 }
 
 function sendInvoiceBySms() {
-                if (order.length === 0) {
-                    alert("Veuillez ajouter des produits à la facture avant d'envoyer par SMS");
-                    return;
-                }
+    if (order.length === 0) {
+        alert("Veuillez ajouter des produits à la facture avant d'envoyer par SMS");
+        return;
+    }
 
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                let smsText = "Facture Chez Barth - " + new Date().toLocaleDateString('fr-FR') + "\n\n";
-                smsText += "CHEZ BARTH\n16 place des Prêcheurs 13100 Aix en Provence\nTel: 09 77 53 78 71\nSIRET: 93253222900014\nAPE: 56.10C\nEntreprise Individuelle\n\n";
-             
-                const caBelow = document.getElementById('caBelow85000').checked;
-                if (caBelow) {
-                    smsText += "FACTURE DU " + new Date().toLocaleDateString('fr-FR') + "\n";
-                    smsText += "TVA non applicable art 293B du CGI\n\n";
-                    smsText += "Détail:\n";
-                    order.forEach(item => {
-                        smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
-                    });
-                } else {
-                    smsText += "FACTURE DU " + new Date().toLocaleDateString('fr-FR') + "\n\n";
-       		    smsText += "Detail:\n";
-                    order.forEach(item => {
-                        smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
-                    });
-                }
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const date = new Date();
 
-                let totalHT = 0;
-                let totalTVA55 = 0;
-                let totalTVA10 = 0;
-                order.forEach(item => {
-                    totalHT += item.priceHT;
-                    if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
-                    else totalTVA10 += item.priceTTC - item.priceHT;
-                });
-                const totalTTC = totalHT + totalTVA55 + totalTVA10;
+    // Ajout de caractères invisibles pour éviter la détection automatique
+    const preventAutoLink = str => str.split('').join('\u200C');
+    const formattedDate = preventAutoLink(date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }));
 
-                if (caBelow) {
-                    smsText += `\nTotal TTC: ${totalTTC.toFixed(2)}€\n`;
-		    smsText += `Paiement: ${currentPaymentMethod}\n\n`;
-                } else {
-                    smsText += `\nTotal HT: ${totalHT.toFixed(2)}€\n`;
-                    smsText += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
-                    smsText += `TVA 10%: ${totalTVA10.toFixed(2)}€\n`;
-                    smsText += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
-		    smsText += `Paiement: ${currentPaymentMethod}\n\n`;
-                }
-                smsText += "Merci de votre visite !";
+    let smsText = "Facture Chez Barth - " + formattedDate + "\n\n";
+    smsText += "CHEZ BARTH\n";
+    smsText += "16\u200B place\u200B des\u200B Prêcheurs\n";
+    smsText += preventAutoLink("13100") + "\u200B Aix\u200B en\u200B Provence\n";
+    smsText += "Tel: 09\u200B77\u200B53\u200B78\u200B71\n";
+    smsText += "SIRET: " + preventAutoLink("93253222900014") + "\n";
+    smsText += "APE: 56.10C\nEntreprise Individuelle\n\n";
 
-                const phoneNumber = prompt("Entrez le numéro de téléphone (ex: 06....):");
-                if (!phoneNumber) return;
+    const caBelow = document.getElementById('caBelow85000').checked;
+    if (caBelow) {
+    smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n`;
+    smsText += "TVA non applicable art 293B du CGI\n\n";
+    smsText += "Détail:\n";
+    order.forEach(item => {
+        smsText += `${item.name}: ${item.priceTTC.toFixed(2)}€ TTC\n`;
+    });
+} else {
+    smsText += `Fact N° ${invoiceCounter} du ${formattedDate}\n\n`;
+    smsText += "Detail:\n";
+    order.forEach(item => {
+        smsText += `${item.name}: ${item.priceHT.toFixed(2)}€ HT / ${item.priceTTC.toFixed(2)}€ TTC\n`;
+    });
+}
 
-                const cleanNumber = phoneNumber.replace(/\s/g, '').replace(/-/g, '');
-                const smsUrl = `sms:${cleanNumber}?body=${encodeURIComponent(smsText)}`;
 
-                if (isMobile) {
-                    window.location.href = smsUrl;
-                } else {
-                    try {
-                        window.location.href = smsUrl;
-                    } catch (e) {
-                        alert("Impossible d'ouvrir l'application SMS.\n\nCopiez ce texte :\n\n" + smsText);
-                        navigator.clipboard.writeText(smsText);
-                    }
-                }
-            }
+    let totalHT = 0;
+    let totalTVA55 = 0;
+    let totalTVA10 = 0;
+    order.forEach(item => {
+        totalHT += item.priceHT;
+        if (item.tvaRate === 0.055) totalTVA55 += item.priceTTC - item.priceHT;
+        else totalTVA10 += item.priceTTC - item.priceHT;
+    });
+    const totalTTC = totalHT + totalTVA55 + totalTVA10;
+
+    if (caBelow) {
+        smsText += `\nTotal TTC: ${totalTTC.toFixed(2)}€\n`;
+        smsText += `Paiement: ${currentPaymentMethod}\n\n`;
+    } else {
+        smsText += `\nTotal HT: ${totalHT.toFixed(2)}€\n`;
+        smsText += `TVA 5.5%: ${totalTVA55.toFixed(2)}€\n`;
+        smsText += `TVA 10%: ${totalTVA10.toFixed(2)}€\n`;
+        smsText += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
+        smsText += `Paiement: ${currentPaymentMethod}\n\n`;
+    }
+
+    smsText += "Chez Barth vous remercie de votre visite.\nA bientôt !";
+
+    const phoneNumber = prompt("Entrez le numéro de téléphone (ex: 06....):");
+    if (!phoneNumber) return;
+
+    const cleanNumber = phoneNumber.replace(/\s/g, '').replace(/-/g, '');
+    const smsUrl = `sms:${cleanNumber}?body=${encodeURIComponent(smsText)}`;
+
+    if (isMobile) {
+        window.location.href = smsUrl;
+    } else {
+        try {
+            window.location.href = smsUrl;
+        } catch (e) {
+            alert("Impossible d'ouvrir l'application SMS.\n\nCopiez ce texte :\n\n" + smsText);
+            navigator.clipboard.writeText(smsText);
+        }
+    }
+}
+
 
 function sendInvoiceByEmail() {
     const caBelow = document.getElementById('caBelow85000').checked;
@@ -3041,12 +3179,15 @@ function sendInvoiceByEmail() {
     });
     const totalTTC = totalHT + totalTVA55 + totalTVA10;
 
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    
     // Corps détaillé pour email avec toutes les informations
     let emailBody = "Facture Chez BARTH\n";
-    emailBody += "16 place des Precheurs, 13100 Aix en Provence\n";
-    emailBody += "Tel: 09 77 53 78 71\n";
-    emailBody += "Ent. Indiv. SIRET: 93253222900014 - APE: 56.10C\n";
-    emailBody += `Fact N° ${invoiceCounter} - ${new Date().toLocaleDateString('fr-FR')}${caBelow ? ' (TVA non applicable)' : ''}\n`;
+    emailBody += "16" + "\u200B" + " place" + "\u200B" + " des" + "\u200B" + " Prêcheurs," + "\u200B" + " 13100" + "\u200B" + " Aix" + "\u200B" + " en" + "\u200B" + " Provence\n";
+    emailBody += "Tel: 09" + "\u200B" + "77" + "\u200B" + "53" + "\u200B" + "78" + "\u200B" + "71\n";
+    emailBody += "Ent. Indiv. SIRET: 932" + "\u200B" + "532" + "\u200B" + "229" + "\u200B" + "00014 - APE: 56.10C\n";
+    emailBody += `Fact N° ${invoiceCounter} - ${formattedDate}${caBelow ? ' (TVA non applicable)' : ''}\n`;
     emailBody += "----------------------------\n";
     order.forEach(item => {
         if (caBelow) {
@@ -3063,7 +3204,9 @@ function sendInvoiceByEmail() {
     }
     emailBody += `Total TTC: ${totalTTC.toFixed(2)}€\n`;
     emailBody += `Paiement: ${currentPaymentMethod}\n`;
-    emailBody += "Merci de votre visite!";
+    emailBody += `\n`;
+    emailBody += "Chez Barth vous remercie de votre visite. A Bientôt !";
+   
 
     const emailUrl = `mailto:?subject=Facture Chez BARTH&body=${encodeURIComponent(emailBody)}`;
     window.open(emailUrl);
@@ -3156,7 +3299,7 @@ function filterInvoices() {
 
     const invoiceList = document.getElementById('invoiceList');
     invoiceList.innerHTML = `
-        <h2>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <h3>Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div style="overflow-x: auto; width: 100%;">
             <table style="width: 100%; max-width: 100%; table-layout: auto; border-collapse: collapse; font-size: 14px;">
                 <tr style="background-color: #f2f2f2;">
@@ -3227,19 +3370,19 @@ function viewInvoiceDetail(number) {
             APE : 56.10C<br>
             <br>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
-            <div class="invoice-number">${invoice.caBelow ? 'TVA non applicable art 293B du CGI' : ''}</div>
+            <div class="invoice-number" style="margin-top: 10px; font-weight: bold;">${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}</div>
             <br>
         </div>
         <div id="orderList">
             ${invoice.caBelow ? `
                 <table>
-                    <tr><th>Produit</th><th>Prix TTC</th></tr>
-                    ${invoice.items.map(item => `<tr><td>${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                    <tr><th style="text-align: left;">Produits</th><th>Prix TTC</th></tr>
+                    ${invoice.items.map(item => `<tr><td style="padding-right: 20px;">${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
                 </table>
             ` : `
                 <table>
-                    <tr><th>Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
-                    ${invoice.items.map(item => `<tr><td>${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                    <tr><th style="text-align: left;">Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
+                    ${invoice.items.map(item => `<tr><td style="padding-right: 20px;">${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
                 </table>
             `}
             <br>
@@ -3255,9 +3398,12 @@ function viewInvoiceDetail(number) {
                     <tr><td>TVA 5.5%:</td><td>${invoice.totalTVA55.toFixed(2)}€</td></tr>
                     <tr><td>TVA 10%:</td><td>${invoice.totalTVA10.toFixed(2)}€</td></tr>
                     <tr><td><strong>Total TTC:</strong></td><td><strong>${invoice.totalTTC.toFixed(2)}€</strong></td></tr>
-                    <tr><td>Paiement</td><td>${invoice.paymentMethod || 'Non spécifié'}</td></tr>
+                    <tr><td>Paiement :</td><td>${invoice.paymentMethod || 'Non spécifié'}</td></tr>
                 </table>
             `}
+        </div>
+        <div id="invoiceFooter" style="text-align: left; margin-top: 20px; font: inherit; font-style: italic;">
+            Chez Barth vous remercie de votre visite.<br>A bientôt !
         </div>
     `;
 }
@@ -3367,7 +3513,7 @@ function printAllInvoices() {
     const tableX = margin;
 
     doc.setFontSize(12);
-    doc.text(`Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -3387,7 +3533,7 @@ function printAllInvoices() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Liste des Commandes factures du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -3754,7 +3900,7 @@ function filterPurchases() {
 
     // Generate the table with purchases and totals
     purchasesList.innerHTML = `
-        <h2>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <h3>Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div class="table-container">
             <table>
                 <tr>
@@ -3886,7 +4032,7 @@ function printPurchases() {
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     drawHeader();
@@ -4005,7 +4151,7 @@ function downloadPurchasesPDF() {
     // Titre
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Liste des achats du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     drawHeader();
@@ -4072,8 +4218,22 @@ function downloadPurchasesPDF() {
 
   const startStr = startDate.toLocaleDateString('fr-CA'); // format YYYY-MM-DD
   const endStr = endDate.toLocaleDateString('fr-CA');
-  doc.save(`Achats_${startStr}_au_${endStr}.pdf`);
-  window.open(doc.output('bloburl'), '_blank');
+
+
+  const fileName = 'Chez_Barth_Achats_${startStr}_au_${endStr}.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
+
 }
 
 
@@ -4636,7 +4796,7 @@ function filterPersonnel() {
     const totalComments = Math.round(Object.values(commentTotals).reduce((sum, comments) => sum + comments, 0));
 
     personnelList.innerHTML = `
-        <h2>Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h2>
+        <h3>Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}</h3>
         <div class="table-container">
             <table>
                 <tr>
@@ -4771,7 +4931,7 @@ function printPersonnel() {
     const tableX = margin;
 
     doc.setFontSize(12);
-    doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -4791,7 +4951,7 @@ function printPersonnel() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -4868,29 +5028,7 @@ function printPersonnel() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    // Créer un iframe temporaire pour charger le PDF
-    const blob = doc.output('blob');
-    const blobURL = URL.createObjectURL(blob);
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = blobURL;
-    document.body.appendChild(iframe);
-
-    // Attendre que l'iframe soit chargé, puis déclencher l'impression
-    iframe.onload = () => {
-        try {
-            iframe.contentWindow.print();
-        } catch (e) {
-            console.error("Erreur lors de l'impression :", e);
-            // Fallback : ouvrir le PDF si l'impression échoue
-            window.open(blobURL, '_blank');
-        }
-        // Nettoyer après un délai pour permettre l'impression
-        setTimeout(() => {
-            document.body.removeChild(iframe);
-            URL.revokeObjectURL(blobURL);
-        }, 1000);
-    };
+    window.open(doc.output('bloburl'), '_blank');
 }
 
 function downloadPersonnelPDF() {
@@ -4920,7 +5058,7 @@ function downloadPersonnelPDF() {
     const tableX = margin;
 
     doc.setFontSize(12);
-    doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+    doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
     y += 10;
 
     doc.setFontSize(10);
@@ -4940,7 +5078,7 @@ function downloadPersonnelPDF() {
             doc.addPage();
             y = margin;
             doc.setFontSize(12);
-            doc.text(`Liste du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
+            doc.text(`Chez Barth-Activité du personnel du ${startDate.toLocaleDateString('fr-FR')} au ${endDate.toLocaleDateString('fr-FR')}`, margin, y);
             y += 10;
             doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
@@ -5017,8 +5155,20 @@ function downloadPersonnelPDF() {
         if (showComments) doc.text(`${totalComments.toFixed(0)}`, tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, y + 6);
     }
 
-    doc.save('liste_personnel_chez_barth.pdf');
-    window.open(doc.output('bloburl'), '_blank');
+    const fileName = 'Activité_du_personnel_Chez_Barth.pdf'; 
+    doc.save(fileName);
+
+    // Message de confirmation
+    setTimeout(() => {
+    alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+
+    // Tentative d'ouverture automatique (fonctionne uniquement si le navigateur le permet)
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+    }, 500);
+
+
 }
 
 async function printPersonnelToBluetooth() {
@@ -5194,10 +5344,8 @@ window.addEventListener('popstate', function(event) {
     }
 });
 
-// Fonction pour afficher la page Budget
 
-document.getElementById('exportPdf').style.backgroundColor = 'orange';
-document.getElementById('exportWord').style.backgroundColor = 'orange';
+
 
 // Fonction pour afficher la page Budget
 function showBudget() {
@@ -5281,22 +5429,22 @@ resultat.innerHTML = `
     <p><strong>   </p>
     <h2 style="text-align: center;">COMPTE DE RESULTAT PREVISIONNEL</h2>
     <p><strong>   </p>
-    <p><strong>* Chiffre d'affaires annuel: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
+    <p><strong>* CHIFFRE D'AFFAIRES ANNUEL: ${chiffreAffaires.toFixed(0)} € (CA)</strong></p>
 
     <ul>
         <p>Détail charges annuelles d'exploitation:</p>
         <ul>
-            <li style="font-weight: normal;">Loyer CC annuel: ${loyerAnnuel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Coût de revient matières (achats): ${coutMatieres.toFixed(0)} €</li>
-            <li style="font-weight: normal;">Charges externes: ${externes.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Loyer :  ${loyerAnnuel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Salaires et charges du personnel: ${chargesPersonnel.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Achats alimentaires (Coût de revient matières): ${coutMatieres.toFixed(0)} €</li>
+            <li style="font-weight: normal;">Charges externes (compta, pub, banque...): ${externes.toFixed(0)} €</li>
             <li style="font-weight: normal;">Charges électricité gaz eau téléphone assurance: ${charges.toFixed(0)} €</li>
         </ul>
     </ul>
     <p><strong>* Total charges annuelles d'exploitation: ${chargesExploitation.toFixed(0)} € (C)</strong></p>
-    <p><strong>* TVA (si CA > 85000€ -TVA déductible): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
-    <p><strong>* Impôts et Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
-    <p><strong>* Bénéfice net annuel: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
+    <p><strong>* TVA-TVA déductible (si CA > 85000€): ${tvaCalcul.toFixed(0)} € (T)</strong></p>
+    <p><strong>* Impôts Cotisations sociales Mathis: ${chargesUrssaf.toFixed(0)} € (I)</strong></p>
+    <p><strong>* BENEFICE NET ANNUEL: <span class="${beneficeNetClass}">${beneficeNet.toFixed(0)} € (CA-C-T-I)</span></strong></p>
 
     <p><strong>Rentabilité économique mini (point mort) :</strong> Nb ventes mini journalier à faire pour couvrir les charges et impôts : <strong>${nbVentesEconomique}</strong> ; soit chiffre d'affaire mini/jour : <strong>${(nbVentesEconomique * prix).toFixed(0)} €</strong></p>
     <p>  </p>`;
@@ -5345,7 +5493,7 @@ function afficherTableauBenefices(prix, cout, jours, semaines, loyerMensuel, cha
     // Création du tableau des bénéfices
     tableau.innerHTML = `
     <tr>
-        <th>Revenu net mensuel Mathis réparti sur 12 mois</th>
+        <th>Revenu net moyen mensuel Mathis sur 12 mois (congés compris)</th>
         <th>1000€</th>
         <th>2000€</th>
         <th>3000€</th>
@@ -5501,64 +5649,59 @@ document.getElementById('exportWord').addEventListener('click', function () {
     document.body.removeChild(fileDownload);
 });
 
-// Fonction pour exporter le contenu HTML en PDF
-
-document.getElementById('exportPdf').addEventListener('click', function() {
-    // Get the known buttons
+document.getElementById('exportPdf').addEventListener('click', function () {
     const exportPdfBtn = document.getElementById('exportPdf');
     const exportWordBtn = document.getElementById('exportWord');
     const retourBtn = document.getElementById('retour');
 
-    // Find all buttons to catch any additional "retour" buttons (e.g., blue one)
+    // Cibler tous les boutons potentiels à masquer
     const allButtons = document.querySelectorAll('button, [id*="retour"], [class*="retour"], [class*="back"], [class*="return"]');
-    console.log("All buttons found:", allButtons); // Debug: Log all buttons to identify the blue one
 
-    // Hide known buttons if they exist
-    if (exportPdfBtn) exportPdfBtn.style.display = 'none';
-    if (exportWordBtn) exportWordBtn.style.display = 'none';
-    if (retourBtn) retourBtn.style.display = 'none';
-
-    // Hide all other buttons that might be the blue "retour" button
-    allButtons.forEach(button => {
-        console.log("Hiding button:", button.id, button.className, button.textContent); // Debug: Log button details
-        button.style.display = 'none';
+    // Masquer tous les boutons
+    [exportPdfBtn, exportWordBtn, retourBtn].forEach(btn => {
+        if (btn) btn.style.display = 'none';
     });
+    allButtons.forEach(btn => btn.style.display = 'none');
 
-    var element = document.querySelector('.container');
-    var opt = {
-        margin:       0.5,
-        filename:     'Budget Barth.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    const element = document.querySelector('.container');
+    const today = new Date().toISOString().split('T')[0];
+    const fileName = `Budget_Chez_Barth_${today}.pdf`;
+
+    const opt = {
+        margin: 0.5,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function(pdf) {
-        // Diviser en 3 pages
-        var totalPages = pdf.internal.getNumberOfPages();
-        if (totalPages > 3) {
-            // Ajuster le contenu ou la mise en page si nécessaire
-        }
-        // Restore known buttons
-        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
-        if (exportWordBtn) exportWordBtn.style.display = 'block';
-        if (retourBtn) retourBtn.style.display = 'block';
-        // Restore all other buttons
-        allButtons.forEach(button => {
-            button.style.display = 'block';
+    html2pdf().from(element).set(opt).toPdf().get('pdf')
+        .then(function (pdf) {
+            const totalPages = pdf.internal.getNumberOfPages();
+            if (totalPages > 3) {
+                console.warn(`⚠️ Document généré avec ${totalPages} pages. Envisagez d'ajuster le contenu.`);
+            }
+
+            // ✅ Message + ouverture
+            alert(`Fichier "${fileName}" téléchargé dans le dossier Téléchargements.`);
+            const blob = pdf.output('blob');
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+        })
+        .catch(function (error) {
+            console.error("❌ Erreur lors de la génération du PDF :", error);
+            alert("❌ Une erreur est survenue lors de l'export du PDF.");
+        })
+        .finally(() => {
+            // Toujours restaurer les boutons
+            [exportPdfBtn, exportWordBtn, retourBtn].forEach(btn => {
+                if (btn) btn.style.display = 'block';
+            });
+            allButtons.forEach(btn => btn.style.display = 'block');
         });
-    }).catch(function(error) {
-        console.error("Error generating PDF:", error);
-        // Restore buttons in case of error
-        if (exportPdfBtn) exportPdfBtn.style.display = 'block';
-        if (exportWordBtn) exportWordBtn.style.display = 'block';
-        if (retourBtn) retourBtn.style.display = 'block';
-        allButtons.forEach(button => {
-            button.style.display = 'block';
-        });
-    }).save();
 });
+
 
 // Fonctions pour la gestion des données (remplacez les versions existantes)
     function backupData() {
@@ -5715,19 +5858,11 @@ const initialMenu = [
 
       </script>
 <script>
-     if ('serviceWorker' in navigator) {
-        // Désinscrire tous les Service Workers existants
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => {
-                registration.unregister();
-                console.log('Service Worker désinscrit');
-            });
-        });
-        // Enregistrer le nouveau Service Worker
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(() => console.log("Service Worker installé ✅"))
-            .catch(err => console.error("Erreur SW :", err));
-    }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log("Service Worker installé ✅"))
+          .catch(err => console.error("Erreur SW :", err));
+      }
     </script>
 
     
