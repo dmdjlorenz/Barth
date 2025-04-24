@@ -2861,7 +2861,7 @@ function updateOrderList() {
     const totalTTC = totalHT + totalTVA55 + totalTVA10;
 
     invoiceHeader.innerHTML = `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto 8px auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 80%; max-width: 600px; margin: 0 auto 8px auto; font-size: 12px; border-collapse: collapse;">
             <tr>
                 <td style="text-align: center; padding: 0;">
                     <div style="margin: 0; padding: 0; line-height: 1.3;">
@@ -2873,16 +2873,16 @@ function updateOrderList() {
                 </td>
             </tr>
             <tr>
-                <td style="text-align: center; padding: 4px 0 0 0;">
-                    Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}
-                    ${caBelow ? '<div style="margin-top: 4px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
+                <td style="text-align: center; padding: 10px 0 10px 0;">
+                   <strong>Fact N° ${invoiceCounter + 1} Facture du ${new Date().toLocaleDateString('fr-FR')}</strong>
+                   ${caBelow ? '<div style="margin-top: 4px; font-weight: bold;">(TVA non applicable art 293B du CGI)</div>' : ''}
                 </td>
             </tr>
         </table>
     `;
 
     orderList.innerHTML = caBelow ? `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto 6px auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 80%; max-width: 600px; margin: 0 auto 2px auto; font-size: 12px; border-collapse: collapse;">
             <tr style="border-bottom: 1px solid #000;">
                 <th style="text-align: left; padding-bottom: 2px;">Produit</th>
                 <th style="text-align: right; padding-bottom: 2px;">Prix TTC</th>
@@ -2895,7 +2895,7 @@ function updateOrderList() {
             `).join('')}
         </table>
     ` : `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto 6px auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 80%; max-width: 600px; margin: 0 auto 2px auto; font-size: 12px; border-collapse: collapse;">
             <tr style="border-bottom: 1px solid #000;">
                 <th style="text-align: left; padding-bottom: 2px;">Produit</th>
                 <th style="text-align: right; padding-bottom: 2px;">Prix HT</th>
@@ -2912,7 +2912,7 @@ function updateOrderList() {
     `;
 
     orderTotal.innerHTML = caBelow ? `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 80%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
             <tr><td><strong>Total TTC:</strong></td><td style="text-align: right;"><strong>${totalTTC.toFixed(2)}€</strong></td></tr>
             <tr><td>Paiement</td><td style="text-align: right;">${currentPaymentMethod}</td></tr>
             <tr>
@@ -2922,7 +2922,7 @@ function updateOrderList() {
             </tr>
         </table>
     ` : `
-        <table style="width: 100%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
+        <table style="width: 80%; max-width: 600px; margin: 0 auto; font-size: 12px; border-collapse: collapse;">
             <tr><td>Total HT:</td><td style="text-align: right;">${totalHT.toFixed(2)}€</td></tr>
             <tr><td>TVA 5.5%:</td><td style="text-align: right;">${totalTVA55.toFixed(2)}€</td></tr>
             <tr><td>TVA 10%:</td><td style="text-align: right;">${totalTVA10.toFixed(2)}€</td></tr>
@@ -3348,8 +3348,8 @@ function viewInvoiceDetail(number) {
 
     // Appliquer styles fixes pour un rendu homogène
     invoiceDetailContainer.style.fontFamily = 'Arial, sans-serif';
-    invoiceDetailContainer.style.fontSize = '10px';
-    invoiceDetailContainer.style.lineHeight = '1.4';
+    invoiceDetailContainer.style.fontSize = '12px';
+    invoiceDetailContainer.style.lineHeight = '1.0';
     invoiceDetailContainer.style.color = '#000';
 
     invoiceDetailContainer.dataset.invoiceNumber = invoice.number;
@@ -3362,10 +3362,10 @@ function viewInvoiceDetail(number) {
             13100 Aix en Provence<br>
             Téléphone : 09 77 53 78 71<br>
             Ent Indiv SIRET : 93253222900014<br>
-            APE : 56.10C<br>
-            <div style="height: 6px;"></div>
+            APE : 56.10C
+	    <div style="height: 6px;"></div>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
-            <div class="invoice-number" style="margin-top: 10px; font-weight: bold;">
+            <div class="invoice-number" style="margin-top: 6px; font-weight: bold;">
                 ${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}
             </div>
             <div style="height: 6px;"></div>
@@ -3376,7 +3376,7 @@ function viewInvoiceDetail(number) {
                     <tr><th style="text-align: left;">Produits</th><th>Prix TTC</th></tr>
                     ${invoice.items.map(item => `
                         <tr>
-                            <td style="padding-right: 20px;">${item.name}</td>
+                            <td style="padding-right: 22px;">${item.name}</td>
                             <td>${item.priceTTC.toFixed(2)}€</td>
                         </tr>
                     `).join('')}
@@ -3386,7 +3386,7 @@ function viewInvoiceDetail(number) {
                     <tr><th style="text-align: left;">Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
                     ${invoice.items.map(item => `
                         <tr>
-                            <td style="padding-right: 20px;">${item.name}</td>
+                            <td style="padding-right: 22px;">${item.name}</td>
                             <td>${item.priceHT.toFixed(2)}€</td>
                             <td>${item.priceTTC.toFixed(2)}€</td>
                         </tr>
@@ -3410,7 +3410,7 @@ function viewInvoiceDetail(number) {
                 </table>
             `}
         </div>
-        <div id="invoiceFooter" style="text-align: left; margin-top: 10px; font-style: italic;">
+        <div id="invoiceFooter" style="text-align: left; margin-top: 6px; font-style: italic;">
             Chez Barth vous remercie de votre visite.<br>A bientôt !
         </div>
     `;
