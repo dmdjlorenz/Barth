@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
     <title>BARTH</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -29,12 +30,18 @@
 
 #invoiceDetailContainer {
     font-family: Arial, sans-serif;
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: 14px; /* ajuste ici si trop petit */
+    line-height: 1.5;
     color: #000;
+    zoom: 1; /* annule les effets de zoom mobile */
+    transform: scale(1);
+    transform-origin: top left;
+    width: 100%;
+    max-width: 100%;
 }
+
 #invoiceDetailContainer table {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 #invoiceDetailContainer .invoice-number {
@@ -3411,7 +3418,7 @@ function viewInvoiceDetail(number) {
 function printInvoiceDetail() {
     const element = document.getElementById('invoiceDetailContainer');
     html2canvas(element, {
-        scale: 2,
+        scale: window.devicePixelRatio > 1 ? 1 : 2,
         useCORS: true,
         backgroundColor: '#FFFFFF'
     }).then(canvas => {
