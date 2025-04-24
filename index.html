@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BARTH</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -28,29 +27,10 @@
     overflow-x: hidden;
 }
 
-#invoiceDetailContainer {
-    font-family: Arial, sans-serif;
-    font-size: 14px; /* ajuste ici si trop petit */
-    line-height: 1.5;
-    color: #000;
-    zoom: 1; /* annule les effets de zoom mobile */
-    transform: scale(1);
-    transform-origin: top left;
-    width: 100%;
-    max-width: 100%;
-}
+/*#invoiceDetailContainer {
+    font-size: 14px; /* ou 10px selon ton besoin */
+}*/
 
-#invoiceDetailContainer table {
-    font-size: 14px;
-}
-
-#invoiceDetailContainer .invoice-number {
-    font-size: 13px;
-}
-
-#invoiceFooter {
-    font-size: 11px;
-}
 
 /* Styles spécifiques pour les boutons de la section facture */
 .invoice-button-group.buttons.no-print {
@@ -3365,8 +3345,16 @@ function viewInvoiceDetail(number) {
 
     showInvoiceDetail();
     const invoiceDetailContainer = document.getElementById('invoiceDetailContainer');
+
+    // Appliquer styles fixes pour un rendu homogène
+    invoiceDetailContainer.style.fontFamily = 'Arial, sans-serif';
+    invoiceDetailContainer.style.fontSize = '12px';
+    invoiceDetailContainer.style.lineHeight = '1.5';
+    invoiceDetailContainer.style.color = '#000';
+
     invoiceDetailContainer.dataset.invoiceNumber = invoice.number;
     const date = new Date(invoice.date).toLocaleDateString('fr-FR');
+    
     invoiceDetailContainer.innerHTML = `
         <div id="invoiceHeader">
             CHEZ BARTH<br>
@@ -3377,19 +3365,32 @@ function viewInvoiceDetail(number) {
             APE : 56.10C<br>
             <br>
             <div class="invoice-number">Fact N° ${invoice.number} Facture du ${date}</div>
-            <div class="invoice-number" style="margin-top: 10px; font-weight: bold;">${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}</div>
+            <div class="invoice-number" style="margin-top: 10px; font-weight: bold;">
+                ${invoice.caBelow ? '(TVA non applicable art 293B du CGI)' : ''}
+            </div>
             <br>
         </div>
         <div id="orderList">
             ${invoice.caBelow ? `
                 <table>
                     <tr><th style="text-align: left;">Produits</th><th>Prix TTC</th></tr>
-                    ${invoice.items.map(item => `<tr><td style="padding-right: 20px;">${item.name}</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                    ${invoice.items.map(item => `
+                        <tr>
+                            <td style="padding-right: 20px;">${item.name}</td>
+                            <td>${item.priceTTC.toFixed(2)}€</td>
+                        </tr>
+                    `).join('')}
                 </table>
             ` : `
                 <table>
                     <tr><th style="text-align: left;">Produit</th><th>Prix HT</th><th>Prix TTC</th></tr>
-                    ${invoice.items.map(item => `<tr><td style="padding-right: 20px;">${item.name}</td><td>${item.priceHT.toFixed(2)}€</td><td>${item.priceTTC.toFixed(2)}€</td></tr>`).join('')}
+                    ${invoice.items.map(item => `
+                        <tr>
+                            <td style="padding-right: 20px;">${item.name}</td>
+                            <td>${item.priceHT.toFixed(2)}€</td>
+                            <td>${item.priceTTC.toFixed(2)}€</td>
+                        </tr>
+                    `).join('')}
                 </table>
             `}
             <br>
@@ -3409,16 +3410,17 @@ function viewInvoiceDetail(number) {
                 </table>
             `}
         </div>
-        <div id="invoiceFooter" style="text-align: left; margin-top: 20px; font: inherit; font-style: italic;">
+        <div id="invoiceFooter" style="text-align: left; margin-top: 20px; font-style: italic;">
             Chez Barth vous remercie de votre visite.<br>A bientôt !
         </div>
     `;
 }
 
+
 function printInvoiceDetail() {
     const element = document.getElementById('invoiceDetailContainer');
     html2canvas(element, {
-        scale: window.devicePixelRatio > 1 ? 1 : 2,
+        scale: 2,
         useCORS: true,
         backgroundColor: '#FFFFFF'
     }).then(canvas => {
